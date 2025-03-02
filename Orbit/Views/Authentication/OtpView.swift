@@ -22,6 +22,7 @@ struct OtpView: View {
                     .multilineTextAlignment(TextAlignment.center)
                     .keyboardType(.decimalPad)
                     .textFieldStyle(.roundedBorder)
+                    .textContentType(.oneTimeCode)
                 Text(explanation)
                     .foregroundStyle(.gray)
                     .font(.caption2)

@@ -19,7 +19,7 @@ extension SettingsView {
                     }
                 }
                 .tag(SettingsDestination.about)
-                if let url = URL(string: "https://github.com/makinosp/Orbit") {
+                if let url = URL(string: "https://github.com/noridev/Orbit") {
                     ExternalLink(
                         title: String(localized: "Source Code"),
                         url: url,
