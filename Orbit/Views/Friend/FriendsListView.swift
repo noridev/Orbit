@@ -19,8 +19,10 @@ struct FriendsListView: View {
 
     var body: some View {
         List(friendVM.filterResultFriends, selection: $selected) { friend in
-            Label {
-                NavigationLabel {
+            NavigationLabel {
+                HStack {
+                    UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
+
                     VStack(alignment: .leading) {
                         Text(friend.displayName)
 
@@ -39,9 +41,8 @@ struct FriendsListView: View {
                             }
                         }
                     }
+                    .padding(.leading, 4)
                 }
-            } icon: {
-                UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
             }
         }
         .overlay { overlayView }

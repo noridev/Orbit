@@ -27,7 +27,7 @@ enum Constants {
     enum IconSize {
         static let thumbnail = CGSize(width: 32, height: 32)
         static let indicator = CGSize(width: 20, height: 20)
-        static let userDetailThumbnail = CGSize(width: 42, height: 42)
+        static let userDetailThumbnail = CGSize(width: 44, height: 44)
         static let userDetailIndicator = CGSize(width: 28, height: 28)
         static let ll = CGSize(width: 48, height: 48)
     }
