@@ -25,6 +25,7 @@ struct FriendsListView: View {
 
                     VStack(alignment: .leading) {
                         Text(friend.displayName)
+                            .font(.headline)
 
                         if !friend.statusDescription.isEmpty {
                             Text(friend.statusDescription)

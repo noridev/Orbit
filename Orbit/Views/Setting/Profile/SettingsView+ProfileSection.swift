@@ -12,16 +12,14 @@ extension SettingsView {
     func profileSection(user: User) -> some View {
         Section(header: Text("Profile")) {
             NavigationLabel {
-                Label {
-                    Text(user.displayName)
-                        .padding(.leading, 8)
-                } icon: {
+                HStack {
                     UserIcon(user: user, size: Constants.IconSize.ll)
+                    Text(user.displayName)
+                        .padding(.leading, 4)
+                        .font(.headline)
                 }
-                .padding(.vertical, 4)
             }
             .tag(SettingsDestination.userDetail)
-            .padding(8)
 
             Button("Edit", systemImage: IconSet.edit.systemName) {
                 isPresentedForm.toggle()
