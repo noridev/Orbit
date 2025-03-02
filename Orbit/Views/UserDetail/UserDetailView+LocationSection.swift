@@ -16,6 +16,7 @@ extension UserDetailView {
                 SquareURLImage(imageUrl: locationImageUrl)
                 Text(locationDescription)
                     .font(.headline)
+                    .padding(.leading, 8)
             }
             .redacted(reason: isRequesting ? .placeholder : [])
         }

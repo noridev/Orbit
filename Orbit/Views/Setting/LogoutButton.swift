@@ -15,6 +15,7 @@ struct LogoutButton: View {
         Button("Logout", systemImage: IconSet.logout.systemName, role: .destructive) {
             isPresentedAlert.toggle()
         }
+        .foregroundColor(.red)
         .alert("Logout", isPresented: $isPresentedAlert) {
             Button("Logout", role: .destructive) {
                 Task { await appVM.logout() }
