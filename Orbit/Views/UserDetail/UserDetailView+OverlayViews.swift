@@ -53,7 +53,7 @@ extension UserDetailView {
         } icon: {
             StatusIndicator(
                 user.state != .offline ? user.status.color : UserStatus.offline.color,
-                size: Constants.IconSize.indicator,
+                size: Constants.IconSize.userDetailIndicator,
                 isCutOut: user.platform == .web
             )
         }

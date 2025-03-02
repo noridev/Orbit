@@ -30,7 +30,7 @@ extension SettingsView {
                     Label {
                         Text("Third Party Licence")
                     } icon: {
-                        Image(systemName: "lightbulb")
+                        Image(systemName: "text.document")
                     }
                 }
                 .tag(SettingsDestination.license)

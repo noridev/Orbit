@@ -18,7 +18,7 @@ extension SettingsView {
                 } icon: {
                     UserIcon(user: user, size: Constants.IconSize.ll)
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, 4)
             }
             .tag(SettingsDestination.userDetail)
             .padding(8)

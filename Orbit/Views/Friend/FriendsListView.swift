@@ -41,7 +41,7 @@ struct FriendsListView: View {
                     }
                 }
             } icon: {
-                UserIcon(user: friend, size: Constants.IconSize.thumbnail)
+                UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
             }
         }
         .overlay { overlayView }
