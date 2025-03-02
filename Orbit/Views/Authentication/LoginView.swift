@@ -17,6 +17,8 @@ struct LoginView: View {
     @State private var isPresentedSavingPasswordPopover = false
     @State private var isRequesting = false
     @State private var isReady = false
+    @State private var isPresentedBrowser = false
+
     private let titleFont = "Avenir Next"
 
     var body: some View {
@@ -48,6 +50,11 @@ struct LoginView: View {
             guard let password = await KeychainUtil.shared.getPassword(for: username) else { return }
             self.password = password
             await appVM.login(credential: cledential, isSavedOnKeyChain: isSavedOnKeyChain)
+        }
+        .sheet(isPresented: $isPresentedBrowser) {
+            if let url = URL(string: "https://vrchat.com/home/register") {
+                SafariView(url: url)
+            }
         }
     }
 
@@ -85,8 +92,6 @@ struct LoginView: View {
             .textInputAutocapitalization(.never)
             .textFieldStyle(.roundedBorder)
             .multilineTextAlignment(.leading)
-            .keyboardType(.default)
-            .autocapitalization(.none)
 
             HStack {
                 Text("Connect your VRChat account.")
@@ -106,6 +111,19 @@ struct LoginView: View {
                         .helpWithCommunicationSecurity
                     ]
                     HelpView(title: "Is this secure?", contents: contents)
+                }
+            }
+            
+            HStack {
+                Text("New to VRChat?")
+                    .font(.footnote)
+                    .foregroundStyle(Color(.systemGray))
+                Button {
+                    isPresentedBrowser.toggle()
+                } label: {
+                    Text("Create an account")
+                        .font(.footnote)
+                        .foregroundColor(.blue)
                 }
             }
         }
@@ -140,7 +158,7 @@ struct LoginView: View {
             if isRequesting {
                 ProgressView()
             } else {
-                Text("Enter")
+                Text("Login")
             }
         }
         .buttonStyle(.bordered)
