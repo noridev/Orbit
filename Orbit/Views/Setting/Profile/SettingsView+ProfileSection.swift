@@ -14,7 +14,7 @@ extension SettingsView {
             NavigationLabel {
                 Label {
                     Text(user.displayName)
-                        .padding(.leading, 4)
+                        .padding(.leading, 8)
                 } icon: {
                     UserIcon(user: user, size: Constants.IconSize.ll)
                 }
