@@ -13,6 +13,7 @@ struct SettingsView: View {
     @Environment(AppViewModel.self) var appVM
     @State var destination: SettingsDestination? = UIDevice.current.userInterfaceIdiom == .pad ? .userDetail : nil
     @State var isPresentedForm = false
+    @State var isPresentedBrowser = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var selectedLibrary: Library?
 
@@ -33,6 +34,11 @@ struct SettingsView: View {
         }
         .sheet(item: $selectedLibrary) { library in
             LicenseView(library: library)
+        }
+        .sheet(isPresented: $isPresentedBrowser) {
+            if let url = URL(string: "https://vrchat.com/home/profile") {
+                SafariView(url: url)
+            }
         }
     }
 

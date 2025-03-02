@@ -7,15 +7,18 @@
 
 import MemberwiseInit
 import SwiftUI
+import SafariServices
 
 @MemberwiseInit
 struct ExternalLink {
-    @State private var isPresentedAlert = false
+    // @State private var isPresentedAlert = false
+    @State private var isPresentedBrowser = false
     @Init(.internal) private let title: String
     @Init(.internal) private let url: URL
     @Init(.internal) private let systemImage: String
 }
 
+/*
 extension ExternalLink: View {
     var body: some View {
         Button {
@@ -35,6 +38,27 @@ extension ExternalLink: View {
             Link("OK", destination: url)
         } message: {
             Text(verbatim: url.absoluteString)
+        }
+    }
+}
+ */
+
+extension ExternalLink: View {
+    var body: some View {
+        Button {
+            isPresentedBrowser.toggle()
+        } label: {
+            LabeledContent {
+                IconSet.linkExternal.icon
+                    .imageScale(.small)
+                    .foregroundStyle(Color(.tertiaryLabel))
+            } label: {
+                Label(title, systemImage: systemImage)
+                    .lineLimit(1)
+            }
+        }
+        .sheet(isPresented: $isPresentedBrowser) {
+            SafariView(url: url)
         }
     }
 }
