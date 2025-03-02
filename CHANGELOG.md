@@ -26,6 +26,9 @@
 ## 1.x.x
 출시일: unreleased<br>
 
+### General
+- 한국어 대응
+
 ### Added
 - 로그인 화면에서 VRChat 계정 생성 페이지로 이동할 수 있는 버튼을 추가함
 
