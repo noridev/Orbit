@@ -1,18 +1,18 @@
 <!-- markdownlint-disable MD033 -->
-# Harmonie
+# Orbit
 
-[![License](https://img.shields.io/github/license/makinosp/harmonie.svg)](https://img.shields.io/github/license/makinosp/harmonie.svg)
-[![Release](https://img.shields.io/github/release/makinosp/harmonie.svg)](https://img.shields.io/github/release/makinosp/harmonie.svg)
+[![License](https://img.shields.io/github/license/noridev/orbit.svg)](https://img.shields.io/github/license/noridev/orbit.svg)
+[![Release](https://img.shields.io/github/release/noridev/orbit.svg)](https://img.shields.io/github/release/noridev/orbit.svg)
 ![Swift](https://img.shields.io/badge/Swift%206.0+-F05138?logo=Swift&logoColor=white)
 ![Platform](https://img.shields.io/badge/platforms-iOS%2017.0%2b%20%7C%20iPadOS%2017.0%2b-lightgrey.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/24e487375b114c83ae937e4e93f3a5c3)](https://app.codacy.com/gh/makinosp/harmonie/dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/24e487375b114c83ae937e4e93f3a5c3)](https://app.codacy.com/gh/noridev/orbit/dashboard)
 
 <div align="center">
-    <a href="https://github.com/makinosp/harmonie">
+    <a href="https://github.com/noridev/orbit">
         <img
         src="https://github.com/user-attachments/assets/161ede10-b0bf-4796-966b-be1727f5fbc1"
         height="128"
-        alt="Harmonie Icon"
+        alt="Orbit Icon"
         >
     </a>
     <p>Unofficial VRChat Social Navigator for iOS</p>
@@ -49,4 +49,4 @@ This app is compatible with iOS 17 or iPadOS 17 or later. It can run on iPhone a
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/makinosp/harmonie/blob/main/LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/noridev/orbit/blob/main/LICENSE) file for details.

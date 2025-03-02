@@ -1,0 +1,752 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 70;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		201067B82C4552B40083ECBC /* AsyncSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 201067B72C4552B40083ECBC /* AsyncSwiftUI */; };
+		2014A0B32C3832690019C638 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2014A0B22C3832690019C638 /* VRCKit */; };
+		201B43102C27F48E00879A2F /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 201B430F2C27F48E00879A2F /* LicenseList */; };
+		20395DC22B945EEF00003921 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 20395DC12B945EEF00003921 /* VRCKit */; };
+		204709A32C7B47E100A56DF8 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 208899AA2C4BB26D00BCE9C5 /* VRCKit */; };
+		204709A42C7B47E100A56DF8 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2052C7AD2C4BC97100B341D1 /* VRCKit */; };
+		204709A52C7B47E100A56DF8 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2096016C2C4BD30100D905AF /* VRCKit */; };
+		20592B032C45640D00E1C8B8 /* AsyncSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 20592B022C45640D00E1C8B8 /* AsyncSwiftUI */; };
+		205A12082CBB8621007D4EA4 /* MemberwiseInit in Frameworks */ = {isa = PBXBuildFile; productRef = 205A12072CBB8621007D4EA4 /* MemberwiseInit */; };
+		206AC9012BFA07AA00E0D5AE /* AsyncSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 206AC9002BFA07AA00E0D5AE /* AsyncSwiftUI */; };
+		2094C4002C43BBC100F88986 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2094C3FF2C43BBC100F88986 /* VRCKit */; };
+		2096E1172C96B9C9009C3649 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2096E1152C96B9C9009C3649 /* README.md */; };
+		2096E1182C96B9C9009C3649 /* release.sh in Resources */ = {isa = PBXBuildFile; fileRef = 2096E1162C96B9C9009C3649 /* release.sh */; };
+		20C7F8BB2C480E6800AC7A56 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 20C7F89E2C480E6800AC7A56 /* LICENSE */; };
+		20DC3C292C422786001101DB /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 20DC3C282C422786001101DB /* VRCKit */; };
+		20E1D3722C8F467D00E00017 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 20E1D3322C8F467D00E00017 /* .swiftlint.yml */; };
+		20F213DD2C11FB470061DE29 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 20F213DC2C11FB470061DE29 /* NukeUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		20395DA42B945CD900003921 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 20395D892B945CD700003921 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 20395D902B945CD700003921;
+			remoteInfo = harmonie;
+		};
+		20395DAE2B945CD900003921 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 20395D892B945CD700003921 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 20395D902B945CD700003921;
+			remoteInfo = harmonie;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		20395D912B945CD700003921 /* Orbit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orbit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		20395DA32B945CD900003921 /* OrbitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OrbitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		20395DAD2B945CD900003921 /* OrbitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OrbitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2096E1152C96B9C9009C3649 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2096E1162C96B9C9009C3649 /* release.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release.sh; sourceTree = "<group>"; };
+		20C7F89E2C480E6800AC7A56 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		20E1D3322C8F467D00E00017 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		20CB5F2E2C48122100B40AE1 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 20395D902B945CD700003921 /* Orbit */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		20C7F8982C480E6800AC7A56 /* Orbit */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (20CB5F2E2C48122100B40AE1 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Orbit; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		20395D8E2B945CD700003921 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				204709A52C7B47E100A56DF8 /* VRCKit in Frameworks */,
+				204709A42C7B47E100A56DF8 /* VRCKit in Frameworks */,
+				204709A32C7B47E100A56DF8 /* VRCKit in Frameworks */,
+				201B43102C27F48E00879A2F /* LicenseList in Frameworks */,
+				201067B82C4552B40083ECBC /* AsyncSwiftUI in Frameworks */,
+				2094C4002C43BBC100F88986 /* VRCKit in Frameworks */,
+				20F213DD2C11FB470061DE29 /* NukeUI in Frameworks */,
+				205A12082CBB8621007D4EA4 /* MemberwiseInit in Frameworks */,
+				20592B032C45640D00E1C8B8 /* AsyncSwiftUI in Frameworks */,
+				20395DC22B945EEF00003921 /* VRCKit in Frameworks */,
+				2014A0B32C3832690019C638 /* VRCKit in Frameworks */,
+				20DC3C292C422786001101DB /* VRCKit in Frameworks */,
+				206AC9012BFA07AA00E0D5AE /* AsyncSwiftUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20395DA02B945CD900003921 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20395DAA2B945CD900003921 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		20395D882B945CD700003921 = {
+			isa = PBXGroup;
+			children = (
+				2096E1152C96B9C9009C3649 /* README.md */,
+				2096E1162C96B9C9009C3649 /* release.sh */,
+				20E1D3322C8F467D00E00017 /* .swiftlint.yml */,
+				20C7F8982C480E6800AC7A56 /* Orbit */,
+				20C7F89E2C480E6800AC7A56 /* LICENSE */,
+				20395D922B945CD700003921 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		20395D922B945CD700003921 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				20395D912B945CD700003921 /* Orbit.app */,
+				20395DA32B945CD900003921 /* OrbitTests.xctest */,
+				20395DAD2B945CD900003921 /* OrbitUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		20395D902B945CD700003921 /* Orbit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 20395DB72B945CD900003921 /* Build configuration list for PBXNativeTarget "Orbit" */;
+			buildPhases = (
+				20395D8D2B945CD700003921 /* Sources */,
+				20395D8E2B945CD700003921 /* Frameworks */,
+				20395D8F2B945CD700003921 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				20C7F8982C480E6800AC7A56 /* Orbit */,
+			);
+			name = Orbit;
+			packageProductDependencies = (
+				20395DC12B945EEF00003921 /* VRCKit */,
+				206AC9002BFA07AA00E0D5AE /* AsyncSwiftUI */,
+				20F213DC2C11FB470061DE29 /* NukeUI */,
+				201B430F2C27F48E00879A2F /* LicenseList */,
+				2014A0B22C3832690019C638 /* VRCKit */,
+				20DC3C282C422786001101DB /* VRCKit */,
+				2094C3FF2C43BBC100F88986 /* VRCKit */,
+				201067B72C4552B40083ECBC /* AsyncSwiftUI */,
+				20592B022C45640D00E1C8B8 /* AsyncSwiftUI */,
+				208899AA2C4BB26D00BCE9C5 /* VRCKit */,
+				2052C7AD2C4BC97100B341D1 /* VRCKit */,
+				2096016C2C4BD30100D905AF /* VRCKit */,
+				205A12072CBB8621007D4EA4 /* MemberwiseInit */,
+			);
+			productName = harmonie;
+			productReference = 20395D912B945CD700003921 /* Orbit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		20395DA22B945CD900003921 /* OrbitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 20395DBA2B945CD900003921 /* Build configuration list for PBXNativeTarget "OrbitTests" */;
+			buildPhases = (
+				20395D9F2B945CD900003921 /* Sources */,
+				20395DA02B945CD900003921 /* Frameworks */,
+				20395DA12B945CD900003921 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				20395DA52B945CD900003921 /* PBXTargetDependency */,
+			);
+			name = OrbitTests;
+			productName = harmonieTests;
+			productReference = 20395DA32B945CD900003921 /* OrbitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		20395DAC2B945CD900003921 /* OrbitUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 20395DBD2B945CD900003921 /* Build configuration list for PBXNativeTarget "OrbitUITests" */;
+			buildPhases = (
+				20395DA92B945CD900003921 /* Sources */,
+				20395DAA2B945CD900003921 /* Frameworks */,
+				20395DAB2B945CD900003921 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				20395DAF2B945CD900003921 /* PBXTargetDependency */,
+			);
+			name = OrbitUITests;
+			productName = harmonieUITests;
+			productReference = 20395DAD2B945CD900003921 /* OrbitUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		20395D892B945CD700003921 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				KnownAssetTags = (
+					New,
+				);
+				LastSwiftUpdateCheck = 1530;
+				LastUpgradeCheck = 1610;
+				TargetAttributes = {
+					20395D902B945CD700003921 = {
+						CreatedOnToolsVersion = 15.3;
+					};
+					20395DA22B945CD900003921 = {
+						CreatedOnToolsVersion = 15.3;
+						LastSwiftMigration = 1540;
+						TestTargetID = 20395D902B945CD700003921;
+					};
+					20395DAC2B945CD900003921 = {
+						CreatedOnToolsVersion = 15.3;
+						LastSwiftMigration = 1540;
+						TestTargetID = 20395D902B945CD700003921;
+					};
+				};
+			};
+			buildConfigurationList = 20395D8C2B945CD700003921 /* Build configuration list for PBXProject "Orbit" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				ja,
+				"zh-Hans",
+				Base,
+				ko,
+			);
+			mainGroup = 20395D882B945CD700003921;
+			packageReferences = (
+				20F213D92C11FB470061DE29 /* XCRemoteSwiftPackageReference "Nuke" */,
+				201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */,
+				20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */,
+				2096016B2C4BD30100D905AF /* XCRemoteSwiftPackageReference "vrckit" */,
+				205A12062CBB8621007D4EA4 /* XCRemoteSwiftPackageReference "swift-memberwise-init-macro" */,
+			);
+			productRefGroup = 20395D922B945CD700003921 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				20395D902B945CD700003921 /* Orbit */,
+				20395DA22B945CD900003921 /* OrbitTests */,
+				20395DAC2B945CD900003921 /* OrbitUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		20395D8F2B945CD700003921 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				20E1D3722C8F467D00E00017 /* .swiftlint.yml in Resources */,
+				2096E1172C96B9C9009C3649 /* README.md in Resources */,
+				2096E1182C96B9C9009C3649 /* release.sh in Resources */,
+				20C7F8BB2C480E6800AC7A56 /* LICENSE in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20395DA12B945CD900003921 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20395DAB2B945CD900003921 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		20395D8D2B945CD700003921 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20395D9F2B945CD900003921 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		20395DA92B945CD900003921 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		20395DA52B945CD900003921 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 20395D902B945CD700003921 /* Orbit */;
+			targetProxy = 20395DA42B945CD900003921 /* PBXContainerItemProxy */;
+		};
+		20395DAF2B945CD900003921 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 20395D902B945CD700003921 /* Orbit */;
+			targetProxy = 20395DAE2B945CD900003921 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		20395DB52B945CD900003921 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		20395DB62B945CD900003921 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		20395DB82B945CD900003921 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = C8JYC8C6SM;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Orbit/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Orbit;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = moe.noridev.orbit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		20395DB92B945CD900003921 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = C8JYC8C6SM;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Orbit/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Orbit;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = moe.noridev.orbit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		20395DBB2B945CD900003921 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = C8JYC8C6SM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = moe.noridev.orbitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Orbit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Orbit";
+			};
+			name = Debug;
+		};
+		20395DBC2B945CD900003921 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = C8JYC8C6SM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = moe.noridev.orbitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Orbit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Orbit";
+			};
+			name = Release;
+		};
+		20395DBE2B945CD900003921 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = C8JYC8C6SM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = moe.noridev.orbitUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = orbit;
+			};
+			name = Debug;
+		};
+		20395DBF2B945CD900003921 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = C8JYC8C6SM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = moe.noridev.orbitUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = orbit;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		20395D8C2B945CD700003921 /* Build configuration list for PBXProject "Orbit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20395DB52B945CD900003921 /* Debug */,
+				20395DB62B945CD900003921 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20395DB72B945CD900003921 /* Build configuration list for PBXNativeTarget "Orbit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20395DB82B945CD900003921 /* Debug */,
+				20395DB92B945CD900003921 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20395DBA2B945CD900003921 /* Build configuration list for PBXNativeTarget "OrbitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20395DBB2B945CD900003921 /* Debug */,
+				20395DBC2B945CD900003921 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20395DBD2B945CD900003921 /* Build configuration list for PBXNativeTarget "OrbitUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20395DBE2B945CD900003921 /* Debug */,
+				20395DBF2B945CD900003921 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cybozu/LicenseList.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.7.0;
+			};
+		};
+		20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/makinosp/async-swift-ui";
+			requirement = {
+				branch = "issue-10-adapt-to-SE-0409";
+				kind = branch;
+			};
+		};
+		205A12062CBB8621007D4EA4 /* XCRemoteSwiftPackageReference "swift-memberwise-init-macro" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gohanlon/swift-memberwise-init-macro";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.1;
+			};
+		};
+		2096016B2C4BD30100D905AF /* XCRemoteSwiftPackageReference "vrckit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/makinosp/vrckit";
+			requirement = {
+				branch = develop;
+				kind = branch;
+			};
+		};
+		20F213D92C11FB470061DE29 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		201067B72C4552B40083ECBC /* AsyncSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AsyncSwiftUI;
+		};
+		2014A0B22C3832690019C638 /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VRCKit;
+		};
+		201B430F2C27F48E00879A2F /* LicenseList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */;
+			productName = LicenseList;
+		};
+		20395DC12B945EEF00003921 /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VRCKit;
+		};
+		2052C7AD2C4BC97100B341D1 /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VRCKit;
+		};
+		20592B022C45640D00E1C8B8 /* AsyncSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */;
+			productName = AsyncSwiftUI;
+		};
+		205A12072CBB8621007D4EA4 /* MemberwiseInit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 205A12062CBB8621007D4EA4 /* XCRemoteSwiftPackageReference "swift-memberwise-init-macro" */;
+			productName = MemberwiseInit;
+		};
+		206AC9002BFA07AA00E0D5AE /* AsyncSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AsyncSwiftUI;
+		};
+		208899AA2C4BB26D00BCE9C5 /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VRCKit;
+		};
+		2094C3FF2C43BBC100F88986 /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VRCKit;
+		};
+		2096016C2C4BD30100D905AF /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2096016B2C4BD30100D905AF /* XCRemoteSwiftPackageReference "vrckit" */;
+			productName = VRCKit;
+		};
+		20DC3C282C422786001101DB /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VRCKit;
+		};
+		20F213DC2C11FB470061DE29 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 20F213D92C11FB470061DE29 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 20395D892B945CD700003921 /* Project object */;
+}

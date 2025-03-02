@@ -2,8 +2,8 @@
 
 PROJECT_PATH="$(dirname $(readlink -f $0))"
 
-PBXPROJ_PATH="${PROJECT_PATH}/Harmonie.xcodeproj/project.pbxproj"
-PRODUCT_BUNDLE_IDENTIFIER="jp.mknn.harmonie"
+PBXPROJ_PATH="${PROJECT_PATH}/Orbit.xcodeproj/project.pbxproj"
+PRODUCT_BUNDLE_IDENTIFIER="moe.noridev.orbit"
 
 AWK_SCRIPT_PATH="${PROJECT_PATH}/Scripts/extract_version.awk"
 MARKETING_VERSION=$(awk '

@@ -1,0 +1,18 @@
+//
+//  Iconizable.swift
+//  Orbit
+//
+//  Created by makinosp on 2024/09/30.
+//
+
+import SwiftUI
+
+protocol Iconizable {
+    var systemName: String { get }
+}
+
+extension Iconizable {
+    var icon: Image {
+        Image(systemName: systemName)
+    }
+}

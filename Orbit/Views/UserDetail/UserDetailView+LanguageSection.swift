@@ -1,0 +1,27 @@
+//
+//  UserDetailView+LanguageSection.swift
+//  Orbit
+//
+//  Created by makinosp on 2024/09/06.
+//
+
+import SwiftUI
+import VRCKit
+
+extension UserDetailView {
+    var languageSection: some View {
+        GroupBox("Languages") {
+            HStack(spacing: 8) {
+                ForEach(user.tags.languageTags) { language in
+                    Text(language.description)
+                        .font(.footnote.bold())
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color(.systemFill))
+                        .cornerRadius(8)
+                }
+            }
+        }
+        .groupBoxStyle(.card)
+    }
+}

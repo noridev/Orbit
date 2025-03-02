@@ -1,0 +1,12 @@
+//
+//  URL+Identifiable.swift
+//  Orbit
+//
+//  Created by makinosp on 2024/08/23.
+//
+
+import Foundation
+
+extension URL: @retroactive Identifiable {
+    public var id: String { absoluteString }
+}

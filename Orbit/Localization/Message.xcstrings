@@ -1,0 +1,206 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "About the authentication method of VRChat API" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VRChat APIの認証方式について "
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VRChat API 인증 방식 안내"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关于VRChat API的认证方式"
+          }
+        }
+      }
+    },
+    "Communication security" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通信の安全性"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "통신에 대한 안전성"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通信安全"
+          }
+        }
+      }
+    },
+    "msg_help_with_communication_security" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All communications in this app are encrypted by SSL/TLS, which minimizes the risk of interception or tampering by third parties."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアプリは、すべての通信がSSL/TLSにより暗号化されており、第三者による傍受や改ざんのリスクを最小限に抑えています。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 앱은 모든 통신이 SSL/TLS에 의해 암호화되어 있으며, 제3자에 의한 감청이나 변조의 위험을 최소화하고 있습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此应用程序中的所有通信都通过 SSL/TLS 加密，有效降低了第三方拦截或篡改的风险。"
+          }
+        }
+      }
+    },
+    "msg_help_with_storing_authentication_tokens" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app does not store passwords permanently unless you opt in to the password storage feature described below, and only retains a time-limited authentication token obtained by sending the username and password to the VRChat API. The app preserves the user's authentication token to avoid re-logging in during the validity period. This information is stored only on the console and will not be shared with any third party other than VRChat Web API."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアプリでは、後述するパスワード保存機能へオプトインする場合を除いて永続的にパスワードを保存することは無く、ユーザー名とパスワードをVRChat APIに送信することで取得される期限付きの認証トークンのみを保持します。このアプリはユーザーの認証トークンの保持によって有効期間内の再ログインを省略します。これらの情報は本体にのみ保存され、VRChat Web API以外のいかなる第三者とも共有することはありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 앱은 아래에 설명된 비밀번호 저장 기능에 옵트인하는 경우를 제외하고 비밀번호를 영구적으로 저장하지 않으며, 사용자 이름과 비밀번호를 VRChat API로 전송하여 얻은 제한된 시간을 가지는 인증 토큰만 보관합니다. 이 앱은 토큰 유효 기간 동안 다시 로그인하지 않고도 사용할 수 있도록 사용자의 인증 토큰을 보관합니다. 이 정보는 이 기기에만 저장되며 VRChat Web API 외의 제3자와 공유되지 않습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此应用程序不会永久存储密码，除非您选择启用下述密码存储功能。应用程序仅会保留通过将用户名和密码发送至 VRChat API 后获取的有时效的认证令牌。此应用程序通过保存用户的认证令牌，避免在有效期内重新登录。这些信息仅存储在控制台，不会与 VRChat Web API 以外的任何第三方共享。"
+          }
+        }
+      }
+    },
+    "msg_help_with_storing_password" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app has the ability to save the password entered when logging in by opt-in. In this feature, passwords are stored encrypted according to Apple's security standards through iCloud Keychain provided by Apple. This feature doesn't send your password to anyone other than iCloud Keychain. Also, passwords are never permanently stored on the device."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアプリではオプトインにより、ログイン時に入力されたパスワードを保存する機能を持ちます。この機能においてパスワードはAppleによって提供されるiCloud Keychainを通じてAppleのセキュリティ基準に基づいて暗号化されて保存されます。この機能によってパスワードがiCloud Keychain以外の第三者に送信されることはありません。また、パスワードが本体に永続的に保存されることはありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 앱에서는 옵트인을 통해 로그인 시 입력된 비밀번호를 저장하는 기능이 있습니다. 이 기능에서 비밀번호는 Apple에 의해 제공되는 iCloud 키체인을 통해 Apple의 보안 기준에 따라 암호화되어 저장됩니다. 이 기능은 iCloud 키체인 외의 제3자에게 비밀번호를 전송하지 않으며, 비밀번호를 기기에 영구적으로 저장하지 않습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此应用程序支持通过用户选择加入（opt-in）来保存登录时输入的密码。该功能通过苹果提供的 iCloud 钥匙串，根据苹果的安全标准对密码进行加密存储。密码不会发送给 iCloud 钥匙串以外的任何人，且不会永久存储在设备上。"
+          }
+        }
+      }
+    },
+    "msg_help_with_vrchat_api_authentication" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app uses VRChat Web API to get information about friends and update user information. Currently, VRChat Web API does not provide an external authentication and authorization system such as OAuth as an authentication method for access. Therefore, the app authenticates by sending the username and password directly to the VRChat API."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアプリはVRChat Web APIを利用してフレンドに関する情報の取得やユーザーの情報の更新を行います。現時点のVRChat Web APIは、アクセスするための認証方式としてOAuthのような外部認証・認可システムを提供しません。そのためこのアプリでは、直接ユーザー名とパスワードをVRChat APIに送信することによって認証を行います。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 앱은 VRChat Web API를 이용하여 친구에 대한 정보를 얻고 사용자의 정보를 업데이트합니다. VRChat Web API는 이러한 정보에 접근하기 위한 인증 방식으로, OAuth와 같은 외부 인증 및 권한 부여 시스템을 제공하지 않습니다. 따라서 이 앱에서는 사용자 이름과 비밀번호를 VRChat API로 직접 전송하여 인증합니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此应用程序使用 VRChat Web API 来获取好友相关信息并更新用户信息。目前，VRChat Web API 并未提供如 OAuth 等外部认证和授权系统作为访问认证方式。因此，该应用程序通过直接将用户名和密码发送至 VRChat API 来进行身份验证。”"
+          }
+        }
+      }
+    },
+    "Security in Authentication Token Retention" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証トークン保持における安全性"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "인증 토큰 보관에 대한 안전성"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "认证令牌存储的安全性"
+          }
+        }
+      }
+    },
+    "Security in password storage" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワード保存機能における安全性"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비밀번호 저장에 대한 안전성"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "密码存储的安全性"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
