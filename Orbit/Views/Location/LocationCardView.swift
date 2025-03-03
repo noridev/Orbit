@@ -47,6 +47,8 @@ struct LocationCardView: View {
                 }
             }
             VStack(spacing: .zero) {
+                Spacer()
+
                 HStack {
                     VStack(alignment: .leading) {
                         Text(instance.world.name)
