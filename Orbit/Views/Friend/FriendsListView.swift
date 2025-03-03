@@ -67,11 +67,8 @@ struct FriendsListView: View {
         } else if friendVM.filterResultFriends.isEmpty {
             if friendVM.isEmptyAllFilters {
                 ContentUnavailableView {
-                    Label {
-                        Text("No Friends")
-                    } icon: {
-                        IconSet.friends.icon
-                    }
+                    Label("No Friends", systemImage: IconSet.friends.systemName)
+                        .foregroundColor(.gray)
                 }
             } else {
                 ContentUnavailableView.search

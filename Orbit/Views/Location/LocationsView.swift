@@ -25,6 +25,7 @@ struct LocationsView: View {
             detail
         }
         .navigationSplitViewStyle(.balanced)
+        .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .refreshable {
             await friendVM.fetchAllFriends { error in
                 appVM.handleError(error)
@@ -43,6 +44,7 @@ struct LocationsView: View {
             if friendVM.isContentUnavailable {
                 ContentUnavailableView {
                     Label("No Friend Location", systemImage: IconSet.friends.systemName)
+                        .foregroundColor(.gray)
                 }
             }
         }
@@ -60,6 +62,7 @@ struct LocationsView: View {
             } else {
                 ContentUnavailableView {
                     Label("Select a location", systemImage: IconSet.location.systemName)
+                        .foregroundColor(.gray)
                 }
             }
         }
@@ -82,6 +85,7 @@ struct LocationsView: View {
             } else {
                 ContentUnavailableView {
                     Label("Select a friend or world", systemImage: IconSet.info.systemName)
+                        .foregroundColor(.gray)
                 }
             }
         }

@@ -25,6 +25,7 @@ struct MainTabView: View {
                 tabViewLegacy
             }
         }
+        .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .onAppear {
             friendVM.setAppVM(appVM)
             Task { await fetchFriendsTask() }

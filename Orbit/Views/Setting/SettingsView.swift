@@ -12,7 +12,7 @@ import VRCKit
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppViewModel.self) var appVM
-    @State var destination: SettingsDestination? = nil
+    @State var destination: SettingsDestination? = UIDevice.current.userInterfaceIdiom == .pad ? .favoriteGroups : nil
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var selectedLibrary: Library?
 
@@ -20,6 +20,7 @@ struct SettingsView: View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             settingsContent
                 .navigationTitle("Settings")
+                .toolbar(removing: .sidebarToggle)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button("Close", action: {
@@ -33,6 +34,7 @@ struct SettingsView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .sheet(item: $selectedLibrary) { library in
             LicenseView(library: library)
         }

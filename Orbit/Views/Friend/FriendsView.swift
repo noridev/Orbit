@@ -21,6 +21,7 @@ struct FriendsView: View {
                 .navigationTitle("Friends")
         } detail: { detail }
         .navigationSplitViewStyle(.balanced)
+        .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .searchable(
             text: $friendVM.filterText,
             placement: .navigationBarDrawer(displayMode: .always)
@@ -37,11 +38,8 @@ struct FriendsView: View {
                     .id(selected)
             } else {
                 ContentUnavailableView {
-                    Label {
-                        Text("Select a Friend")
-                    } icon: {
-                        IconSet.friends.icon
-                    }
+                    Label("Select a Friend", systemImage: IconSet.friends.systemName)
+                        .foregroundColor(.gray)
                 }
             }
         }

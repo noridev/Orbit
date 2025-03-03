@@ -33,6 +33,7 @@ struct FavoritesView: View {
                 } else if isSelectedEmpty {
                     ContentUnavailableView {
                         Label("No Favorites", systemImage: IconSet.favorite.systemName)
+                            .foregroundColor(.gray)
                     }
                     .background(Color(.systemGroupedBackground))
                 }
@@ -43,6 +44,7 @@ struct FavoritesView: View {
             .toolbarTitleMenu { toolbarTitleMenu }
         } detail: { detail }
         .navigationSplitViewStyle(.balanced)
+        .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .refreshable {
             segment = .none
             await fetchFavoriteAction()
@@ -77,11 +79,8 @@ struct FavoritesView: View {
                 }
             } else {
                 ContentUnavailableView {
-                    Label {
-                        Text("Select an item")
-                    } icon: {
-                        IconSet.favorite.icon
-                    }
+                    Label("Select an item", systemImage: IconSet.favorite.systemName)
+                        .foregroundColor(.gray)
                 }
             }
         }
