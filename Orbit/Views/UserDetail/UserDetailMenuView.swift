@@ -141,7 +141,7 @@ struct UserDetailToolbarMenu: View {
     }
     
     private var presentSettingsButton: Button<some View> {
-        Button { isPresentedForm.toggle() } label: { IconSet.edit.icon }
+        Button { isPresentedSettings.toggle() } label: { IconSet.setting.icon }
     }
     
     private var presentEditProfileButton: Button<some View> {
