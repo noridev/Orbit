@@ -576,7 +576,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "즐겨찾는 그룹 수정"
+            "value" : "즐겨찾기한 그룹 수정"
           }
         },
         "zh-Hans" : {
@@ -774,7 +774,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "즐겨찾는 그룹"
+            "value" : "즐겨찾기한 그룹"
           }
         },
         "zh-Hans" : {
@@ -1685,7 +1685,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "아이템 선택"
+            "value" : "항목 선택"
           }
         },
         "zh-Hans" : {
