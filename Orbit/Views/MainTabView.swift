@@ -41,12 +41,19 @@ struct MainTabView: View {
 
 @MainActor
 private extension MainTabViewSegment {
-    @ViewBuilder var content: some View {
+    @ViewBuilder
+    func content(appVM: AppViewModel) -> some View {
         switch self {
         case .social: LocationsView()
         case .friends: FriendsView()
         case .favorites: FavoritesView()
-        case .settings: SettingsView()
+        // case .settings: SettingsView()
+        case .profile:
+            if let user = appVM.user {
+                NavigationStack {
+                    UserDetailPresentationView(id: user.id)
+                }
+            }
         }
     }
 }
@@ -85,7 +92,7 @@ private extension MainTabView {
     private var tabViewLegacy: some View {
         TabView(selection: $selection) {
             ForEach(MainTabViewSegment.allCases) { tabSegment in
-                tabSegment.content
+                tabSegment.content(appVM: appVM)
                     .tag(tabSegment)
                     .tabItem {
                         Label(
@@ -101,7 +108,8 @@ private extension MainTabView {
         TabView(selection: $selection) {
             ForEach(MainTabViewSegment.allCases) { segment in
                 Tab(segment.description, systemImage: segment.icon.systemName, value: segment) {
-                    segment.content.environment(\.horizontalSizeClass, defaultHorizontalSizeClass)
+                    segment.content(appVM: appVM)
+                        .environment(\.horizontalSizeClass, defaultHorizontalSizeClass)
                 }
             }
         }

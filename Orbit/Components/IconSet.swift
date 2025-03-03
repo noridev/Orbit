@@ -99,8 +99,11 @@ enum IconSet {
     static var `private`: some Iconizable {
         Icon("person.fill.questionmark")
     }
+    static var profile: some Iconizable {
+        Icon("person.crop.circle.fill")
+    }
     static var setting: some Iconizable {
-        Icon("gear")
+        Icon("gearshape")
     }
     static var shield: some Iconizable {
         Icon("shield.fill")

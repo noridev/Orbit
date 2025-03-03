@@ -5,6 +5,7 @@
 //  Created by makinosp on 2024/08/20.
 //
 
+/*
 import SwiftUI
 import VRCKit
 
@@ -32,3 +33,4 @@ extension SettingsView {
         .textCase(nil)
     }
 }
+ */

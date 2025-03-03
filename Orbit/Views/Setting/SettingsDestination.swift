@@ -6,5 +6,5 @@
 //
 
 enum SettingsDestination: Hashable {
-    case userDetail, favoriteGroups, about, license
+    case favoriteGroups, about, license
 }

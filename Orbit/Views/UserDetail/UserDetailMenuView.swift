@@ -15,30 +15,56 @@ struct UserDetailToolbarMenu: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isRequesting = false
     @State private var isPresentedAlert = false
+    @State private var isPresentedSettings = false
+    @State private var isPresentedForm = false
+    @State private var isPresentedBrowser = false
     let user: UserDetail
 
     var body: some View {
-        Menu {
-            if user.isFriend {
-                favoriteMenu
+        HStack {
+            if let isMe = appVM.user, user.id == isMe.id {
+                presentSettingsButton
             }
-            if let url = user.url {
-                ShareLink(item: url)
+
+            Menu {
+                if user.isFriend {
+                    favoriteMenu
+                }
+                if let url = user.url {
+                    ShareLink(item: url)
+                }
+                if user.isFriend {
+                    presentUnfriendAlertButton
+                }
+                if let isMe = appVM.user, user.id == isMe.id {
+                    presentEditProfileButton
+                    presentAccountSettingsButton
+                }
+            } label: {
+                if isRequesting {
+                    ProgressView()
+                } else {
+                    IconSet.dots.icon
+                }
             }
-            if user.isFriend {
-                presentUnfriendAlertButton
+            .alert("Unfriend", isPresented: $isPresentedAlert) {
+                unfriendTaskButton
+            } message: {
+                Text("Are you sure you want to unfriend?")
             }
-        } label: {
-            if isRequesting {
-                ProgressView()
-            } else {
-                IconSet.dots.icon
+            .sheet(isPresented: $isPresentedSettings) {
+                SettingsView()
             }
-        }
-        .alert("Unfriend", isPresented: $isPresentedAlert) {
-            unfriendTaskButton
-        } message: {
-            Text("Are you sure you want to unfriend?")
+            .sheet(isPresented: $isPresentedForm) {
+                if let user = appVM.user {
+                    ProfileEditView(user: user)
+                }
+            }
+            .sheet(isPresented: $isPresentedBrowser) {
+                if let url = URL(string: "https://vrchat.com/home/profile") {
+                    SafariView(url: url)
+                }
+            }
         }
     }
 
@@ -112,5 +138,21 @@ struct UserDetailToolbarMenu: View {
         } catch {
             appVM.handleError(error)
         }
+    }
+    
+    private var presentSettingsButton: Button<some View> {
+        Button { isPresentedForm.toggle() } label: { IconSet.edit.icon }
+    }
+    
+    private var presentEditProfileButton: Button<some View> {
+        Button("Edit", systemImage: IconSet.edit.systemName, action: {
+            isPresentedForm.toggle()
+        })
+    }
+
+    private var presentAccountSettingsButton: Button<some View> {
+        Button("Account Settings", systemImage: IconSet.account.systemName, action: {
+            isPresentedBrowser.toggle()
+        })
     }
 }
