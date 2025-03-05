@@ -1816,6 +1816,12 @@
             "value" : "並べ替え"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정렬"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
