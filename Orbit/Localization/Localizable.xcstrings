@@ -543,6 +543,28 @@
         }
       }
     },
+    "Display Settings" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示設定"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "표시 설정"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示设置"
+          }
+        }
+      }
+    },
     "Edit" : {
       "localizations" : {
         "ja" : {

@@ -75,6 +75,8 @@ struct FriendsListSheetView: View {
                     }
                 }
             }
+            .navigationTitle("Display Settings")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem {
                     Button {
