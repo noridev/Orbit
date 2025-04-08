@@ -69,3 +69,6 @@ playground.xcworkspace
 
 # macOS
 .DS_Store
+
+# IntelliJ
+.idea/
