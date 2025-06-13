@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cybozu/LicenseList.git",
       "state" : {
-        "revision" : "4801461b9ca8eee843c19ab8fe88a590ce064e15",
-        "version" : "2.0.1"
+        "revision" : "0f83f934ee437461b87870b62871108b882a143a",
+        "version" : "2.0.3"
       }
     },
     {
