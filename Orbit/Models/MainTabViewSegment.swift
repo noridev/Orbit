@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftUICore
+import SwiftUI
 
 enum MainTabViewSegment: String, CaseIterable {
     case social, friends, favorites, profile
