@@ -35,7 +35,7 @@ enum EventType: String, CaseIterable, Hashable, CustomStringConvertible {
     
     var icon: Iconizable {
         switch self {
-        case .newFriend: return IconSet.friends
+        case .newFriend: return IconSet.newFriend
         case .unfriend: return IconSet.unfriend
         case .displayNameChanged: return IconSet.at
         case .trustRankChanged: return IconSet.shield

@@ -58,7 +58,7 @@ enum IconSet {
         Icon("chevron.forward")
     }
     static var friends: some Iconizable {
-        Icon("person.fill.checkmark")
+        Icon("person.2")
     }
     static var friendsFilled: some Iconizable {
         Icon("person.2.fill")
@@ -89,6 +89,9 @@ enum IconSet {
     }
     static var megaphone: some Iconizable {
         Icon("megaphone.fill")
+    }
+    static var newFriend: some Iconizable {
+        Icon("person.fill.checkmark")
     }
     static var parson: some Iconizable {
         Icon("person.fill")
