@@ -15,6 +15,16 @@
       },
       "shouldTranslate" : false
     },
+    "%@'s History" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@의 기록"
+          }
+        }
+      }
+    },
     "About This App" : {
       "localizations" : {
         "ja" : {
@@ -852,6 +862,16 @@
         }
       }
     },
+    "Friend History" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친구 기록"
+          }
+        }
+      }
+    },
     "Friend Locations" : {
       "localizations" : {
         "ja" : {
@@ -896,8 +916,28 @@
         }
       }
     },
+    "Friends History" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친구 기록"
+          }
+        }
+      }
+    },
     "https://" : {
       "shouldTranslate" : false
+    },
+    "If your friend changes their nickname, changed their trust rank, or adds or removes a friend, you'll see a record of here." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친구가 닉네임을 변경하거나, 신뢰 등급이 변경되거나, 친구 추가 또는 삭제한 경우 여기에 기록이 표시됩니다."
+          }
+        }
+      }
     },
     "In What Way?" : {
       "localizations" : {
@@ -1359,6 +1399,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "没有好友"
+          }
+        }
+      }
+    },
+    "No history" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록이 없습니다."
           }
         }
       }

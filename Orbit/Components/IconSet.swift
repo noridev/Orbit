@@ -60,6 +60,9 @@ enum IconSet {
     static var friendsFilled: some Iconizable {
         Icon("person.2.fill")
     }
+    static var friendsHistory: some Iconizable {
+        Icon("clock.arrow.circlepath")
+    }
     static var heart: some Iconizable {
         Icon("heart.fill")
     }

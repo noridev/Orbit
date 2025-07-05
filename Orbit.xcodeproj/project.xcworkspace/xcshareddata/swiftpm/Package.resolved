@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/noridev/vrckit",
       "state" : {
-        "branch" : "develop",
-        "revision" : "994e6a3c1f23c3de8df66d91128e5d9f9f10299b"
+        "branch" : "friends-history",
+        "revision" : "bd4d158c7f862f4e52fabd3f4eb9c7eb6a563bf4"
       }
     }
   ],

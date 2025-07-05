@@ -9,12 +9,17 @@ import Foundation
 import SwiftUI
 
 enum MainTabViewSegment: String, CaseIterable {
-    case social, friends, favorites, profile
+    case social, friends, favorites, friendsHistory, profile
 }
 
 extension MainTabViewSegment: CustomStringConvertible {
     var localizedString: LocalizedStringResource {
-        LocalizedStringResource(stringLiteral: rawValue.capitalized)
+        switch self {
+        case .friendsHistory:
+            return LocalizedStringResource(stringLiteral: "Friends History")
+        default:
+            return LocalizedStringResource(stringLiteral: rawValue.capitalized)
+        }
     }
 
     var description: String {
@@ -32,6 +37,7 @@ extension MainTabViewSegment {
         case .social: IconSet.social
         case .friends: IconSet.friends
         case .favorites: IconSet.favorite
+        case .friendsHistory: IconSet.friendsHistory
         case .profile: IconSet.profile
         }
     }

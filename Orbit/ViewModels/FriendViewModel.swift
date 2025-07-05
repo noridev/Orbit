@@ -23,6 +23,8 @@ final class FriendViewModel {
     var isProcessingFilter = false
     @ObservationIgnored private var appVM: AppViewModel?
     @ObservationIgnored var favoriteFriends: [FavoriteFriend] = []
+    @ObservationIgnored private let historyVM = FriendHistoryViewModel.shared
+    private let localFriendsKey = "localFriendsList"
 
     init() {
         restoreFilter()
@@ -62,9 +64,6 @@ final class FriendViewModel {
         allFriends.first { $0.id == id }
     }
 
-    /// Returns a list of matches for either `onlineFriends` or `offlineFriends`
-    /// for each id of reversed order friend list.
-    /// - Returns a list of recentry friends
     var recentlyFriends: [Friend] {
         guard let appVM = appVM, let user = appVM.user else { return [] }
         return user.friends.reversed().compactMap { id in
@@ -76,15 +75,6 @@ final class FriendViewModel {
         friendsLocations.filter(\.location.isVisible)
     }
 
-    /// Fetches all friends and updates the relevant data properties.
-    ///
-    /// This function asynchronously retrieves online and offline friends
-    /// using the `FriendService`, updates their locations, and applies filters
-    /// to the retrieved data. If an error occurs during any part of the process,
-    /// the provided error handler is invoked. The function manages a loading state
-    /// using the `isFetchingAllFriends` property.
-    /// - Parameters errorHandler: A closure that is called with an error if one occurs
-    ///              during the fetch operation.
     func fetchAllFriends(errorHandler: @escaping (_ error: any Error) -> Void) async {
         defer { isFetchingAllFriends = false }
         isFetchingAllFriends = true
@@ -104,6 +94,8 @@ final class FriendViewModel {
             )
             onlineFriends = try await onlineFriendsTask
             offlineFriends = try await offlineFriendsTask
+            
+            processFriendListChanges()
         } catch {
             errorHandler(error)
             return
@@ -112,12 +104,70 @@ final class FriendViewModel {
         applyFilters()
     }
 
+    private func saveFriendsLocally(_ friends: [Friend]) {
+        do {
+            let data = try JSONEncoder().encode(friends)
+            UserDefaults.standard.set(data, forKey: localFriendsKey)
+        } catch {
+            print("Failed to save friends locally: \(error)")
+        }
+    }
+
+    private func loadFriendsFromLocal() -> [Friend] {
+        guard let data = UserDefaults.standard.data(forKey: localFriendsKey) else { return [] }
+        do {
+            return try JSONDecoder().decode([Friend].self, from: data)
+        } catch {
+            print("Failed to load friends from local: \(error)")
+            return []
+        }
+    }
+
+    private func processFriendListChanges() {
+        let oldFriends = loadFriendsFromLocal()
+        let newFriends = self.allFriends
+
+        guard !oldFriends.isEmpty else {
+            saveFriendsLocally(newFriends)
+            return
+        }
+
+        let oldFriendsDict = Dictionary(uniqueKeysWithValues: oldFriends.map { ($0.id, $0) })
+        let newFriendsDict = Dictionary(uniqueKeysWithValues: newFriends.map { ($0.id, $0) })
+
+        let oldIDs = Set(oldFriendsDict.keys)
+        let newIDs = Set(newFriendsDict.keys)
+
+        for id in newIDs.subtracting(oldIDs) {
+            if newFriendsDict[id] != nil {
+                historyVM.saveHistory(event: .added, for: id)
+            }
+        }
+
+        for id in oldIDs.subtracting(newIDs) {
+            if oldFriendsDict[id] != nil {
+                historyVM.saveHistory(event: .removed, for: id)
+            }
+        }
+
+        for id in newIDs.intersection(oldIDs) {
+            guard let oldFriend = oldFriendsDict[id], let newFriend = newFriendsDict[id] else { continue }
+
+            if oldFriend.displayName != newFriend.displayName {
+                historyVM.saveHistory(event: .nicknameChanged(from: oldFriend.displayName, to: newFriend.displayName), for: id)
+            }
+            if oldFriend.trustRank != newFriend.trustRank {
+                historyVM.saveHistory(event: .trustRankChanged(from: oldFriend.trustRank.description, to: newFriend.trustRank.description), for: id)
+            }
+        }
+
+        saveFriendsLocally(newFriends)
+    }
+
     var isContentUnavailable: Bool {
         friendsLocations.isEmpty && !isFetchingAllFriends
     }
-}
-
-extension FriendViewModel {
+    
     convenience init(appVM: AppViewModel) {
         self.init()
         setAppVM(appVM)

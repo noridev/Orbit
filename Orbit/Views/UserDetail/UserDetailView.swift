@@ -1,10 +1,3 @@
-//
-//  UserDetailView.swift
-//  Orbit
-//
-//  Created by makinosp on 2024/03/16.
-//
-
 import AsyncSwiftUI
 import NukeUI
 import VRCKit
@@ -21,6 +14,7 @@ struct UserDetailView: View {
     @State var isPresentedNoteEditor = false
     private let headerHeight: CGFloat = 250
 
+    // init은 기존과 동일
     init(user: UserDetail) {
         self.user = user
     }
@@ -63,6 +57,13 @@ struct UserDetailView: View {
         VStack {
             locationSection
             noteSection
+            
+            // --- 추가된 부분 시작 ---
+            if let friend = friendVM.getFriend(id: user.id) {
+                historySection(friend: friend)
+            }
+            // --- 추가된 부분 끝 ---
+
             if let bio = user.bio {
                 bioSection(bio)
             }
@@ -76,6 +77,22 @@ struct UserDetailView: View {
             activitySection
         }
     }
+    
+    // --- 아래 함수 추가 ---
+    private func historySection(friend: Friend) -> some View {
+        GroupBox {
+            NavigationLink(destination: FriendHistoryView(friend: friend)) {
+                HStack {
+                    Label("Friend History", systemImage: "clock.arrow.circlepath")
+                    Spacer()
+                    IconSet.forward.icon
+                }
+            }
+            .foregroundStyle(Color.primary)
+        }
+        .groupBoxStyle(.card)
+    }
+    // --- 추가된 함수 끝 ---
 
     private func fetchInstance(id: String) async {
         do {
@@ -88,7 +105,7 @@ struct UserDetailView: View {
         }
     }
 }
-
+// Preview는 기존과 동일
 #Preview {
     PreviewContainer { userDetail in
         UserDetailView(user: userDetail)

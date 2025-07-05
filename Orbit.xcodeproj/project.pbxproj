@@ -23,7 +23,8 @@
 		20DC3C292C422786001101DB /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 20DC3C282C422786001101DB /* VRCKit */; };
 		20E1D3722C8F467D00E00017 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 20E1D3322C8F467D00E00017 /* .swiftlint.yml */; };
 		20F213DD2C11FB470061DE29 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 20F213DC2C11FB470061DE29 /* NukeUI */; };
-		F1010C152E194FE1004FA1DE /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1010C142E194FE1004FA1DE /* VRCKit */; };
+		F1C08D812E19691400B95347 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1C08D802E19691400B95347 /* VRCKit */; };
+		F1C08D842E19727A00B95347 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1C08D832E19727A00B95347 /* VRCKit */; };
 		F1E2819A2D74580E0047C025 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = F1E281992D74580E0047C025 /* CHANGELOG.md */; };
 /* End PBXBuildFile section */
 
@@ -74,7 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1010C152E194FE1004FA1DE /* VRCKit in Frameworks */,
+				F1C08D812E19691400B95347 /* VRCKit in Frameworks */,
 				204709A42C7B47E100A56DF8 /* VRCKit in Frameworks */,
 				204709A32C7B47E100A56DF8 /* VRCKit in Frameworks */,
 				201B43102C27F48E00879A2F /* LicenseList in Frameworks */,
@@ -85,6 +86,7 @@
 				20592B032C45640D00E1C8B8 /* AsyncSwiftUI in Frameworks */,
 				20395DC22B945EEF00003921 /* VRCKit in Frameworks */,
 				2014A0B32C3832690019C638 /* VRCKit in Frameworks */,
+				F1C08D842E19727A00B95347 /* VRCKit in Frameworks */,
 				20DC3C292C422786001101DB /* VRCKit in Frameworks */,
 				206AC9012BFA07AA00E0D5AE /* AsyncSwiftUI in Frameworks */,
 			);
@@ -162,7 +164,8 @@
 				208899AA2C4BB26D00BCE9C5 /* VRCKit */,
 				2052C7AD2C4BC97100B341D1 /* VRCKit */,
 				205A12072CBB8621007D4EA4 /* MemberwiseInit */,
-				F1010C142E194FE1004FA1DE /* VRCKit */,
+				F1C08D802E19691400B95347 /* VRCKit */,
+				F1C08D832E19727A00B95347 /* VRCKit */,
 			);
 			productName = harmonie;
 			productReference = 20395D912B945CD700003921 /* Orbit.app */;
@@ -249,7 +252,7 @@
 				201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */,
 				20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */,
 				205A12062CBB8621007D4EA4 /* XCRemoteSwiftPackageReference "swift-memberwise-init-macro" */,
-				F1010C132E194FE1004FA1DE /* XCRemoteSwiftPackageReference "vrckit" */,
+				F1C08D822E19727A00B95347 /* XCRemoteSwiftPackageReference "vrckit" */,
 			);
 			productRefGroup = 20395D922B945CD700003921 /* Products */;
 			projectDirPath = "";
@@ -682,11 +685,11 @@
 				minimumVersion = 12.7.1;
 			};
 		};
-		F1010C132E194FE1004FA1DE /* XCRemoteSwiftPackageReference "vrckit" */ = {
+		F1C08D822E19727A00B95347 /* XCRemoteSwiftPackageReference "vrckit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/noridev/vrckit";
 			requirement = {
-				branch = develop;
+				branch = "friends-history";
 				kind = branch;
 			};
 		};
@@ -745,9 +748,13 @@
 			package = 20F213D92C11FB470061DE29 /* XCRemoteSwiftPackageReference "Nuke" */;
 			productName = NukeUI;
 		};
-		F1010C142E194FE1004FA1DE /* VRCKit */ = {
+		F1C08D802E19691400B95347 /* VRCKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F1010C132E194FE1004FA1DE /* XCRemoteSwiftPackageReference "vrckit" */;
+			productName = VRCKit;
+		};
+		F1C08D832E19727A00B95347 /* VRCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1C08D822E19727A00B95347 /* XCRemoteSwiftPackageReference "vrckit" */;
 			productName = VRCKit;
 		};
 /* End XCSwiftPackageProductDependency section */
