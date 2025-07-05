@@ -19,6 +19,8 @@ struct FriendsListView: View {
     @State var isPresentedSheet = false
 
     var body: some View {
+        @Bindable var friendVM = friendVM
+
         List(friendVM.filterResultFriends, selection: $selected) { friend in
             NavigationLabel {
                 HStack {
@@ -48,8 +50,15 @@ struct FriendsListView: View {
             }
         }
         .sheet(isPresented: $isPresentedSheet) {
-            FriendsListSheetView()
-                .presentationDetents([.medium])
+            FilterSheetView(
+                sortType: $friendVM.sortType,
+                statusFilter: $friendVM.filterUserStatus,
+                favoriteGroupFilter: $friendVM.filterFavoriteGroups,
+                eventFilter: .constant([]),
+                sortContext: .friends,
+                visibleSections: [.status, .favoriteGroup]
+            )
+            .presentationDetents([.medium])
         }
         .overlay { overlayView }
         .toolbar { toolbarContent }

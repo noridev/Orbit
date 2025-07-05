@@ -24,29 +24,25 @@ struct FriendsHistoryView: View {
     private var filteredAndSortedHistories: [FriendHistoryViewModel.MergedHistory] {
         guard let histories = allHistories else { return [] }
 
-        let searched = histories.filter {
-            searchText.isEmpty || $0.friend?.displayName.localizedCaseInsensitiveContains(searchText) ?? false
-        }
-
-        let eventFiltered = searched.filter {
-            eventFilters.isEmpty || eventFilters.contains($0.history.event.eventType)
-        }
-
-        let favoriteGroupFiltered = eventFiltered.filter { history in
-            filterFavoriteGroups.isEmpty ||
-            (history.friend != nil && isFriendInFavoriteGroups(friend: history.friend!))
-        }
-
-        return favoriteGroupFiltered.sorted {
-            switch sortType {
-            case .name:
-                return $0.friend?.displayName.lowercased() ?? "" < $1.friend?.displayName.lowercased() ?? ""
-            case .timeDescending:
-                return $0.history.date > $1.history.date
-            case .timeAscending:
-                return $0.history.date < $1.history.date
+        return histories
+            .filter { history in
+                searchText.isEmpty || history.friend?.displayName.localizedCaseInsensitiveContains(searchText) ?? false
             }
-        }
+            .filter { history in
+                eventFilters.isEmpty || eventFilters.contains(history.history.event.eventType)
+            }
+            .filter { history in
+                filterFavoriteGroups.isEmpty ||
+                (history.friend != nil && isFriendInFavoriteGroups(friend: history.friend!))
+            }
+            .sorted {
+                switch sortType {
+                case .name: $0.friend?.displayName.lowercased() ?? "" < $1.friend?.displayName.lowercased() ?? ""
+                case .timeDescending: $0.history.date > $1.history.date
+                case .timeAscending: $0.history.date < $1.history.date
+                default: $0.history.date > $1.history.date
+                }
+            }
     }
 
     private var areFiltersActive: Bool {
@@ -93,8 +89,15 @@ struct FriendsHistoryView: View {
                 }
             }
             .sheet(isPresented: $isPresentedSheet, onDismiss: saveSettings) {
-                historyFilterSheet
-                    .presentationDetents([.medium])
+                FilterSheetView(
+                    sortType: $sortType,
+                    statusFilter: .constant([]),
+                    favoriteGroupFilter: $filterFavoriteGroups,
+                    eventFilter: $eventFilters,
+                    sortContext: .history,
+                    visibleSections: [.eventType, .favoriteGroup]
+                )
+                .presentationDetents([.medium])
             }
         }
         .onAppear(perform: loadSettings)
@@ -109,72 +112,6 @@ struct FriendsHistoryView: View {
                 Image(systemName: IconSet.dots.systemName)
             }
             .disabled(allHistories == nil)
-        }
-    }
-
-    private var historyFilterSheet: some View {
-        NavigationStack {
-            Form {
-                Picker("Sort", selection: $sortType) {
-                    ForEach(SortType.allCases) { type in
-                        Label(type.description, systemImage: type.icon.systemName).tag(type)
-                    }
-                }
-                .pickerStyle(.inline)
-
-                Section {
-                    ForEach(EventType.allCases, id: \.self) { eventType in
-                        Toggle(isOn: eventFilterBinding(for: eventType)) {
-                            Label(eventType.description, systemImage: eventType.icon.systemName)
-                        }
-                    }
-                } header: {
-                    HStack {
-                        Text("이벤트 종류")
-                        Spacer()
-                        Button("Clear") { eventFilters.removeAll() }.font(.caption)
-                    }
-                }
-
-                Section {
-                    ForEach(favoriteVM.favoriteGroups(.friend)) { group in
-                        Toggle(isOn: favoriteGroupFilterBinding(for: group.id)) {
-                            Label(group.displayName, systemImage: IconSet.favoriteGroup.systemName)
-                        }
-                    }
-                } header: {
-                    HStack {
-                        Text("Favorite Groups")
-                        Spacer()
-                        Button("Clear") { filterFavoriteGroups.removeAll() }.font(.caption)
-                    }
-                }
-            }
-            .navigationTitle("Display Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: { isPresentedSheet = false }) {
-                        ExitButton()
-                    }
-                }
-            }
-        }
-    }
-
-    enum SortType: String, CaseIterable, CustomStringConvertible, Identifiable {
-        case name = "이름"
-        case timeDescending = "최신순"
-        case timeAscending = "오래된순"
-
-        var description: String { self.rawValue }
-        var id: String { self.rawValue }
-
-        var icon: Iconizable {
-            switch self {
-            case .name: return IconSet.at
-            case .timeDescending, .timeAscending: return IconSet.calendar
-            }
         }
     }
 

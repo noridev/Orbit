@@ -24,6 +24,9 @@ enum IconSet {
     static var clear: some Iconizable {
         Icon("clear")
     }
+    static var clock: some Iconizable {
+        Icon("clock")
+    }
     static var code: some Iconizable {
         Icon("curlybraces")
     }
@@ -55,7 +58,7 @@ enum IconSet {
         Icon("chevron.forward")
     }
     static var friends: some Iconizable {
-        Icon("person.2")
+        Icon("person.fill.checkmark")
     }
     static var friendsFilled: some Iconizable {
         Icon("person.2.fill")

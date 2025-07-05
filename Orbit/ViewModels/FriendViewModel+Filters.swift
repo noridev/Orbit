@@ -33,6 +33,7 @@ extension FriendViewModel {
                 case .loginLatest: $0.lastLogin > $1.lastLogin
                 case .loginOldest: $0.lastLogin < $1.lastLogin
                 case .status: $0.status.rawValue < $1.status.rawValue
+                default: $0.lastLogin > $1.lastLogin
                 }
             }
     }

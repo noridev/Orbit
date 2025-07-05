@@ -69,6 +69,7 @@ struct RawHistoryDataView: View {
             case .loginLatest: $0.lastLogin > $1.lastLogin
             case .loginOldest: $0.lastLogin < $1.lastLogin
             case .status: $0.status.rawValue < $1.status.rawValue
+            default: $0.displayName.lowercased() < $1.displayName.lowercased()
             }
         }
     }
@@ -134,8 +135,15 @@ struct RawHistoryDataView: View {
             }
         }
         .sheet(isPresented: $isPresentedSheet, onDismiss: saveSettings) {
-            historyFilterSheet
-                .presentationDetents([.medium])
+            FilterSheetView(
+                sortType: $sortType,
+                statusFilter: $filterUserStatus,
+                favoriteGroupFilter: $filterFavoriteGroups,
+                eventFilter: .constant([]),
+                sortContext: .friends,
+                visibleSections: [.status, .favoriteGroup]
+            )
+            .presentationDetents([.medium])
         }
         .onAppear {
             loadCacheFromFile()
@@ -179,66 +187,6 @@ struct RawHistoryDataView: View {
         
         let groupIDs = Array(self.filterFavoriteGroups)
         defaults.set(groupIDs, forKey: "raw_history_filter_favorite_groups")
-    }
-    
-    private var historyFilterSheet: some View {
-        NavigationStack {
-            Form {
-                Picker("Sort", selection: $sortType) {
-                    ForEach(SortType.allCases) { type in
-                        Label(type.description, systemImage: type.icon.systemName).tag(type)
-                    }
-                }
-                .pickerStyle(.inline)
-                
-                Section {
-                    ForEach(UserStatus.allCases) { userStatus in
-                        Toggle(isOn: $filterUserStatus.containsBinding(for: userStatus)) {
-                            Label {
-                                Text(userStatus.description)
-                            } icon: {
-                                Image(systemName: IconSet.circleFilled.systemName)
-                                    .symbolRenderingMode(.palette)
-                                    .foregroundStyle(userStatus.color)
-                            }
-                        }
-                    }
-                } header: {
-                    HStack {
-                        Text("상태")
-                        Spacer()
-                        Button("Clear") { filterUserStatus.removeAll() }.font(.caption)
-                    }
-                }
-
-                Section {
-                    ForEach(favoriteVM.favoriteGroups(.friend)) { favoriteGroup in
-                        Toggle(isOn: $filterFavoriteGroups.containsBinding(for: favoriteGroup.id)) {
-                            Label {
-                                Text(favoriteGroup.displayName)
-                            } icon: {
-                                Image(systemName: IconSet.favoriteGroup.systemName)
-                            }
-                        }
-                    }
-                } header: {
-                    HStack {
-                        Text("Favorite Groups")
-                        Spacer()
-                        Button("Clear") { filterFavoriteGroups.removeAll() }.font(.caption)
-                    }
-                }
-            }
-            .navigationTitle("Display Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: { isPresentedSheet = false }) {
-                        ExitButton()
-                    }
-                }
-            }
-        }
     }
 }
 

@@ -5,16 +5,18 @@
 //  Created by makinosp on 2024/10/19.
 //
 
-enum SortType: String, Hashable, CaseIterable {
-    case name, loginLatest, loginOldest, status
-}
+import Foundation
 
-extension SortType: Identifiable {
+enum SortType: String, Hashable, CaseIterable, Identifiable {
+    case name, loginLatest, loginOldest, status, timeDescending, timeAscending
+    
     var id: String { rawValue }
-}
 
-extension SortType: CustomStringConvertible {
-    var description: String {
+    enum Context {
+        case friends, history
+    }
+
+    func description(for context: Context) -> String {
         switch self {
         case .name:
             String(localized: "Name")
@@ -24,15 +26,18 @@ extension SortType: CustomStringConvertible {
             String(localized: "Login oldest")
         case .status:
             String(localized: "Status")
+        case .timeDescending:
+            String(localized: "Latest")
+        case .timeAscending:
+            String(localized: "Oldest")
         }
     }
-}
 
-extension SortType {
     var icon: Iconizable {
         switch self {
         case .name: IconSet.at
         case .loginLatest, .loginOldest: IconSet.calendar
+        case .timeAscending, .timeDescending: IconSet.clock
         case .status: IconSet.circleFilled
         }
     }

@@ -17,17 +17,7 @@ struct FriendsListSheetView: View {
         NavigationStack {
             Form {
                 @Bindable var friendVM = friendVM
-                Picker("Sort", selection: $friendVM.sortType) {
-                    ForEach(SortType.allCases) { sortType in
-                        Label {
-                            Text(sortType.description)
-                        } icon: {
-                            Image(systemName: sortType.icon.systemName)
-                        }
-                        .tag(sortType)
-                    }
-                }
-                .pickerStyle(.inline)
+                SortPickerView(selection: $friendVM.sortType, context: .friends)
 
                 Section {
                     ForEach(UserStatus.allCases) { userStatus in
