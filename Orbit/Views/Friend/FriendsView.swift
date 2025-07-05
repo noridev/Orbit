@@ -36,6 +36,7 @@ struct FriendsView: View {
             Group {
                 if let selected = selected {
                     UserDetailPresentationView(id: selected)
+                        .id(selected)
                 } else {
                     ContentUnavailableView {
                         Label("Select a Friend", systemImage: IconSet.friends.systemName)
