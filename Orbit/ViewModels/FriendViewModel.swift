@@ -105,22 +105,11 @@ final class FriendViewModel {
     }
 
     private func saveFriendsLocally(_ friends: [Friend]) {
-        do {
-            let data = try JSONEncoder().encode(friends)
-            UserDefaults.standard.set(data, forKey: localFriendsKey)
-        } catch {
-            print("Failed to save friends locally: \(error)")
-        }
+        FriendCacheManager.saveFriends(friends)
     }
-
+    
     private func loadFriendsFromLocal() -> [Friend] {
-        guard let data = UserDefaults.standard.data(forKey: localFriendsKey) else { return [] }
-        do {
-            return try JSONDecoder().decode([Friend].self, from: data)
-        } catch {
-            print("Failed to load friends from local: \(error)")
-            return []
-        }
+        return FriendCacheManager.loadFriends()
     }
 
     private func processFriendListChanges() {
@@ -140,13 +129,13 @@ final class FriendViewModel {
 
         for id in newIDs.subtracting(oldIDs) {
             if newFriendsDict[id] != nil {
-                historyVM.saveHistory(event: .added, for: id)
+                historyVM.saveHistory(event: .newFriend, for: id)
             }
         }
 
         for id in oldIDs.subtracting(newIDs) {
             if oldFriendsDict[id] != nil {
-                historyVM.saveHistory(event: .removed, for: id)
+                historyVM.saveHistory(event: .unfriend, for: id)
             }
         }
 
@@ -154,7 +143,7 @@ final class FriendViewModel {
             guard let oldFriend = oldFriendsDict[id], let newFriend = newFriendsDict[id] else { continue }
 
             if oldFriend.displayName != newFriend.displayName {
-                historyVM.saveHistory(event: .nicknameChanged(from: oldFriend.displayName, to: newFriend.displayName), for: id)
+                historyVM.saveHistory(event: .displayNameChanged(from: oldFriend.displayName, to: newFriend.displayName), for: id)
             }
             if oldFriend.trustRank != newFriend.trustRank {
                 historyVM.saveHistory(event: .trustRankChanged(from: oldFriend.trustRank.description, to: newFriend.trustRank.description), for: id)

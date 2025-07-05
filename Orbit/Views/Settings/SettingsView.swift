@@ -57,6 +57,10 @@ struct SettingsView: View {
             }
             .navigationTitle("Third Party Licence")
             .navigationBarTitleDisplayMode(.inline)
+        case .rawHistoryData:
+            NavigationStack {
+                RawHistoryDataView()
+            }
         }
     }
 
@@ -67,6 +71,10 @@ struct SettingsView: View {
                     .tag(SettingsDestination.favoriteGroups)
             }
             AboutSection()
+            Section("Debug") {
+                Label("Raw History Data", systemImage: "doc.text.magnifyingglass")
+                    .tag(SettingsDestination.rawHistoryData)
+            }
             Section {
                 LogoutButton()
             }

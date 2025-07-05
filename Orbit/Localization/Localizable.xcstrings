@@ -465,6 +465,9 @@
         }
       }
     },
+    "Debug" : {
+
+    },
     "Delete" : {
       "localizations" : {
         "ja" : {
@@ -861,6 +864,9 @@
           }
         }
       }
+    },
+    "Friend Cache Inspector" : {
+
     },
     "Friend History" : {
       "localizations" : {
@@ -1616,6 +1622,9 @@
         }
       }
     },
+    "Raw History Data" : {
+
+    },
     "Region" : {
       "localizations" : {
         "ja" : {
@@ -1681,6 +1690,9 @@
           }
         }
       }
+    },
+    "Search by name" : {
+
     },
     "Select a Friend" : {
       "localizations" : {
@@ -2165,6 +2177,18 @@
           }
         }
       }
+    },
+    "상태" : {
+
+    },
+    "이름으로 검색" : {
+
+    },
+    "이벤트 종류" : {
+
+    },
+    "친구 목록 탭으로 이동하여 아래로 당겨 새로고침하면 캐시가 생성됩니다." : {
+
     }
   },
   "version" : "1.0"

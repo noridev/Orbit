@@ -11,20 +11,24 @@ import VRCKit
 @MainActor
 class FriendHistoryViewModel: ObservableObject {
     static let shared = FriendHistoryViewModel()
-    private let userDefaults = UserDefaults.standard
-    private let allHistoryKey = "allFriendHistoryKeys" // 모든 기록 키를 저장할 키
 
-    // ✅ 친구 정보와 기록을 함께 담을 구조체 추가
     struct MergedHistory: Identifiable, Hashable {
         let id: UUID
         let friend: Friend?
         let history: FriendHistory
+        let relativeDateString: String
     }
     
+    let userDefaults = UserDefaults.standard
+    let allHistoryKey = "allFriendHistoryKeys"
+    
+    private var friendsDict: [String: Friend] = [:]
+
     private init() {}
 
-    // ✅ 모든 친구 기록을 불러오는 함수 추가
-    func loadAllHistories(friends: [Friend]) -> [MergedHistory] {
+    func loadAllHistories(friends: [Friend]) async -> [MergedHistory] {
+        self.friendsDict = Dictionary(uniqueKeysWithValues: friends.map { ($0.id, $0) })
+        
         let allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
         var allHistories: [FriendHistory] = []
         
@@ -39,19 +43,28 @@ class FriendHistoryViewModel: ObservableObject {
             }
         }
         
-        // 시간순으로 정렬
         allHistories.sort { $0.date > $1.date }
         
-        // 친구 정보와 병합
-        let friendsDict = Dictionary(uniqueKeysWithValues: friends.map { ($0.id, $0) })
-        let mergedHistories = allHistories.map { history in
-            MergedHistory(id: history.id, friend: friendsDict[history.friendId], history: history)
+        var mergedHistories: [MergedHistory] = []
+        for history in allHistories {
+            let relativeDate = await DateUtil.shared.formatRelative(from: history.date)
+            mergedHistories.append(
+                MergedHistory(
+                    id: history.id,
+                    friend: friendsDict[history.friendId],
+                    history: history,
+                    relativeDateString: relativeDate
+                )
+            )
         }
         
         return mergedHistories
     }
     
-    // 특정 친구의 모든 기록을 불러오기
+    func getFriend(byId id: String) -> Friend? {
+        return friendsDict[id]
+    }
+    
     func loadHistory(for friendId: String) -> [FriendHistory] {
         let key = "history_\(friendId)"
         guard let data = userDefaults.data(forKey: key) else { return [] }
@@ -63,7 +76,6 @@ class FriendHistoryViewModel: ObservableObject {
         }
     }
 
-    // 새로운 기록 저장하기
     func saveHistory(event: HistoryEvent, for friendId: String) {
         let key = "history_\(friendId)"
         var histories = loadHistory(for: friendId)
@@ -79,7 +91,6 @@ class FriendHistoryViewModel: ObservableObject {
             let data = try JSONEncoder().encode(histories)
             userDefaults.set(data, forKey: key)
             
-            // ✅ 전체 기록 키 목록에 현재 키 추가
             var allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
             if !allKeys.contains(key) {
                 allKeys.append(key)

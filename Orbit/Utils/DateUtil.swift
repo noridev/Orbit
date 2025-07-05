@@ -14,6 +14,7 @@ actor DateUtil {
 
     private init() {
         relativeDateTimeFormatter = RelativeDateTimeFormatter()
+        relativeDateTimeFormatter.unitsStyle = .full
         comparedComponents = [.year, .month, .day, .hour, .minute, .second]
     }
 

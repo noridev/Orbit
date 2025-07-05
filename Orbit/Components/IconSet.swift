@@ -28,7 +28,7 @@ enum IconSet {
         Icon("curlybraces")
     }
     static var dots: some Iconizable {
-        Icon("ellipsis.circle")
+        Icon("ellipsis")
     }
     static var down: some Iconizable {
         Icon("arrow.down")
