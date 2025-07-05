@@ -1,5 +1,5 @@
 {
-  "originHash" : "d25c80368e9e8d8866e69d741b0ffc1dbd5065f632c8e2a054795c9c6d0d7caf",
+  "originHash" : "cfe178345eebad4fe20e3fb2b57d46c3f79ebea1216d69ecd7c81ef4b8e4547e",
   "pins" : [
     {
       "identity" : "async-swift-ui",
@@ -49,10 +49,10 @@
     {
       "identity" : "vrckit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/makinosp/vrckit",
+      "location" : "https://github.com/noridev/vrckit",
       "state" : {
         "branch" : "develop",
-        "revision" : "d83f6537f6286d9cc7453bf3d31ca119b68d74a5"
+        "revision" : "994e6a3c1f23c3de8df66d91128e5d9f9f10299b"
       }
     }
   ],
