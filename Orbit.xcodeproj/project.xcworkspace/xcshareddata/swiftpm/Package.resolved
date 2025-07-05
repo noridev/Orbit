@@ -1,5 +1,5 @@
 {
-  "originHash" : "cfe178345eebad4fe20e3fb2b57d46c3f79ebea1216d69ecd7c81ef4b8e4547e",
+  "originHash" : "6ba4e03a6c2464309ec1a6f8ba65c0110319c72dfa0b311f9cc5a1a0738a5956",
   "pins" : [
     {
       "identity" : "async-swift-ui",
@@ -44,15 +44,6 @@
       "state" : {
         "revision" : "0687f71944021d616d34d922343dcef086855920",
         "version" : "600.0.1"
-      }
-    },
-    {
-      "identity" : "vrckit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/noridev/vrckit",
-      "state" : {
-        "branch" : "friends-history",
-        "revision" : "bd4d158c7f862f4e52fabd3f4eb9c7eb6a563bf4"
       }
     }
   ],
