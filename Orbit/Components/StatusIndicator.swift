@@ -40,16 +40,20 @@ struct StatusIndicator<S>: View where S: ShapeStyle {
     }
 
     var body: some View {
-        Circle()
-            .fill(content)
-            .frame(size: frameSize)
-            .overlay {
-                Circle()
-                    .blendMode(.destinationOut)
-                    .frame(size: isCutOut ? cutoutSize : .zero)
+        let indicatorShape = Circle()
+        let lineWidth = frameSize.width / 4
+
+        Group {
+            if isCutOut {
+                indicatorShape
+                    .strokeBorder(content, lineWidth: lineWidth)
+            } else {
+                indicatorShape
+                    .fill(content)
             }
-            .compositingGroup()
-            .offset(x: offset.width, y: offset.height)
+        }
+        .frame(size: frameSize)
+        .offset(x: offset.width, y: offset.height)
     }
 }
 
