@@ -67,20 +67,22 @@ struct FavoritesView: View {
     }
 
     private var detail: some View {
-        Group {
-            if let selectedContainer = selected {
-                switch selectedContainer.segment {
-                case .friends:
-                    UserDetailPresentationView(id: selectedContainer.selected.id)
-                        .id(selectedContainer.id)
-                case .world:
-                    WorldPresentationView(id: selectedContainer.selected.id)
-                        .id(selectedContainer.id)
-                }
-            } else {
-                ContentUnavailableView {
-                    Label("Select an item", systemImage: IconSet.favorite.systemName)
-                        .foregroundColor(.gray)
+        NavigationStack {
+            Group {
+                if let selectedContainer = selected {
+                    switch selectedContainer.segment {
+                    case .friends:
+                        UserDetailPresentationView(id: selectedContainer.selected.id)
+                            .id(selectedContainer.id)
+                    case .world:
+                        WorldPresentationView(id: selectedContainer.selected.id)
+                            .id(selectedContainer.id)
+                    }
+                } else {
+                    ContentUnavailableView {
+                        Label("Select an item", systemImage: IconSet.favorite.systemName)
+                            .foregroundColor(.gray)
+                    }
                 }
             }
         }

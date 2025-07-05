@@ -11,14 +11,14 @@ import VRCKit
 struct UserDetailPresentationView: View {
     @Environment(AppViewModel.self) var appVM
     @State var userDetail: UserDetail?
-    private let id: String
+    @State private var id: String
 
     init(id: String) {
-        self.id = id
+        _id = State(initialValue: id)
     }
 
     init(selected: Selected) {
-        id = selected.id
+        _id = State(initialValue: selected.id)
     }
 
     var body: some View {
@@ -27,9 +27,10 @@ struct UserDetailPresentationView: View {
                 .refreshable {
                     await fetchUser(id: id)
                 }
+                .id(id)
         } else {
             ProgressScreen()
-                .task(id: id) {
+                .task {
                     await fetchUser(id: id)
                 }
                 .navigationTitle("Loading...")
