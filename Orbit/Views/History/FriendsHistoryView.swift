@@ -52,7 +52,7 @@ struct FriendsHistoryView: View {
 
     var body: some View {
         NavigationStack {
-            List {
+            let content = List {
                 Section {
                     if allHistories == nil {
                         ForEach(0..<15) { _ in
@@ -72,7 +72,6 @@ struct FriendsHistoryView: View {
             .listStyle(.plain)
             .navigationTitle("Friends History")
             .toolbar { navigationToolbar }
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "이름으로 검색")
             .overlay {
                 if allHistories != nil, filteredAndSortedHistories.isEmpty {
                     if areFiltersActive {
@@ -86,17 +85,24 @@ struct FriendsHistoryView: View {
                     }
                 }
             }
-            .sheet(isPresented: $isPresentedSheet, onDismiss: saveSettings) {
-                FilterSheetView(
-                    sortType: $sortType,
-                    statusFilter: .constant([]),
-                    favoriteGroupFilter: $filterFavoriteGroups,
-                    eventFilter: $eventFilters,
-                    sortContext: .history,
-                    visibleSections: [.eventType, .favoriteGroup]
-                )
-                .presentationDetents([.medium])
+            
+            if allHistories != nil {
+                content
+                    .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "이름으로 검색")
+            } else {
+                content
             }
+        }
+        .sheet(isPresented: $isPresentedSheet, onDismiss: saveSettings) {
+            FilterSheetView(
+                sortType: $sortType,
+                statusFilter: .constant([]),
+                favoriteGroupFilter: $filterFavoriteGroups,
+                eventFilter: $eventFilters,
+                sortContext: .history,
+                visibleSections: [.eventType, .favoriteGroup]
+            )
+            .presentationDetents([.medium])
         }
         .onAppear(perform: loadSettings)
         .task { await loadInitialData() }

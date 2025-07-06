@@ -24,7 +24,7 @@ struct FriendsView: View {
         .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .searchable(
             text: $friendVM.filterText,
-            placement: .navigationBarDrawer(displayMode: .always)
+            placement: .navigationBarDrawer(displayMode: .automatic)
         )
         .onSubmit(of: .search) {
             friendVM.applyFilters()
