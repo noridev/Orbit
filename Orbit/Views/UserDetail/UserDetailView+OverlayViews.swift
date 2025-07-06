@@ -14,16 +14,15 @@ extension UserDetailView {
             Spacer()
             
             if !lastActivity.isEmpty {
-                Label {
-                    Text(lastActivity)
-                } icon: {
+                HStack(spacing: 4) {
                     Image(systemName: "stopwatch")
+                    Text(lastActivity)
                 }
                 .font(.footnote.bold())
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .background(.regularMaterial)
-                .cornerRadius(8)
+                .clipShape(Capsule())
             }
         }
         .padding(.vertical, 8)
@@ -31,10 +30,29 @@ extension UserDetailView {
     }
 
     var bottomOverlay: some View {
-        HStack {
+        HStack(alignment: .bottom) {
             status
             Spacer()
-            trustRankLabel
+            if user.ageVerification.ageVerificationStatusLabel != nil {
+                VStack(alignment: .trailing) {
+                    if user.vrcPlus.isSupporter {
+                        vrcPlusLabel
+                    }
+                    HStack {
+                        if let ageVerificationStatusLabel = user.ageVerification.ageVerificationStatusLabel {
+                            ageVerificationLabel(text: ageVerificationStatusLabel, status: user.ageVerification.ageVerificationStatus)
+                        }
+                        trustRankLabel
+                    }
+                }
+            } else {
+                HStack {
+                    if user.vrcPlus.isSupporter {
+                        vrcPlusLabel
+                    }
+                    trustRankLabel
+                }
+            }
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -64,14 +82,39 @@ extension UserDetailView {
         .font(.subheadline)
     }
 
-    private var trustRankLabel: some View {
-        Label {
-            Text(user.trustRank.description)
-        } icon: {
-            IconSet.shield.icon
+    private var vrcPlusLabel: some View {
+        HStack(spacing: 4) {
+            IconSet.vrcplus.icon
+            Text("VRC+")
         }
         .font(.footnote.bold())
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .background(user.vrcPlus.color.opacity(0.5))
+        .background(.thinMaterial)
+        .cornerRadius(8)
+    }
+
+    private func ageVerificationLabel(text: String, status: AgeVerificationStatus) -> some View {
+        HStack(spacing: 4) {
+            IconSet.ageVerification.icon
+            Text(text)
+        }
+        .font(.footnote.bold())
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .background(status.color.opacity(0.5))
+        .background(.thinMaterial)
+        .cornerRadius(8)
+    }
+
+    private var trustRankLabel: some View {
+        HStack(spacing: 4) {
+            IconSet.shield.icon
+            Text(user.trustRank.description)
+        }
+        .font(.footnote.bold())
+        .padding(.horizontal, 10)
         .padding(.vertical, 4)
         .background(user.trustRank.color.opacity(0.5))
         .background(.thinMaterial)

@@ -141,6 +141,12 @@ enum IconSet {
     static var upload: some Iconizable {
         Icon("square.and.arrow.up.fill")
     }
+    static var ageVerification: some Iconizable {
+        Icon("person.text.rectangle.fill")
+    }
+    static var vrcplus: some Iconizable {
+        Icon("plus.bubble.fill")
+    }
     static var walk: some Iconizable {
         Icon("figure.walk")
     }
