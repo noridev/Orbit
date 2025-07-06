@@ -15,8 +15,21 @@ class FriendHistoryViewModel: ObservableObject {
     struct MergedHistory: Identifiable, Hashable {
         let id: UUID
         let friend: Friend?
+        let deletedUser: UserDetail?
         let history: FriendHistory
         let relativeDateString: String
+        
+        var displayName: String {
+            friend?.displayName ?? deletedUser?.displayName ?? "알 수 없는 사용자"
+        }
+        
+        var avatarThumbnailUrl: URL? {
+            friend?.avatarThumbnailUrl ?? deletedUser?.avatarThumbnailUrl
+        }
+        
+        var userId: String {
+            friend?.id ?? deletedUser?.id ?? history.friendId
+        }
     }
     
     let userDefaults = UserDefaults.standard
@@ -26,7 +39,7 @@ class FriendHistoryViewModel: ObservableObject {
 
     private init() {}
 
-    func loadAllHistories(friends: [Friend]) async -> [MergedHistory] {
+    func loadAllHistories(friends: [Friend], userService: UserServiceProtocol?) async -> [MergedHistory] {
         self.friendsDict = Dictionary(uniqueKeysWithValues: friends.map { ($0.id, $0) })
         
         let allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
@@ -48,10 +61,22 @@ class FriendHistoryViewModel: ObservableObject {
         var mergedHistories: [MergedHistory] = []
         for history in allHistories {
             let relativeDate = await DateUtil.shared.formatRelative(from: history.date)
+            let friend = friendsDict[history.friendId]
+            var deletedUser: UserDetail?
+
+            if friend == nil, let userService = userService {
+                do {
+                    deletedUser = try await userService.fetchUser(userId: history.friendId)
+                } catch {
+                    print("Could not fetch user data for deleted friend \(history.friendId): \(error)")
+                }
+            }
+            
             mergedHistories.append(
                 MergedHistory(
                     id: history.id,
-                    friend: friendsDict[history.friendId],
+                    friend: friend,
+                    deletedUser: deletedUser,
                     history: history,
                     relativeDateString: relativeDate
                 )

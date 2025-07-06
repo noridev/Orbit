@@ -11,7 +11,7 @@ import VRCKit
 
 @Observable @MainActor
 final class FriendViewModel {
-    @ObservationIgnored private var appVM: AppViewModel?
+    @ObservationIgnored var appVM: AppViewModel?
     @ObservationIgnored var favoriteFriends: [FavoriteFriend] = []
     @ObservationIgnored private let historyVM = FriendHistoryViewModel.shared
     var onlineFriends: [Friend] = []

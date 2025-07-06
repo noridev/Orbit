@@ -26,7 +26,7 @@ struct FriendsHistoryView: View {
 
         return histories
             .filter { history in
-                searchText.isEmpty || history.friend?.displayName.localizedCaseInsensitiveContains(searchText) ?? false
+                searchText.isEmpty || history.displayName.localizedCaseInsensitiveContains(searchText)
             }
             .filter { history in
                 eventFilters.isEmpty || eventFilters.contains(history.history.event.eventType)
@@ -37,7 +37,8 @@ struct FriendsHistoryView: View {
             }
             .sorted {
                 switch sortType {
-                case .name: $0.friend?.displayName.lowercased() ?? "" < $1.friend?.displayName.lowercased() ?? ""
+                case .name:
+                    $0.displayName.lowercased() < $1.displayName.lowercased()
                 case .timeDescending: $0.history.date > $1.history.date
                 case .timeAscending: $0.history.date < $1.history.date
                 default: $0.history.date > $1.history.date
@@ -52,24 +53,21 @@ struct FriendsHistoryView: View {
     var body: some View {
         NavigationStack {
             List {
-                if allHistories == nil {
-                    ForEach(0..<15) { _ in
-                        HistoryRowView(mergedHistory: nil)
-                    }
-                    .redacted(reason: .placeholder)
-                } else if filteredAndSortedHistories.isEmpty {
-                    // for .overlay
-                } else {
-                    ForEach(filteredAndSortedHistories) { mergedHistory in
-                        if let friend = mergedHistory.friend {
-                            NavigationLink(destination: UserDetailPresentationView(id: friend.id)) {
+                Section {
+                    if allHistories == nil {
+                        ForEach(0..<15) { _ in
+                            HistoryRowView(mergedHistory: nil)
+                        }
+                        .redacted(reason: .placeholder)
+                    } else {
+                        ForEach(filteredAndSortedHistories) { mergedHistory in
+                            NavigationLink(destination: UserDetailPresentationView(id: mergedHistory.userId)) {
                                 HistoryRowView(mergedHistory: mergedHistory)
                             }
-                        } else {
-                            HistoryRowView(mergedHistory: mergedHistory)
                         }
                     }
                 }
+                .listSectionSeparator(.hidden, edges: .top)
             }
             .listStyle(.plain)
             .navigationTitle("Friends History")
@@ -185,15 +183,14 @@ struct FriendsHistoryView: View {
     private func loadInitialData() async {
         if self.allHistories == nil {
             if friendVM.allFriends.isEmpty { await friendVM.fetchAllFriends { _ in } }
-            self.allHistories = await historyVM.loadAllHistories(friends: friendVM.allFriends)
+            self.allHistories = await historyVM.loadAllHistories(friends: friendVM.allFriends, userService: friendVM.appVM?.services.userService)
         }
     }
 
     @MainActor
     private func loadAndRefreshData() async {
-        self.allHistories = nil
         await friendVM.fetchAllFriends { _ in }
-        self.allHistories = await historyVM.loadAllHistories(friends: friendVM.allFriends)
+        self.allHistories = await historyVM.loadAllHistories(friends: friendVM.allFriends, userService: friendVM.appVM?.services.userService)
     }
 }
 
@@ -202,7 +199,7 @@ struct HistoryRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            LazyImage(url: mergedHistory?.friend?.avatarThumbnailUrl) { state in
+            LazyImage(url: mergedHistory?.avatarThumbnailUrl) { state in
                 if let image = state.image {
                     image.resizable().aspectRatio(contentMode: .fill)
                 } else {
@@ -213,10 +210,10 @@ struct HistoryRowView: View {
             .clipShape(Circle())
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(mergedHistory?.friend?.displayName ?? "플레이스홀더 이름")
+                Text(mergedHistory?.displayName ?? "Placeholder 이름")
                     .font(.headline)
                 
-                Text(mergedHistory?.history.event.description ?? "이벤트 설명이 여기에 표시됩니다.")
+                Text(mergedHistory?.history.event.description ?? "이벤트 유형이 여기에 표시됩니다.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 
