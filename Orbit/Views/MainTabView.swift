@@ -49,7 +49,6 @@ private extension MainTabViewSegment {
         case .friends: FriendsView()
         case .search: SearchView()
         case .favorites: FavoritesView()
-        case .friendsHistory: FriendsHistoryView()
         // case .settings: SettingsView()
         case .profile:
             if let user = appVM.user {

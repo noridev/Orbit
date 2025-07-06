@@ -74,7 +74,7 @@ struct FriendsHistoryView: View {
             .listStyle(.plain)
             .navigationTitle("Friends History")
             .toolbar { navigationToolbar }
-            .searchable(text: $searchText, prompt: "이름으로 검색")
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "이름으로 검색")
             .overlay {
                 if allHistories != nil, filteredAndSortedHistories.isEmpty {
                     if areFiltersActive {
@@ -103,13 +103,28 @@ struct FriendsHistoryView: View {
         .onAppear(perform: loadSettings)
         .task { await loadInitialData() }
         .refreshable { await loadAndRefreshData() }
+        .alert("캐시가 손상됨", isPresented: Binding(
+            get: { friendVM.isCacheCorrupted },
+            set: { friendVM.isCacheCorrupted = $0 }
+        )) {
+            Button("삭제", role: .destructive) {
+                FriendCacheManager.deleteCache()
+                friendVM.isCacheCorrupted = false
+                Task { await loadAndRefreshData() }
+            }
+            Button("취소", role: .cancel) {
+                friendVM.isCacheCorrupted = false
+            }
+        } message: {
+            Text("친구 목록 캐시 파일이 손상되어 기록을 제대로 표시할 수 없습니다. 파일을 삭제하시겠습니까?")
+        }
     }
 
     @ToolbarContentBuilder
     private var navigationToolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button(action: { isPresentedSheet = true }) {
-                Image(systemName: IconSet.dots.systemName)
+            Button("", systemImage: IconSet.dots.systemName) {
+                isPresentedSheet.toggle()
             }
             .disabled(allHistories == nil)
         }
