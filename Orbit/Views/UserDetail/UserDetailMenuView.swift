@@ -6,33 +6,29 @@
 //
 
 import AsyncSwiftUI
+import SwiftUI
 import VRCKit
 
-struct UserDetailToolbarMenu: View {
+struct UserDetailToolbarMenu: ToolbarContent {
     @Environment(AppViewModel.self) var appVM
     @Environment(FavoriteViewModel.self) var favoriteVM
     @Environment(FriendViewModel.self) var friendVM
-    @Environment(\.dismiss) private var dismiss
-    @State private var isRequesting = false
-    @State private var isPresentedAlert = false
-    @State private var isPresentedSettings = false
-    @State private var isPresentedForm = false
-    @State private var isPresentedBrowser = false
+    @Binding var isRequesting: Bool
+    @Binding var isPresentedAlert: Bool
+    @Binding var isPresentedSettings: Bool
+    @Binding var isPresentedForm: Bool
+    @Binding var isPresentedBrowser: Bool
     let user: UserDetail
 
-    var body: some View {
-        HStack {
+    var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
             if let isMe = appVM.user, user.id == isMe.id {
                 presentSettingsButton
             }
 
             Menu {
-                if user.isFriend {
-                    favoriteMenu
-                }
-                if let url = user.url {
-                    ShareLink(item: url)
-                }
+                if user.isFriend { favoriteMenu }
+                if let url = user.url { ShareLink(item: url) }
                 if user.isFriend {
                     Divider()
                     presentUnfriendAlertButton
@@ -48,25 +44,11 @@ struct UserDetailToolbarMenu: View {
                     IconSet.dots.icon
                 }
             }
-            .alert("Unfriend", isPresented: $isPresentedAlert) {
-                unfriendTaskButton
-            } message: {
-                Text("Are you sure you want to unfriend?")
-            }
-            .sheet(isPresented: $isPresentedSettings) {
-                SettingsView()
-            }
-            .sheet(isPresented: $isPresentedForm) {
-                if let user = appVM.user {
-                    ProfileEditView(user: user)
-                }
-            }
-            .sheet(isPresented: $isPresentedBrowser) {
-                if let url = URL(string: "https://vrchat.com/home/profile") {
-                    SafariView(url: url)
-                }
-            }
         }
+    }
+
+    private var presentSettingsButton: some View {
+        Button { isPresentedSettings.toggle() } label: { IconSet.setting.icon }
     }
 
     private var presentUnfriendAlertButton: some View {
@@ -76,36 +58,26 @@ struct UserDetailToolbarMenu: View {
         .tint(.red)
     }
 
-    private var unfriendTaskButton: Button<some View> {
-        Button("Unfriend", role: .destructive) {
-            Task {
-                do {
-                    try await appVM.services.friendService.unfriend(id: user.id)
-                } catch {
-                    appVM.handleError(error)
-                }
-                await friendVM.fetchAllFriends { error in
-                    appVM.handleError(error)
-                }
-                dismiss()
-            }
+    private var presentEditProfileButton: some View {
+        Button("Edit", systemImage: IconSet.edit.systemName) {
+            isPresentedForm.toggle()
         }
     }
 
+    private var presentAccountSettingsButton: some View {
+        Button("Account Settings", systemImage: IconSet.account.systemName) {
+            isPresentedBrowser.toggle()
+        }
+    }
+    
     private var favoriteMenu: some View {
         Menu {
             ForEach(favoriteVM.favoriteGroups(.friend)) { group in
                 favoriteMenuItem(group: group)
             }
         } label: {
-            Label {
-                Text("Favorite")
-            } icon: {
-                if favoriteVM.isAdded(friendId: user.id) {
-                    IconSet.favoriteFilled.icon
-                } else {
-                    IconSet.favorite.icon
-                }
+            Label { Text("Favorite") } icon: {
+                Image(systemName: favoriteVM.isAdded(friendId: user.id) ? "star.fill" : "star")
             }
         }
     }
@@ -114,13 +86,8 @@ struct UserDetailToolbarMenu: View {
         AsyncButton {
             await updateFavoriteAction(friendId: user.id, group: group)
         } label: {
-            Label {
-                Text(group.displayName)
-            } icon: {
-                if favoriteVM.isInFavoriteGroup(
-                    friendId: user.id,
-                    groupId: group.id
-                ) {
+            Label { Text(group.displayName) } icon: {
+                if favoriteVM.isInFavoriteGroup(friendId: user.id, groupId: group.id) {
                     IconSet.check.icon
                 }
             }
@@ -129,8 +96,8 @@ struct UserDetailToolbarMenu: View {
 
     private func updateFavoriteAction(friendId: String, group: FavoriteGroup) async {
         guard let friend = friendVM.getFriend(id: friendId) else { return }
-        defer { isRequesting = false }
         isRequesting = true
+        defer { isRequesting = false }
         do {
             try await favoriteVM.updateFavorite(
                 service: appVM.services.favoriteService,
@@ -140,21 +107,5 @@ struct UserDetailToolbarMenu: View {
         } catch {
             appVM.handleError(error)
         }
-    }
-    
-    private var presentSettingsButton: Button<some View> {
-        Button { isPresentedSettings.toggle() } label: { IconSet.setting.icon }
-    }
-    
-    private var presentEditProfileButton: Button<some View> {
-        Button("Edit", systemImage: IconSet.edit.systemName, action: {
-            isPresentedForm.toggle()
-        })
-    }
-
-    private var presentAccountSettingsButton: Button<some View> {
-        Button("Account Settings", systemImage: IconSet.account.systemName, action: {
-            isPresentedBrowser.toggle()
-        })
     }
 }

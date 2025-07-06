@@ -16,13 +16,18 @@ struct UserDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State var user: UserDetail
     @State var instance: Instance?
-    @State var isRequesting = false
     @State var lastActivity = ""
     @State var isPresentedNoteEditor = false
+    @State var isRequesting = false
+    @State private var isPresentedAlert = false
+    @State private var isPresentedSettings = false
+    @State private var isPresentedForm = false
+    @State private var isPresentedBrowser = false
+    
     private let headerHeight: CGFloat = 250
 
     init(user: UserDetail) {
-        self.user = user
+        _user = State(initialValue: user)
     }
 
     var body: some View {
@@ -44,11 +49,32 @@ struct UserDetailView: View {
         .navigationTitle(user.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
-        .toolbar { toolbar }
-        .task {
-            if case let .id(id) = user.location {
-                await fetchInstance(id: id)
+        .toolbar {
+            UserDetailToolbarMenu(
+                isRequesting: $isRequesting,
+                isPresentedAlert: $isPresentedAlert,
+                isPresentedSettings: $isPresentedSettings,
+                isPresentedForm: $isPresentedForm,
+                isPresentedBrowser: $isPresentedBrowser,
+                user: user
+            )
+        }
+        .alert("Unfriend", isPresented: $isPresentedAlert) {
+            unfriendTaskButton
+        } message: {
+            Text("Are you sure you want to unfriend?")
+        }
+        .sheet(isPresented: $isPresentedSettings) { SettingsView() }
+        .sheet(isPresented: $isPresentedForm) {
+            if let user = appVM.user { ProfileEditView(user: user) }
+        }
+        .sheet(isPresented: $isPresentedBrowser) {
+            if let url = URL(string: "https://vrchat.com/home/profile") {
+                SafariView(url: url)
             }
+        }
+        .task {
+            if case let .id(id) = user.location { await fetchInstance(id: id) }
         }
         .task {
             if let lastActivity = user.lastActivity {
@@ -56,11 +82,7 @@ struct UserDetailView: View {
             }
         }
     }
-
-    @ToolbarContentBuilder private var toolbar: some ToolbarContent {
-        ToolbarItem { UserDetailToolbarMenu(user: user) }
-    }
-
+    
     private var contentStacks: some View {
         VStack {
             locationSection
@@ -108,10 +130,20 @@ struct UserDetailView: View {
             appVM.handleError(error)
         }
     }
-}
 
-#Preview {
-    PreviewContainer { userDetail in
-        UserDetailView(user: userDetail)
+    private var unfriendTaskButton: some View {
+        Button("Unfriend", role: .destructive) {
+            Task {
+                do {
+                    try await appVM.services.friendService.unfriend(id: user.id)
+                } catch {
+                    appVM.handleError(error)
+                }
+                await friendVM.fetchAllFriends { error in
+                    appVM.handleError(error)
+                }
+                dismiss()
+            }
+        }
     }
 }

@@ -10,7 +10,16 @@ import VRCKit
 
 extension FriendsListView {
     @ToolbarContentBuilder var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) { presentSheetButton }
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            friendsHistoryViewButton
+            presentSheetButton
+        }
+    }
+    
+    private var friendsHistoryViewButton: some View {
+        NavigationLink(destination: FriendsHistoryView()) {
+            Image(systemName: IconSet.friendsHistory.systemName)
+        }
     }
 
     private var presentSheetButton: some View {
