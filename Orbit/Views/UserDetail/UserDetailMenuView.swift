@@ -34,6 +34,7 @@ struct UserDetailToolbarMenu: View {
                     ShareLink(item: url)
                 }
                 if user.isFriend {
+                    Divider()
                     presentUnfriendAlertButton
                 }
                 if let isMe = appVM.user, user.id == isMe.id {
@@ -68,10 +69,11 @@ struct UserDetailToolbarMenu: View {
         }
     }
 
-    private var presentUnfriendAlertButton: Button<some View> {
+    private var presentUnfriendAlertButton: some View {
         Button("Unfriend", systemImage: IconSet.unfriend.systemName, role: .destructive) {
             isPresentedAlert.toggle()
         }
+        .tint(.red)
     }
 
     private var unfriendTaskButton: Button<some View> {

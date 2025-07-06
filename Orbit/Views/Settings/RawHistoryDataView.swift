@@ -66,8 +66,8 @@ struct RawHistoryDataView: View {
         return favoriteGroupFiltered.sorted {
             switch sortType {
             case .name: $0.displayName.lowercased() < $1.displayName.lowercased()
-            case .loginLatest: $0.lastLogin > $1.lastLogin
-            case .loginOldest: $0.lastLogin < $1.lastLogin
+            case .loginLatest: $0.lastLogin ?? .distantPast > $1.lastLogin ?? .distantPast
+            case .loginOldest: $0.lastLogin ?? .distantFuture < $1.lastLogin ?? .distantFuture
             case .status: $0.status.rawValue < $1.status.rawValue
             default: $0.displayName.lowercased() < $1.displayName.lowercased()
             }

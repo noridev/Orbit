@@ -47,6 +47,7 @@ private extension MainTabViewSegment {
         switch self {
         case .social: LocationsView()
         case .friends: FriendsView()
+        case .search: SearchView()
         case .favorites: FavoritesView()
         case .friendsHistory: FriendsHistoryView()
         // case .settings: SettingsView()

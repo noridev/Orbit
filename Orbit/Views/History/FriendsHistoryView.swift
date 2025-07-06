@@ -76,7 +76,7 @@ struct FriendsHistoryView: View {
             .toolbar { navigationToolbar }
             .searchable(text: $searchText, prompt: "이름으로 검색")
             .overlay {
-                if let histories = allHistories, filteredAndSortedHistories.isEmpty {
+                if allHistories != nil, filteredAndSortedHistories.isEmpty {
                     if areFiltersActive {
                         ContentUnavailableView.search
                     } else {

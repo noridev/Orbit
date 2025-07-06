@@ -22,7 +22,7 @@ struct UserIcon<T>: View where T: ProfileElementRepresentable {
             StatusIndicator(
                 user.status.color,
                 outerSize: size,
-                isCutOut: user.platform == .web
+                isCutOut: user.platform == .some(.web)
             )
         }
     }

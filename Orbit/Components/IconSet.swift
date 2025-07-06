@@ -111,6 +111,9 @@ enum IconSet {
     static var profile: some Iconizable {
         Icon("person.crop.circle.fill")
     }
+    static var search: some Iconizable {
+        Icon("magnifyingglass")
+    }
     static var setting: some Iconizable {
         Icon("gearshape")
     }

@@ -36,7 +36,7 @@ struct FriendCacheManager {
         do {
             let data = try Data(contentsOf: url)
             
-            guard var rawString = String(data: data, encoding: .utf8) else {
+            guard let rawString = String(data: data, encoding: .utf8) else {
                 print("Could not convert data to UTF-8 string.")
                 return try JSONDecoder().decode([Friend].self, from: data)
             }

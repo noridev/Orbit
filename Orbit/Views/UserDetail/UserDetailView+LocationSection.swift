@@ -26,7 +26,7 @@ extension UserDetailView {
     private var locationDescription: String {
         if let instance = instance {
             instance.world.name
-        } else if user.platform == .web {
+        } else if user.platform == .some(.web) {
             "On website"
         } else if user.location == .private {
             "Private World"
@@ -42,7 +42,7 @@ extension UserDetailView {
     private var locationImageUrl: URL? {
         switch user.location {
         case .id:
-            user.platform == .web ? Const.locationOnWebImageUrl : instance?.imageUrl(.x256)
+            user.platform == .some(.web) ? Const.locationOnWebImageUrl : instance?.imageUrl(.x256)
         case .private, .traveling:
             Const.privateWorldImageUrl
         case .offline:

@@ -7,6 +7,7 @@
 
 import MemberwiseInit
 import SwiftUI
+import VRCKit
 
 @MemberwiseInit
 struct FriendsListView: View {
@@ -29,21 +30,8 @@ struct FriendsListView: View {
                     VStack(alignment: .leading) {
                         Text(friend.displayName)
                             .font(.headline)
-
-                        if !friend.statusDescription.isEmpty {
-                            Text(friend.statusDescription)
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        } else {
-                            HStack(spacing: 2) {
-                                Text("Last Login" + ":")
-                                    .font(.caption)
-                                    .foregroundStyle(.gray)
-                                Text(friend.lastLogin.formatted(date: .numeric, time: .shortened))
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                            }
-                        }
+                        
+                        statusView(for: friend)
                     }
                     .padding(.leading, 4)
                 }
@@ -81,6 +69,24 @@ struct FriendsListView: View {
         }
         .onChange(of: friendVM.filterFavoriteGroups) {
             friendVM.applyFilters()
+        }
+    }
+
+    @ViewBuilder
+    private func statusView(for friend: Friend) -> some View {
+        if !friend.statusDescription.isEmpty {
+            Text(friend.statusDescription)
+                .font(.caption)
+                .foregroundColor(.gray)
+        } else if let lastLogin = friend.lastLogin {
+            HStack(spacing: 2) {
+                Text("Last Login" + ":")
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+                Text(lastLogin.formatted(date: .numeric, time: .shortened))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
         }
     }
 

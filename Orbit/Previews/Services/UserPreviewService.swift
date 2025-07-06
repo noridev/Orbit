@@ -17,4 +17,9 @@ final actor UserPreviewService: APIService, UserServiceProtocol {
     }
 
     func updateUser(id: String, editedInfo: EditableUserInfo) async throws {}
+
+    func searchUser(displayName: String, n: Int, offset: Int) async throws -> [LimitedUser] {
+        // Return an empty array for preview purposes.
+        []
+    }
 }

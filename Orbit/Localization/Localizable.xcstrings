@@ -843,6 +843,9 @@
         }
       }
     },
+    "Find VRChat users by their display name." : {
+
+    },
     "Friend" : {
       "localizations" : {
         "ja" : {
@@ -1689,7 +1692,13 @@
         }
       }
     },
+    "Search" : {
+
+    },
     "Search by name" : {
+
+    },
+    "Search for Users" : {
 
     },
     "Select a Friend" : {
@@ -1757,6 +1766,9 @@
           }
         }
       }
+    },
+    "Select a User" : {
+
     },
     "Select an item" : {
       "localizations" : {

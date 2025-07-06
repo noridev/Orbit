@@ -68,6 +68,7 @@ final class PreviewData: Sendable {
             userLanguage: nil,
             userLanguageCode: nil,
             presence: Presence(),
+            platform: .standalonewindows
         )
     }
 }

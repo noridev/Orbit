@@ -12,16 +12,19 @@ extension UserDetailView {
     var topOverlay: some View {
         HStack {
             Spacer()
-            Label {
-                Text(lastActivity)
-            } icon: {
-                Image(systemName: "stopwatch")
+            
+            if !lastActivity.isEmpty {
+                Label {
+                    Text(lastActivity)
+                } icon: {
+                    Image(systemName: "stopwatch")
+                }
+                .font(.footnote.bold())
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .background(.regularMaterial)
+                .cornerRadius(8)
             }
-            .font(.footnote.bold())
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
-            .background(.regularMaterial)
-            .cornerRadius(8)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
