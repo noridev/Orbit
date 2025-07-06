@@ -47,8 +47,8 @@ private struct UserListView: View {
         List(searchVM.users, selection: $selected) { user in
             NavigationLabel {
                 HStack {
-                    CircleURLImage(
-                        imageUrl: user.profilePicOverride ?? user.avatarThumbnailUrl,
+                    UserIcon(
+                        user: user,
                         size: Constants.IconSize.userDetailThumbnail
                     )
                     // 친구가 아니어도 해당 사용자의 상태를 확인할 수 있으므로 UserIcon을 사용한 코드도 남겨둠.

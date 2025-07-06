@@ -16,9 +16,11 @@ struct HorizontalProfileImages<T>: View where T: ProfileElementRepresentable {
         ScrollView(.horizontal) {
             LazyHStack(spacing: -8) {
                 ForEach(profiles) { profile in
-                    CircleURLImage(
-                        imageUrl: profile.imageUrl(.x256),
-                        size: Constants.IconSize.thumbnail
+                    UserIcon(
+                        user: profile,
+                        size: Constants.IconSize.thumbnail,
+                        showStatusIndicator: false,
+                        showTrustRankBorder: false
                     )
                 }
             }
