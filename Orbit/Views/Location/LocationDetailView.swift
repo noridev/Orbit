@@ -12,13 +12,6 @@ import VRCKit
 
 @MemberwiseInit
 struct LocationDetailView: View {
-    @InitWrapper(
-        .internal,
-        default: Binding<SegmentIdSelection?>.constant(nil),
-        label: "_",
-        type: Binding<SegmentIdSelection?>.self
-    )
-    @Binding var selection: SegmentIdSelection?
     @Init(.internal) private let location: FriendsLocation
     @Init(.internal) private let instance: Instance
 
@@ -27,6 +20,7 @@ struct LocationDetailView: View {
         let platforms = instance.userPlatforms.map(\.description).joined(separator: ", ")
         return [
             (title: String(localized: "Instance Type"), value: instance.typeDescription),
+            (title: String(localized: "Instance ID"), value: "#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId))"),
             (title: String(localized: "Friends"), value: location.friends.count.description),
             (title: String(localized: "Users"), value: instance.userCount.description),
             (title: String(localized: "Capacity"), value: instance.capacity.description),
@@ -36,26 +30,26 @@ struct LocationDetailView: View {
     }
 
     var body: some View {
-        List(selection: $selection) {
+        List {
             Section("World") {
-                HStack(spacing: 12) {
-                    SquareURLImage(
-                        imageUrl: instance.world.imageUrl(.x1024),
-                        thumbnailImageUrl: instance.world.imageUrl(.x256)
-                    )
-                    VStack(alignment: .leading) {
-                        Text(instance.world.name)
-                            .font(.body)
-                            .lineLimit(1)
-                        Text(instance.world.description ?? "")
-                            .font(.footnote)
-                            .foregroundStyle(Color.gray)
-                            .lineLimit(2)
+                NavigationLink(destination: WorldPresentationView(id: instance.world.id)) {
+                    HStack(spacing: 12) {
+                        SquareURLImage(
+                            imageUrl: instance.world.imageUrl(.x1024),
+                            thumbnailImageUrl: instance.world.imageUrl(.x256)
+                        )
+                        VStack(alignment: .leading) {
+                            Text(instance.world.name)
+                                .font(.body)
+                                .lineLimit(1)
+                            Text(instance.world.description ?? "")
+                                .font(.footnote)
+                                .foregroundStyle(Color.gray)
+                                .lineLimit(2)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    IconSet.forward.icon
                 }
-                .tag(SegmentIdSelection(worldId: instance.world.id))
             }
             Section("Friends") { friendList }
             Section("Information") { informationList }
@@ -67,14 +61,13 @@ struct LocationDetailView: View {
 
     private var friendList: ForEach<[Friend], Friend.ID, some View> {
         ForEach(location.friends) { friend in
-            NavigationLabel {
+            NavigationLink(destination: UserDetailPresentationView(id: friend.id)) {
                 Label {
                     Text(friend.displayName)
                 } icon: {
                     UserIcon(user: friend, size: Constants.IconSize.thumbnail)
                 }
             }
-            .tag(SegmentIdSelection(friendId: friend.id))
         }
     }
 

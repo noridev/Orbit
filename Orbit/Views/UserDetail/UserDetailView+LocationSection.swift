@@ -12,11 +12,47 @@ import VRCKit
 extension UserDetailView {
     var locationSection: some View {
         GroupBox("Location") {
-            HStack {
-                SquareURLImage(imageUrl: locationImageUrl)
-                Text(locationDescription)
-                    .font(.headline)
-                    .padding(.leading, 8)
+            VStack(alignment: .leading, spacing: 8) {
+                if let instance = instance {
+                    NavigationLink(destination: LocationDetailView(
+                        location: FriendsLocation(location: .id(instance.id), friends: friendVM.allFriends.filter { friend in
+                            if case let .id(locationId) = friend.location {
+                                return locationId == instance.id
+                            }
+                            return false
+                        }),
+                        instance: instance
+                    )
+                    .environment(appVM)
+                    .environment(friendVM)
+                    ) {
+                        HStack {
+                            SquareURLImage(imageUrl: locationImageUrl)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(locationDescription)
+                                    .font(.headline)
+                                    .padding(.leading, 8)
+                                Text("#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId)) \(InstanceUtil.getInstanceTypeDescription(instance)) \(InstanceUtil.getUserCountString(instance))")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                    .padding(.leading, 8)
+                            }
+                            Spacer()
+                            IconSet.forward.icon
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                } else {
+                    HStack {
+                        SquareURLImage(imageUrl: locationImageUrl)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(locationDescription)
+                                .font(.headline)
+                                .padding(.leading, 8)
+                        }
+                    }
+                }
             }
             .redacted(reason: isRequesting ? .placeholder : [])
         }
