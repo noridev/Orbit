@@ -17,9 +17,11 @@ struct FriendCacheManager {
     static func saveFriends(_ friends: [Friend]) {
         guard let url = cacheURL else { return }
         do {
-            let data = try JSONEncoder().encode(friends)
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .formatted(.iso8601Full)
             print("--- Saving Cache ---")
             print("Attempting to save \(data.count) bytes to friendCache.json")
+            let data = try encoder.encode(friends)
             try data.write(to: url, options: .atomic)
             print("Save successful.")
             print("--------------------")
@@ -28,39 +30,38 @@ struct FriendCacheManager {
         }
     }
 
-    static func loadFriends() -> [Friend] {
+    static func loadFriends() throws -> [Friend] {
         guard let url = cacheURL, FileManager.default.fileExists(atPath: url.path) else {
             return []
         }
 
-        do {
-            let data = try Data(contentsOf: url)
-            
-            guard let rawString = String(data: data, encoding: .utf8) else {
-                print("Could not convert data to UTF-8 string.")
-                return try JSONDecoder().decode([Friend].self, from: data)
-            }
-            
-            let sanitizedString = rawString.filter { character in
-                guard let firstScalar = character.unicodeScalars.first else { return false }
-                let controlRanges = [0x00...0x1F, 0x7F...0x9F]
-                return !controlRanges.contains(where: { $0.contains(Int(firstScalar.value)) })
-            }
-
-            print("--- Loading Cache ---")
-            print("friendCache.json file found. Sanitized Content:")
-            print(sanitizedString)
-            print("---------------------")
-
-            if let sanitizedData = sanitizedString.data(using: .utf8) {
-                return try JSONDecoder().decode([Friend].self, from: sanitizedData)
-            }
-            
+        let data = try Data(contentsOf: url)
+        
+        guard let rawString = String(data: data, encoding: .utf8) else {
+            print("Could not convert data to UTF-8 string.")
             return try JSONDecoder().decode([Friend].self, from: data)
+        }
+        
+        let sanitizedString = rawString.filter { character in
+            guard let firstScalar = character.unicodeScalars.first else { return false }
+            let controlRanges = [0x00...0x1F, 0x7F...0x9F]
+            return !controlRanges.contains(where: { $0.contains(Int(firstScalar.value)) })
+        }
+
+        if let sanitizedData = sanitizedString.data(using: .utf8) {
+            return try JSONDecoder().decode([Friend].self, from: sanitizedData)
+        }
+        
+        return try JSONDecoder().decode([Friend].self, from: data)
+    }
+    
+    static func deleteCache() {
+        guard let url = cacheURL, FileManager.default.fileExists(atPath: url.path) else { return }
+        do {
+            try FileManager.default.removeItem(at: url)
+            print("Cache file deleted successfully.")
         } catch {
-            print("Error loading/decoding cache. Deleting corrupted file. Error: \(error)")
-            try? FileManager.default.removeItem(at: url)
-            return []
+            print("Error deleting cache file: \(error)")
         }
     }
     

@@ -49,6 +49,7 @@ struct RawHistoryDataView: View {
     @State private var sortType: SortType = .name
     @State private var filterUserStatus: Set<UserStatus> = []
     @State private var filterFavoriteGroups: Set<FavoriteGroup.ID> = []
+    @State private var showCorruptedCacheAlert = false
 
     private var filteredFriends: [Friend] {
         let searched = friendsInCache.filter {
@@ -88,9 +89,11 @@ struct RawHistoryDataView: View {
                         .multilineTextAlignment(.center)
                         .foregroundColor(.secondary)
                     
-                    Text("친구 목록 탭으로 이동하여 아래로 당겨 새로고침하면 캐시가 생성됩니다.")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    if showCorruptedCacheAlert {
+                        Text("친구 목록 탭으로 이동하여 아래로 당겨 새로고침하면 캐시가 재생성됩니다.")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
                 }
                 .padding()
             } else {
@@ -149,16 +152,32 @@ struct RawHistoryDataView: View {
             loadCacheFromFile()
             loadSettings()
         }
+        .alert("캐시가 손상됨", isPresented: $showCorruptedCacheAlert) {
+            Button("삭제", role: .destructive) {
+                FriendCacheManager.deleteCache()
+                loadCacheFromFile()
+            }
+            Button("취소", role: .cancel) {}
+        } message: {
+            Text("캐시 파일이 손상되어 읽을 수 없습니다. 파일을 삭제하시겠습니까?")
+        }
     }
 
     private func loadCacheFromFile() {
-        let loadedFriends = FriendCacheManager.loadFriends()
-        if loadedFriends.isEmpty {
-            self.statusMessage = "캐시 파일이 비어있거나 찾을 수 없습니다."
+        self.showCorruptedCacheAlert = false
+        do {
+            let loadedFriends = try FriendCacheManager.loadFriends()
+            if loadedFriends.isEmpty {
+                self.statusMessage = "캐시 파일이 비어있거나 찾을 수 없습니다."
+                self.friendsInCache = []
+            } else {
+                self.friendsInCache = loadedFriends
+                self.statusMessage = ""
+            }
+        } catch {
+            self.showCorruptedCacheAlert = true
+            self.statusMessage = "캐시 파일이 손상되었습니다."
             self.friendsInCache = []
-        } else {
-            self.friendsInCache = loadedFriends
-            self.statusMessage = ""
         }
     }
     

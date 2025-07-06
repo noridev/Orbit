@@ -11,6 +11,9 @@ import VRCKit
 
 @Observable @MainActor
 final class FriendViewModel {
+    @ObservationIgnored private var appVM: AppViewModel?
+    @ObservationIgnored var favoriteFriends: [FavoriteFriend] = []
+    @ObservationIgnored private let historyVM = FriendHistoryViewModel.shared
     var onlineFriends: [Friend] = []
     var offlineFriends: [Friend] = []
     var filterResultFriends: [Friend] = []
@@ -21,9 +24,7 @@ final class FriendViewModel {
     var sortType: SortType = .loginLatest
     var isFetchingAllFriends = true
     var isProcessingFilter = false
-    @ObservationIgnored private var appVM: AppViewModel?
-    @ObservationIgnored var favoriteFriends: [FavoriteFriend] = []
-    @ObservationIgnored private let historyVM = FriendHistoryViewModel.shared
+    var isCacheCorrupted = false
     private let localFriendsKey = "localFriendsList"
 
     init() {
@@ -76,6 +77,7 @@ final class FriendViewModel {
     }
 
     func fetchAllFriends(errorHandler: @escaping (_ error: any Error) -> Void) async {
+        isCacheCorrupted = false
         defer { isFetchingAllFriends = false }
         isFetchingAllFriends = true
         guard let appVM = appVM else {
@@ -95,9 +97,13 @@ final class FriendViewModel {
             onlineFriends = try await onlineFriendsTask
             offlineFriends = try await offlineFriendsTask
             
-            processFriendListChanges()
+            try processFriendListChanges()
         } catch {
-            errorHandler(error)
+            if error is DecodingError {
+                self.isCacheCorrupted = true
+            } else {
+                errorHandler(error)
+            }
             return
         }
         friendsLocations = await appVM.services.friendService.friendsGroupedByLocation(onlineFriends)
@@ -108,12 +114,12 @@ final class FriendViewModel {
         FriendCacheManager.saveFriends(friends)
     }
     
-    private func loadFriendsFromLocal() -> [Friend] {
-        return FriendCacheManager.loadFriends()
+    private func loadFriendsFromLocal() throws -> [Friend] {
+        return try FriendCacheManager.loadFriends()
     }
 
-    private func processFriendListChanges() {
-        let oldFriends = loadFriendsFromLocal()
+    private func processFriendListChanges() throws {
+        let oldFriends = try loadFriendsFromLocal()
         let newFriends = self.allFriends
 
         guard !oldFriends.isEmpty else {
