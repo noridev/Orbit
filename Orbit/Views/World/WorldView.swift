@@ -73,6 +73,8 @@ struct WorldView: View {
             descriptionSection(world.description ?? "")
             authorSection
             detailsSection
+            
+            Spacer()
         }
     }
 

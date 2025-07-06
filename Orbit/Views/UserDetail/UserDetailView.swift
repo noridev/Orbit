@@ -103,6 +103,8 @@ struct UserDetailView: View {
                 socialLinksSection(urls)
             }
             activitySection
+            
+            Spacer()
         }
     }
     
