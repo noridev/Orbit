@@ -71,26 +71,29 @@ struct LocationsView: View {
     }
 
     private var detail: some View {
-        Group {
-            if let selection = selection {
-                Group {
-                    switch selection.segment {
-                    case .friends:
-                        UserDetailPresentationView(selected: selection.selected)
-                    case .world:
-                        WorldPresentationView(id: selection.selected.id)
+        NavigationStack {
+            Group {
+                if let selection = selection {
+                    Group {
+                        switch selection.segment {
+                        case .friends:
+                            UserDetailPresentationView(selected: selection.selected)
+                                .id(selection.id)
+                        case .world:
+                            WorldPresentationView(id: selection.selected.id)
+                                .id(selection.id)
+                        }
+                    }
+                } else {
+                    ContentUnavailableView {
+                        Label("Select a friend or world", systemImage: IconSet.info.systemName)
+                            .foregroundColor(.gray)
                     }
                 }
-                .id(selection.selected.id)
-            } else {
-                ContentUnavailableView {
-                    Label("Select a friend or world", systemImage: IconSet.info.systemName)
-                        .foregroundColor(.gray)
-                }
             }
+            .background(Color(.systemGroupedBackground))
+            .setColumn(appVM.screenSize)
         }
-        .background(Color(.systemGroupedBackground))
-        .setColumn(appVM.screenSize)
     }
 
     private var friendLocations: some View {
