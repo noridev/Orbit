@@ -47,8 +47,8 @@ private extension MainTabViewSegment {
         switch self {
         case .social: LocationsView()
         case .friends: FriendsView()
-        case .search: SearchView()
         case .favorites: FavoritesView()
+        case .search: SearchView()
         // case .settings: SettingsView()
         case .profile:
             if let user = appVM.user {

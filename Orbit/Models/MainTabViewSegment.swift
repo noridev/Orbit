@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 enum MainTabViewSegment: String, CaseIterable {
-    case social, friends, search, favorites, profile
+    case social, friends, favorites, search, profile
 }
 
 extension MainTabViewSegment: CustomStringConvertible {
@@ -34,8 +34,8 @@ extension MainTabViewSegment {
         switch self {
         case .social: IconSet.social
         case .friends: IconSet.friends
-        case .search: IconSet.search
         case .favorites: IconSet.favorite
+        case .search: IconSet.search
         case .profile: IconSet.profile
         }
     }
