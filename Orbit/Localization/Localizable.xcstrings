@@ -12,7 +12,8 @@
             "value" : "#%1$@ %2$@ %3$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%@ / %@" : {
       "localizations" : {
@@ -299,6 +300,16 @@
         }
       }
     },
+    "Cache corrupted" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캐시가 손상됨"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "ja" : {
@@ -476,7 +487,7 @@
       }
     },
     "Debug" : {
-
+      "shouldTranslate" : false
     },
     "Delete" : {
       "localizations" : {
@@ -786,8 +797,35 @@
         }
       }
     },
+    "Exclude users who are using VRChat through a web browser" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "웹 브라우저를 통해 VRChat에 접속한 유저를 제외합니다."
+          }
+        }
+      }
+    },
+    "Exclude Web Users" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "웹으로 접속한 유저 제외"
+          }
+        }
+      }
+    },
     "Failed to get location" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치 정보를 불러올 수 없음"
+          }
+        }
+      }
     },
     "Favorite" : {
       "localizations" : {
@@ -857,10 +895,24 @@
       }
     },
     "Fetching location..." : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치 정보를 불러오는 중…"
+          }
+        }
+      }
     },
-    "Find VRChat users by their display name." : {
-
+    "Find users by their display name." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름을 입력하여 유저를 찾을 수 있습니다."
+          }
+        }
+      }
     },
     "Friend" : {
       "localizations" : {
@@ -885,7 +937,7 @@
       }
     },
     "Friend Cache Inspector" : {
-
+      "shouldTranslate" : false
     },
     "Friend History" : {
       "localizations" : {
@@ -951,6 +1003,16 @@
         }
       }
     },
+    "Go to the Friends tab and pull down to refresh to regenerate the cache." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친구 목록 탭으로 이동해 아래로 당겨서 새로고침하면 캐시가 재생성됩니다."
+          }
+        }
+      }
+    },
     "https://" : {
       "shouldTranslate" : false
     },
@@ -987,7 +1049,14 @@
       }
     },
     "In world" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "월드에 있음"
+          }
+        }
+      }
     },
     "Information" : {
       "localizations" : {
@@ -1484,6 +1553,16 @@
         }
       }
     },
+    "No users added as friends" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친구로 추가된 유저 없음"
+          }
+        }
+      }
+    },
     "Note" : {
       "localizations" : {
         "ja" : {
@@ -1687,7 +1766,7 @@
       }
     },
     "Raw History Data" : {
-
+      "shouldTranslate" : false
     },
     "Region" : {
       "localizations" : {
@@ -1756,13 +1835,34 @@
       }
     },
     "Search" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색"
+          }
+        }
+      }
     },
     "Search by name" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름으로 검색"
+          }
+        }
+      }
     },
     "Search for Users" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유저 검색"
+          }
+        }
+      }
     },
     "Select a Friend" : {
       "localizations" : {
@@ -1831,7 +1931,14 @@
       }
     },
     "Select a User" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유저 선택"
+          }
+        }
+      }
     },
     "Select an item" : {
       "localizations" : {
@@ -2075,6 +2182,16 @@
         }
       }
     },
+    "The Friend Cache file is corrupted and cannot be read. Do you want to delete it?" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친구 캐시 파일이 손상되어 읽을 수 없습니다. 파일을 삭제하시겠습니까?"
+          }
+        }
+      }
+    },
     "Third Party Licence" : {
       "localizations" : {
         "ja" : {
@@ -2098,7 +2215,14 @@
       }
     },
     "Traveling" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이동 중"
+          }
+        }
+      }
     },
     "Try again later" : {
       "localizations" : {
@@ -2145,7 +2269,14 @@
       }
     },
     "Type" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유형"
+          }
+        }
+      }
     },
     "Unfriend" : {
       "localizations" : {
@@ -2236,7 +2367,7 @@
       }
     },
     "VRC+" : {
-
+      "shouldTranslate" : false
     },
     "World" : {
       "localizations" : {
@@ -2256,145 +2387,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "世界"
-          }
-        }
-      }
-    },
-    "삭제" : {
-
-    },
-    "월드에 있음" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ワールドにいる"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "월드에 있음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在世界中"
-          }
-        }
-      }
-    },
-    "위치 정보 로딩 중..." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置情報を読み込み中..."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "위치 정보 로딩 중..."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在加载位置信息..."
-          }
-        }
-      }
-    },
-    "위치 정보를 가져올 수 없습니다" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置情報を取得できません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "위치 정보를 가져올 수 없습니다"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法获取位置信息"
-          }
-        }
-      }
-    },
-    "이동 중" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移動中"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이동 중"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移动中"
-          }
-        }
-      }
-    },
-    "이름으로 검색" : {
-
-    },
-    "취소" : {
-
-    },
-    "친구 목록 캐시 파일이 손상되어 기록을 제대로 표시할 수 없습니다. 파일을 삭제하시겠습니까?" : {
-
-    },
-    "친구 목록 탭으로 이동하여 아래로 당겨 새로고침하면 캐시가 재생성됩니다." : {
-
-    },
-    "친구로 추가된 유저 없음" : {
-
-    },
-    "캐시 파일이 손상되어 읽을 수 없습니다. 파일을 삭제하시겠습니까?" : {
-
-    },
-    "캐시가 손상됨" : {
-
-    },
-    "프라이빗 월드" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プライベートワールド"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "프라이빗 월드"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "私人世界"
           }
         }
       }

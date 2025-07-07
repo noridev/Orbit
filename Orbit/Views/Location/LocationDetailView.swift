@@ -63,7 +63,7 @@ struct LocationDetailView: View {
         Group {
             if location.friends.isEmpty {
                 Label {
-                    Text("친구로 추가된 유저 없음")
+                    Text("No users added as friends")
                         .font(.body)
                         .foregroundColor(.gray)
                 } icon: {

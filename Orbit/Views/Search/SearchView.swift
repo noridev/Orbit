@@ -79,7 +79,9 @@ private struct UserListView: View {
             }
         }
         .refreshable {
-            await searchVM.searchUsers()
+            if !searchVM.searchText.isEmpty {
+                await searchVM.searchUsers()
+            }
         }
         .overlay {
             if searchVM.isSearching && searchVM.users.isEmpty {
@@ -92,7 +94,7 @@ private struct UserListView: View {
                 ContentUnavailableView {
                     Label("Search for Users", systemImage: "magnifyingglass")
                 } description: {
-                    Text("Find VRChat users by their display name.")
+                    Text("Find users by their display name.")
                 }
             }
         }
