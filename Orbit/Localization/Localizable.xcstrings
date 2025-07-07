@@ -786,6 +786,9 @@
         }
       }
     },
+    "Failed to get location" : {
+
+    },
     "Favorite" : {
       "localizations" : {
         "ja" : {
@@ -852,6 +855,9 @@
           }
         }
       }
+    },
+    "Fetching location..." : {
+
     },
     "Find VRChat users by their display name." : {
 
@@ -2281,6 +2287,7 @@
       }
     },
     "위치 정보 로딩 중..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2303,6 +2310,7 @@
       }
     },
     "위치 정보를 가져올 수 없습니다" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

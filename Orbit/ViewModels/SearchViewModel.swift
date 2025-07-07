@@ -20,9 +20,14 @@ class SearchViewModel: ObservableObject {
     private let fetchCount = 50
     
     var appVM: AppViewModel
+    var friendVM: FriendViewModel?
     
     init(appVM: AppViewModel) {
         self.appVM = appVM
+    }
+    
+    func setFriendVM(_ friendVM: FriendViewModel) {
+        self.friendVM = friendVM
     }
     
     func searchUsers() async {
@@ -69,5 +74,9 @@ class SearchViewModel: ObservableObject {
             appVM.handleError(error)
             canLoadMore = false
         }
+    }
+    
+    func getFriendInfo(for userId: String) -> Friend? {
+        return friendVM?.getFriend(id: userId)
     }
 }

@@ -10,6 +10,7 @@ import VRCKit
 
 struct SearchView: View {
     @Environment(AppViewModel.self) var appVM
+    @Environment(FriendViewModel.self) var friendVM
     
     @StateObject private var searchVM: SearchViewModel
     @State private var selected: String?
@@ -34,6 +35,7 @@ struct SearchView: View {
         }
         .onAppear {
             searchVM.appVM = appVM
+            searchVM.setFriendVM(friendVM)
         }
     }
 }
@@ -51,15 +53,18 @@ private struct UserListView: View {
                         user: user,
                         size: Constants.IconSize.userDetailThumbnail
                     )
-                    // 친구가 아니어도 해당 사용자의 상태를 확인할 수 있으므로 UserIcon을 사용한 코드도 남겨둠.
-                    //UserIcon(user: user, size: Constants.IconSize.userDetailThumbnail)
 
                     VStack(alignment: .leading) {
                         Text(user.displayName)
                             .font(.headline)
-                        Text(user.statusDescription)
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                        
+                        if user.isFriend, let friend = searchVM.getFriendInfo(for: user.id) {
+                            FriendStatusView(friend: friend)
+                        } else if !user.statusDescription.isEmpty {
+                            Text(user.statusDescription)
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
                     }
                     .padding(.leading, 4)
                 }
