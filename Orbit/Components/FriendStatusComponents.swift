@@ -51,10 +51,12 @@ struct InstanceLocationView: View {
                     .foregroundColor(.gray)
             } else if let instance = instance {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(InstanceUtil.getWorldNameWithInstance(instance))
+                    Text(instance.world.name)
                         .font(.caption)
                         .foregroundColor(.gray)
-                    Text(InstanceUtil.getInstanceTypeWithUserCount(instance))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    Text("#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId)) \(InstanceUtil.getInstanceTypeWithUserCount(instance))")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }

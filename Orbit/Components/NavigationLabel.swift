@@ -25,7 +25,11 @@ struct NavigationLabel<Label> where Label: View {
 
 extension NavigationLabel: View {
     var body: some View {
-        LabeledContent(content: content, label: label)
+        HStack {
+            label()
+                .frame(maxWidth: .infinity, alignment: .leading)
+            content()
+        }
     }
 }
 

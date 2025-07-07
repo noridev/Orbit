@@ -126,9 +126,9 @@ struct LocationsView: View {
         Section("Private") {
             HStack(spacing: 16) {
                 SquareURLImage(imageUrl: Const.privateWorldImageUrl)
-                VStack(spacing: .zero) {
+                VStack(spacing: 8) {
                     HStack {
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 2) {
                             Text("Private Instances")
                                 .font(.body)
                                 .lineLimit(1)
@@ -141,7 +141,6 @@ struct LocationsView: View {
                     }
                     HorizontalProfileImages(friendVM.friendsInPrivate)
                 }
-                .padding(.top, 4)
             }
             .tag(InstanceLocation(friends: friendVM.friendsInPrivate))
         }

@@ -46,15 +46,16 @@ struct LocationCardView: View {
                         .controlSize(.small)
                 }
             }
-            VStack(spacing: .zero) {
-                Spacer()
-
+            VStack(spacing: 8) {
                 HStack {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(instance.world.name)
                             .font(.body)
                             .lineLimit(1)
                         HStack {
+                            Text("#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId))")
+                                .font(.caption)
+                                .foregroundStyle(Color.gray)
                             Text(instance.typeDescription)
                                 .font(.caption)
                                 .foregroundStyle(Color.gray)
@@ -64,7 +65,6 @@ struct LocationCardView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    NavigationLabel()
                 }
                 HorizontalProfileImages(location.friends)
                     .onTapGesture {
@@ -73,6 +73,7 @@ struct LocationCardView: View {
                         }
                     }
             }
+            NavigationLabel()
         }
         .selectionDisabled(isRequesting)
         .tag(tag(instance))
