@@ -59,13 +59,27 @@ struct LocationDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private var friendList: ForEach<[Friend], Friend.ID, some View> {
-        ForEach(location.friends) { friend in
-            NavigationLink(destination: UserDetailPresentationView(id: friend.id)) {
+    private var friendList: some View {
+        Group {
+            if location.friends.isEmpty {
                 Label {
-                    Text(friend.displayName)
+                    Text("친구로 추가된 유저 없음")
+                        .font(.body)
+                        .foregroundColor(.gray)
                 } icon: {
-                    UserIcon(user: friend, size: Constants.IconSize.thumbnail)
+                    Image(systemName: "person.2.slash")
+                        .font(.body)
+                        .foregroundColor(.gray)
+                }
+            } else {
+                ForEach(location.friends) { friend in
+                    NavigationLink(destination: UserDetailPresentationView(id: friend.id)) {
+                        Label {
+                            Text(friend.displayName)
+                        } icon: {
+                            UserIcon(user: friend, size: Constants.IconSize.thumbnail)
+                        }
+                    }
                 }
             }
         }
