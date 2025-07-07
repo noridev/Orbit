@@ -23,6 +23,7 @@ struct UserDetailView: View {
     @State private var isPresentedSettings = false
     @State private var isPresentedForm = false
     @State private var isPresentedBrowser = false
+    @State private var isPresentedJsonView = false
     
     private let headerHeight: CGFloat = 250
 
@@ -56,6 +57,7 @@ struct UserDetailView: View {
                 isPresentedSettings: $isPresentedSettings,
                 isPresentedForm: $isPresentedForm,
                 isPresentedBrowser: $isPresentedBrowser,
+                isPresentedJsonView: $isPresentedJsonView,
                 user: user
             )
         }
@@ -72,6 +74,9 @@ struct UserDetailView: View {
             if let url = URL(string: "https://vrchat.com/home/profile") {
                 SafariView(url: url)
             }
+        }
+        .sheet(isPresented: $isPresentedJsonView) {
+            UserDetailJsonDetailView(userDetail: user)
         }
         .task {
             if case let .id(id) = user.location { await fetchInstance(id: id) }

@@ -40,6 +40,48 @@ struct FriendJsonDetailView: View {
     }
 }
 
+struct UserDetailJsonDetailView: View {
+    let userDetail: UserDetail
+    @State private var jsonString: String = "Generating JSON..."
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            TextEditor(text: .constant(jsonString))
+                .font(.system(size: 12, design: .monospaced))
+                .padding(.horizontal, 8)
+                .navigationTitle(userDetail.displayName)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Done") {
+                            dismiss()
+                        }
+                    }
+                }
+                .onAppear(perform: generateJsonString)
+        }
+    }
+
+    private func generateJsonString() {
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
+            encoder.dateEncodingStrategy = .formatted(.iso8601Full)
+
+            let data = try encoder.encode(userDetail)
+            var finalJsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
+            
+            let pattern = "\\[\\s*\\]"
+            finalJsonString = finalJsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
+            
+            self.jsonString = finalJsonString
+        } catch {
+            self.jsonString = "Error encoding user detail data to JSON: \(error.localizedDescription)"
+        }
+    }
+}
+
 struct RawHistoryDataView: View {
     @Environment(FavoriteViewModel.self) private var favoriteVM
     @State private var friendsInCache: [Friend] = []

@@ -18,6 +18,7 @@ struct UserDetailToolbarMenu: ToolbarContent {
     @Binding var isPresentedSettings: Bool
     @Binding var isPresentedForm: Bool
     @Binding var isPresentedBrowser: Bool
+    @Binding var isPresentedJsonView: Bool
     let user: UserDetail
 
     var body: some ToolbarContent {
@@ -29,13 +30,15 @@ struct UserDetailToolbarMenu: ToolbarContent {
             Menu {
                 if user.isFriend { favoriteMenu }
                 if let url = user.url { ShareLink(item: url) }
-                if user.isFriend {
-                    Divider()
-                    presentUnfriendAlertButton
-                }
                 if let isMe = appVM.user, user.id == isMe.id {
                     presentEditProfileButton
                     presentAccountSettingsButton
+                }
+                Divider()
+                presentJsonViewButton
+                if user.isFriend {
+                    Divider()
+                    presentUnfriendAlertButton
                 }
             } label: {
                 if isRequesting {
@@ -106,6 +109,12 @@ struct UserDetailToolbarMenu: ToolbarContent {
             )
         } catch {
             appVM.handleError(error)
+        }
+    }
+
+    private var presentJsonViewButton: some View {
+        Button("JSON Data", systemImage: "doc.text") {
+            isPresentedJsonView.toggle()
         }
     }
 }
