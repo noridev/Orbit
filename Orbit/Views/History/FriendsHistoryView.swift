@@ -18,7 +18,7 @@ struct FriendsHistoryView: View {
     @State private var sortType: SortType = .timeDescending
     @State private var eventFilters: Set<EventType> = []
     @State private var filterFavoriteGroups: Set<FavoriteGroup.ID> = []
-    @State private var excludeWebUsers: Bool = false
+    @State private var showClearHistoryAlert: Bool = false
 
     private let historyVM = FriendHistoryViewModel.shared
 
@@ -35,9 +35,6 @@ struct FriendsHistoryView: View {
             .filter { history in
                 filterFavoriteGroups.isEmpty ||
                 (history.friend != nil && isFriendInFavoriteGroups(friend: history.friend!))
-            }
-            .filter { history in
-                !excludeWebUsers || history.friend?.platform != .web
             }
             .sorted {
                 switch sortType {
@@ -103,9 +100,9 @@ struct FriendsHistoryView: View {
                 statusFilter: .constant([]),
                 favoriteGroupFilter: $filterFavoriteGroups,
                 eventFilter: $eventFilters,
-                excludeWebUsers: $excludeWebUsers,
+                excludeWebUsers: .constant(false),
                 sortContext: .history,
-                visibleSections: [.eventType, .favoriteGroup, .platform]
+                visibleSections: [.eventType, .favoriteGroup]
             )
             .presentationDetents([.medium])
         }
@@ -127,11 +124,26 @@ struct FriendsHistoryView: View {
         } message: {
             Text("The Friend Cache file is corrupted and cannot be read. Do you want to delete it?")
         }
+        .alert("Clear Friend History", isPresented: $showClearHistoryAlert) {
+            Button("Clear", role: .destructive) {
+                historyVM.clearAllHistory()
+                allHistories = []
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Are you sure you want to clear all friend history? This action cannot be undone.")
+        }
     }
 
     @ToolbarContentBuilder
     private var navigationToolbar: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            Button("", systemImage: "trash") {
+                showClearHistoryAlert = true
+            }
+            .tint(.red)
+            .disabled(allHistories == nil || allHistories?.isEmpty == true)
+            
             Button("", systemImage: IconSet.dots.systemName) {
                 isPresentedSheet.toggle()
             }
@@ -153,8 +165,6 @@ struct FriendsHistoryView: View {
         if let rawGroups = defaults.array(forKey: "history_filter_favorite_groups") as? [String] {
             self.filterFavoriteGroups = Set(rawGroups)
         }
-
-        self.excludeWebUsers = defaults.bool(forKey: "history_exclude_web_users")
     }
 
     private func saveSettings() {
@@ -166,8 +176,6 @@ struct FriendsHistoryView: View {
 
         let groupIDs = Array(self.filterFavoriteGroups)
         defaults.set(groupIDs, forKey: "history_filter_favorite_groups")
-
-        defaults.set(self.excludeWebUsers, forKey: "history_exclude_web_users")
     }
 
     private func eventFilterBinding(for eventType: EventType) -> Binding<Bool> {

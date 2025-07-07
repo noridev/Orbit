@@ -126,4 +126,14 @@ class FriendHistoryViewModel: ObservableObject {
             print("Error encoding history for \(friendId): \(error)")
         }
     }
+
+    func clearAllHistory() {
+        let allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
+        
+        for key in allKeys {
+            userDefaults.removeObject(forKey: key)
+        }
+        
+        userDefaults.removeObject(forKey: allHistoryKey)
+    }
 }

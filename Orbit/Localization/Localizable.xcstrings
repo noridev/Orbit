@@ -168,6 +168,16 @@
         }
       }
     },
+    "Are you sure you want to clear all friend history? This action cannot be undone." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 친구 기록을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다."
+          }
+        }
+      }
+    },
     "Are you sure you want to logout?" : {
       "localizations" : {
         "ja" : {
@@ -372,6 +382,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "默认"
+          }
+        }
+      }
+    },
+    "Clear Friend History" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친구 기록 삭제"
           }
         }
       }
