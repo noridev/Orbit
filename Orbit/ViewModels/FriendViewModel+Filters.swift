@@ -11,6 +11,7 @@ extension FriendViewModel {
     func clearFilters() {
         filterUserStatus = []
         filterFavoriteGroups = []
+        excludeWebUsers = false
         applyFilters()
     }
 
@@ -26,6 +27,9 @@ extension FriendViewModel {
             }
             .filter {
                 filterText.isEmpty || $0.displayName.range(of: filterText, options: .caseInsensitive) != nil
+            }
+            .filter { friend in
+                !excludeWebUsers || friend.platform != .web
             }
             .sorted {
                 switch sortType {
@@ -47,7 +51,7 @@ extension FriendViewModel {
     }
 
     var isEmptyAllFilters: Bool {
-        [ filterUserStatus.isEmpty, filterFavoriteGroups.isEmpty, filterText.isEmpty ].allSatisfy(\.self)
+        [ filterUserStatus.isEmpty, filterFavoriteGroups.isEmpty, filterText.isEmpty, !excludeWebUsers ].allSatisfy(\.self)
     }
 
     private func isFriendContainedInFilterFavoriteGroups(friend: Friend) -> Bool {

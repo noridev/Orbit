@@ -18,6 +18,7 @@ struct FriendsHistoryView: View {
     @State private var sortType: SortType = .timeDescending
     @State private var eventFilters: Set<EventType> = []
     @State private var filterFavoriteGroups: Set<FavoriteGroup.ID> = []
+    @State private var excludeWebUsers: Bool = false
 
     private let historyVM = FriendHistoryViewModel.shared
 
@@ -34,6 +35,9 @@ struct FriendsHistoryView: View {
             .filter { history in
                 filterFavoriteGroups.isEmpty ||
                 (history.friend != nil && isFriendInFavoriteGroups(friend: history.friend!))
+            }
+            .filter { history in
+                !excludeWebUsers || history.friend?.platform != .web
             }
             .sorted {
                 switch sortType {
@@ -88,7 +92,7 @@ struct FriendsHistoryView: View {
             
             if allHistories != nil {
                 content
-                    .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "이름으로 검색")
+                    .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search by name")
             } else {
                 content
             }
@@ -99,28 +103,29 @@ struct FriendsHistoryView: View {
                 statusFilter: .constant([]),
                 favoriteGroupFilter: $filterFavoriteGroups,
                 eventFilter: $eventFilters,
+                excludeWebUsers: $excludeWebUsers,
                 sortContext: .history,
-                visibleSections: [.eventType, .favoriteGroup]
+                visibleSections: [.eventType, .favoriteGroup, .platform]
             )
             .presentationDetents([.medium])
         }
         .onAppear(perform: loadSettings)
         .task { await loadInitialData() }
         .refreshable { await loadAndRefreshData() }
-        .alert("캐시가 손상됨", isPresented: Binding(
+        .alert("Cache corrupted", isPresented: Binding(
             get: { friendVM.isCacheCorrupted },
             set: { friendVM.isCacheCorrupted = $0 }
         )) {
-            Button("삭제", role: .destructive) {
+            Button("Delete", role: .destructive) {
                 FriendCacheManager.deleteCache()
                 friendVM.isCacheCorrupted = false
                 Task { await loadAndRefreshData() }
             }
-            Button("취소", role: .cancel) {
+            Button("Cancel", role: .cancel) {
                 friendVM.isCacheCorrupted = false
             }
         } message: {
-            Text("친구 목록 캐시 파일이 손상되어 기록을 제대로 표시할 수 없습니다. 파일을 삭제하시겠습니까?")
+            Text("The Friend Cache file is corrupted and cannot be read. Do you want to delete it?")
         }
     }
 
@@ -148,6 +153,8 @@ struct FriendsHistoryView: View {
         if let rawGroups = defaults.array(forKey: "history_filter_favorite_groups") as? [String] {
             self.filterFavoriteGroups = Set(rawGroups)
         }
+
+        self.excludeWebUsers = defaults.bool(forKey: "history_exclude_web_users")
     }
 
     private func saveSettings() {
@@ -159,6 +166,8 @@ struct FriendsHistoryView: View {
 
         let groupIDs = Array(self.filterFavoriteGroups)
         defaults.set(groupIDs, forKey: "history_filter_favorite_groups")
+
+        defaults.set(self.excludeWebUsers, forKey: "history_exclude_web_users")
     }
 
     private func eventFilterBinding(for eventType: EventType) -> Binding<Bool> {

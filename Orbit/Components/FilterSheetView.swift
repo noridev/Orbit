@@ -15,6 +15,7 @@ struct FilterSheetView: View {
     @Binding var statusFilter: Set<UserStatus>
     @Binding var favoriteGroupFilter: Set<FavoriteGroup.ID>
     @Binding var eventFilter: Set<EventType>
+    @Binding var excludeWebUsers: Bool
     
     let sortContext: SortType.Context
     let visibleSections: Set<FilterType>
@@ -34,6 +35,10 @@ struct FilterSheetView: View {
 
                 if visibleSections.contains(.favoriteGroup) {
                     favoriteGroupSection
+                }
+                
+                if visibleSections.contains(.platform) {
+                    platformSection
                 }
             }
             .navigationTitle("Display Settings")
@@ -101,6 +106,22 @@ struct FilterSheetView: View {
             }
         }
     }
+    
+    private var platformSection: some View {
+        Section {
+            Toggle(isOn: $excludeWebUsers) {
+                Label {
+                    Text("Exclude Web Users")
+                } icon: {
+                    Image(systemName: "globe")
+                }
+            }
+        } header: {
+            Text("Platform")
+        } footer: {
+            Text("Exclude users who are using VRChat through a web browser")
+        }
+    }
 
     private func eventFilterBinding(for eventType: EventType) -> Binding<Bool> {
         Binding<Bool>(
@@ -112,6 +133,6 @@ struct FilterSheetView: View {
     }
     
     enum FilterType {
-        case status, favoriteGroup, eventType
+        case status, favoriteGroup, eventType, platform
     }
 }

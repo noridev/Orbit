@@ -16,6 +16,7 @@ enum Constants {
         case filterUserStatus
         case filterFavoriteGroups
         case sortType
+        case excludeWebUsers
     }
 
     enum MaxCountInFavoriteList: Int, CustomStringConvertible {

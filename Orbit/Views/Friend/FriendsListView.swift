@@ -43,8 +43,9 @@ struct FriendsListView: View {
                 statusFilter: $friendVM.filterUserStatus,
                 favoriteGroupFilter: $friendVM.filterFavoriteGroups,
                 eventFilter: .constant([]),
+                excludeWebUsers: $friendVM.excludeWebUsers,
                 sortContext: .friends,
-                visibleSections: [.status, .favoriteGroup]
+                visibleSections: [.status, .favoriteGroup, .platform]
             )
             .presentationDetents([.medium])
         }
@@ -68,6 +69,9 @@ struct FriendsListView: View {
             friendVM.applyFilters()
         }
         .onChange(of: friendVM.filterFavoriteGroups) {
+            friendVM.applyFilters()
+        }
+        .onChange(of: friendVM.excludeWebUsers) {
             friendVM.applyFilters()
         }
     }

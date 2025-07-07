@@ -22,6 +22,7 @@ final class FriendViewModel {
     var filterFavoriteGroups: Set<FavoriteGroup.ID> = []
     var filterText: String = ""
     var sortType: SortType = .loginLatest
+    var excludeWebUsers: Bool = false
     var isFetchingAllFriends = true
     var isProcessingFilter = false
     var isCacheCorrupted = false
@@ -47,6 +48,7 @@ final class FriendViewModel {
            let unwrapped = SortType(rawValue: sortType) {
             self.sortType = unwrapped
         }
+        self.excludeWebUsers = UserDefaults.standard.bool(forKey: Constants.Keys.excludeWebUsers.rawValue)
     }
 
     func setAppVM(_ appVM: AppViewModel) {

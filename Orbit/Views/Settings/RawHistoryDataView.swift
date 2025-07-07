@@ -49,6 +49,7 @@ struct RawHistoryDataView: View {
     @State private var sortType: SortType = .name
     @State private var filterUserStatus: Set<UserStatus> = []
     @State private var filterFavoriteGroups: Set<FavoriteGroup.ID> = []
+    @State private var excludeWebUsers: Bool = false
     @State private var showCorruptedCacheAlert = false
 
     private var filteredFriends: [Friend] {
@@ -63,8 +64,12 @@ struct RawHistoryDataView: View {
         let favoriteGroupFiltered = statusFiltered.filter { friend in
             filterFavoriteGroups.isEmpty || isFriendInFavoriteGroups(friend: friend)
         }
+        
+        let platformFiltered = favoriteGroupFiltered.filter { friend in
+            !excludeWebUsers || friend.platform != .web
+        }
 
-        return favoriteGroupFiltered.sorted {
+        return platformFiltered.sorted {
             switch sortType {
             case .name: $0.displayName.lowercased() < $1.displayName.lowercased()
             case .loginLatest: $0.lastLogin ?? .distantPast > $1.lastLogin ?? .distantPast
@@ -90,7 +95,7 @@ struct RawHistoryDataView: View {
                         .foregroundColor(.secondary)
                     
                     if showCorruptedCacheAlert {
-                        Text("친구 목록 탭으로 이동하여 아래로 당겨 새로고침하면 캐시가 재생성됩니다.")
+                        Text("Go to the Friends tab and pull down to refresh to regenerate the cache.")
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
@@ -143,8 +148,9 @@ struct RawHistoryDataView: View {
                 statusFilter: $filterUserStatus,
                 favoriteGroupFilter: $filterFavoriteGroups,
                 eventFilter: .constant([]),
+                excludeWebUsers: $excludeWebUsers,
                 sortContext: .friends,
-                visibleSections: [.status, .favoriteGroup]
+                visibleSections: [.status, .favoriteGroup, .platform]
             )
             .presentationDetents([.medium])
         }
@@ -152,14 +158,14 @@ struct RawHistoryDataView: View {
             loadCacheFromFile()
             loadSettings()
         }
-        .alert("캐시가 손상됨", isPresented: $showCorruptedCacheAlert) {
-            Button("삭제", role: .destructive) {
+        .alert("Cache corrupted", isPresented: $showCorruptedCacheAlert) {
+            Button("Delete", role: .destructive) {
                 FriendCacheManager.deleteCache()
                 loadCacheFromFile()
             }
-            Button("취소", role: .cancel) {}
+            Button("Cancel", role: .cancel) {}
         } message: {
-            Text("캐시 파일이 손상되어 읽을 수 없습니다. 파일을 삭제하시겠습니까?")
+            Text("The Friend Cache file is corrupted and cannot be read. Do you want to delete it?")
         }
     }
 
@@ -168,7 +174,7 @@ struct RawHistoryDataView: View {
         do {
             let loadedFriends = try FriendCacheManager.loadFriends()
             if loadedFriends.isEmpty {
-                self.statusMessage = "캐시 파일이 비어있거나 찾을 수 없습니다."
+                self.statusMessage = "Friend Cache file is empty or not found."
                 self.friendsInCache = []
             } else {
                 self.friendsInCache = loadedFriends
@@ -176,7 +182,7 @@ struct RawHistoryDataView: View {
             }
         } catch {
             self.showCorruptedCacheAlert = true
-            self.statusMessage = "캐시 파일이 손상되었습니다."
+            self.statusMessage = "Friend Cache file is corrupted."
             self.friendsInCache = []
         }
     }
@@ -195,6 +201,8 @@ struct RawHistoryDataView: View {
         if let rawGroups = defaults.array(forKey: "raw_history_filter_favorite_groups") as? [String] {
             self.filterFavoriteGroups = Set(rawGroups)
         }
+        
+        self.excludeWebUsers = defaults.bool(forKey: "raw_history_exclude_web_users")
     }
     
     private func saveSettings() {
@@ -206,6 +214,8 @@ struct RawHistoryDataView: View {
         
         let groupIDs = Array(self.filterFavoriteGroups)
         defaults.set(groupIDs, forKey: "raw_history_filter_favorite_groups")
+        
+        defaults.set(self.excludeWebUsers, forKey: "raw_history_exclude_web_users")
     }
 }
 
