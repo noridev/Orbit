@@ -397,17 +397,12 @@
       }
     },
     "Close" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "閉じる"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "닫기"
           }
         },
         "zh-Hans" : {
@@ -615,6 +610,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示设置"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "완료"
           }
         }
       }
@@ -1162,6 +1167,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这安全吗？"
+          }
+        }
+      }
+    },
+    "JSON Data" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JSON 데이터"
           }
         }
       }

@@ -28,7 +28,7 @@ struct HelpView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") {
+                    Button("Done") {
                         dismiss()
                     }
                 }

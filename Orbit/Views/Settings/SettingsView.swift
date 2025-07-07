@@ -23,7 +23,7 @@ struct SettingsView: View {
                 .toolbar(removing: .sidebarToggle)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Close", action: {
+                        Button("Done", action: {
                             dismiss()
                         })
                     }
