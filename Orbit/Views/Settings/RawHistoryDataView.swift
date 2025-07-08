@@ -53,7 +53,7 @@ struct UserDetailJsonDetailView: View {
                 .navigationTitle(userDetail.displayName)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItem(placement: .confirmationAction) {
                         Button("Done") {
                             dismiss()
                         }
@@ -176,11 +176,11 @@ struct RawHistoryDataView: View {
         .searchable(text: $searchText, prompt: "Search by name")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button(action: { isPresentedSheet.toggle() }) {
-                    Image(systemName: IconSet.dots.systemName)
-                }
                 Button(action: loadCacheFromFile) {
                     Image(systemName: "arrow.clockwise")
+                }
+                Button(action: { isPresentedSheet.toggle() }) {
+                    Image(systemName: IconSet.dots.systemName)
                 }
             }
         }

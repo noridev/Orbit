@@ -638,7 +638,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "수정"
+            "value" : "편집"
           }
         },
         "zh-Hans" : {
@@ -649,7 +649,7 @@
         }
       }
     },
-    "Edit favorite groups" : {
+    "Edit Favorite Groups" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -660,7 +660,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "즐겨찾기한 그룹 수정"
+            "value" : "즐겨찾기한 그룹 편집"
           }
         },
         "zh-Hans" : {
@@ -682,7 +682,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "메모 수정"
+            "value" : "메모 편집"
           }
         },
         "zh-Hans" : {
@@ -704,7 +704,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로필 수정"
+            "value" : "프로필 편집"
           }
         },
         "zh-Hans" : {
@@ -1037,6 +1037,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "친구 목록 탭으로 이동해 아래로 당겨서 새로고침하면 캐시가 재생성됩니다."
+          }
+        }
+      }
+    },
+    "Group Name" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "그룹 이름"
           }
         }
       }

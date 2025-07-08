@@ -22,7 +22,7 @@ struct SettingsView: View {
                 .navigationTitle("Settings")
                 .toolbar(removing: .sidebarToggle)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
+                    ToolbarItem(placement: .confirmationAction) {
                         Button("Done", action: {
                             dismiss()
                         })
@@ -66,10 +66,6 @@ struct SettingsView: View {
 
     private var settingsContent: some View {
         List(selection: $destination) {
-            Section("Favorite") {
-                Label("Favorite Groups", systemImage: IconSet.favoriteGroup.systemName)
-                    .tag(SettingsDestination.favoriteGroups)
-            }
             AboutSection()
             Section("Debug") {
                 Label("Raw History Data", systemImage: "doc.text.magnifyingglass")

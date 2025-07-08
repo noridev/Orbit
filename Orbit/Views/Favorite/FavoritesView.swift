@@ -15,6 +15,7 @@ struct FavoritesView: View {
     @State private var selected: SegmentIdSelection?
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var segment: FavoriteViewSegment?
+    @State private var isPresentedFavoriteGroups = false
 
     var body: some View {
         @Bindable var favoriteVM = favoriteVM
@@ -42,12 +43,30 @@ struct FavoritesView: View {
             .navigationTitle("Favorites")
             .navigationBarTitleDisplayMode(.automatic)
             .toolbarTitleMenu { toolbarTitleMenu }
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button {
+                            isPresentedFavoriteGroups = true
+                        } label: {
+                            Label("Edit", systemImage: IconSet.edit.systemName)
+                        }
+                    } label: {
+                        IconSet.dots.icon
+                    }
+                }
+            }
         } detail: { detail }
         .navigationSplitViewStyle(.balanced)
         .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .refreshable {
             segment = .none
             await fetchFavoriteAction()
+        }
+        .sheet(isPresented: $isPresentedFavoriteGroups) {
+            NavigationStack {
+                FavoriteGroupsListView()
+            }
         }
     }
 
