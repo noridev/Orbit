@@ -36,7 +36,18 @@ struct SettingsView: View {
         .navigationSplitViewStyle(.balanced)
         .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
         .sheet(item: $selectedLibrary) { library in
-            LicenseView(library: library)
+            NavigationStack {
+                LicenseView(library: library)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") {
+                                selectedLibrary = nil
+                            }
+                        }
+                    }
+                    .navigationTitle(library.name)
+                    .navigationBarTitleDisplayMode(.inline)
+            }
         }
     }
 
