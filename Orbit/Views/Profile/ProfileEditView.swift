@@ -94,8 +94,9 @@ struct ProfileEditView: View {
                         Button(role: .destructive) {
                             profileEditVM.removeTag(tag)
                         } label: {
-                            Text("Delete")
+                            Label("Delete", systemImage: "trash")
                         }
+                        .tint(.red)
                     }
             }
             
@@ -121,8 +122,9 @@ struct ProfileEditView: View {
                     Button(role: .destructive) {
                         profileEditVM.removeUrl(url)
                     } label: {
-                        Text("Delete")
+                        Label("Delete", systemImage: "trash")
                     }
+                    .tint(.red)
                 }
             }
             

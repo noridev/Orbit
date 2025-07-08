@@ -13,10 +13,12 @@ struct URLEditorView: View {
     @Binding private var inputtedURL: URL?
     @State private var urlString: String
     @State private var isInvalid = false
+    @State private var isEditMode: Bool
 
     init(inputtedURL: Binding<URL?>, urlString: String = "") {
         _inputtedURL = inputtedURL
-        _urlString = State(initialValue: urlString)
+        _urlString = State(initialValue: inputtedURL.wrappedValue?.absoluteString ?? urlString)
+        _isEditMode = State(initialValue: inputtedURL.wrappedValue != nil)
     }
 
     var body: some View {
@@ -28,7 +30,7 @@ struct URLEditorView: View {
                         isInvalid = !urlString.isValidURLFormat
                     }
             }
-            .navigationTitle("Enter URL")
+            .navigationTitle(isEditMode ? "Edit URL" : "Enter URL")
             .toolbarTitleDisplayMode(.inline)
             .toolbar { toolbarContents }
         }

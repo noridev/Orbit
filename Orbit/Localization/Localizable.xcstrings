@@ -574,6 +574,7 @@
       }
     },
     "Display Name" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -714,6 +715,9 @@
           }
         }
       }
+    },
+    "Edit URL" : {
+
     },
     "email" : {
       "localizations" : {
