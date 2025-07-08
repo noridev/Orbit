@@ -97,9 +97,8 @@ struct UserDetailView: View {
                 historySection(friend: friend)
             }
 
-            if let bio = user.bio {
-                bioSection(bio)
-            }
+            bioSection(user.bio)
+
             if !user.tags.languageTags.isEmpty {
                 languageSection
             }

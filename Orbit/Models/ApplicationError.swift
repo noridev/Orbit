@@ -25,6 +25,14 @@ struct ApplicationError: LocalizedError {
     static var userIsNotSetError: ApplicationError {
         ApplicationError(text: "User is not set")
     }
+
+    static var tooManyLanguages: ApplicationError {
+        ApplicationError(text: "You can add up to 3 languages")
+    }
+
+    static var tooManyBioLinks: ApplicationError {
+        ApplicationError(text: "You can add up to 3 social links")
+    }
 }
 
 extension ApplicationError {

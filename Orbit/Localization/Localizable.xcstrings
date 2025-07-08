@@ -417,6 +417,7 @@
       }
     },
     "Confirm" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -715,9 +716,6 @@
           }
         }
       }
-    },
-    "Edit URL" : {
-
     },
     "email" : {
       "localizations" : {
@@ -1054,9 +1052,6 @@
           }
         }
       }
-    },
-    "https://" : {
-      "shouldTranslate" : false
     },
     "If your friend changes their nickname, changed their trust rank, or adds or removes a friend, you'll see a record of here." : {
       "localizations" : {

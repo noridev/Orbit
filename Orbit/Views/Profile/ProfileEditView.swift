@@ -11,9 +11,9 @@ import VRCKit
 struct ProfileEditView: View {
     @Environment(AppViewModel.self) var appVM
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var focusedField: Int?
     @State private var profileEditVM: ProfileEditViewModel
     @State private var isPresentedLanguagePicker = false
-    @State private var isPresentedURLEditor = false
     @State private var isRequesting = false
     @State private var selectedLanguage: LanguageTag?
     @State private var inputtedURL: URL?
@@ -39,10 +39,6 @@ struct ProfileEditView: View {
         }
         .sheet(isPresented: $isPresentedLanguagePicker) {
             LanguagePickerView(selectedLanguage: $selectedLanguage)
-                .presentationDetents([.medium])
-        }
-        .sheet(isPresented: $isPresentedURLEditor) {
-            URLEditorView(inputtedURL: $inputtedURL)
                 .presentationDetents([.medium])
         }
         .onChange(of: selectedLanguage) {
@@ -100,13 +96,15 @@ struct ProfileEditView: View {
                     }
             }
             
-            Button {
-                isPresentedLanguagePicker = true
-            } label: {
-                Label {
-                    Text("Add")
-                } icon: {
-                    IconSet.plusCircleFilled.icon.symbolRenderingMode(.multicolor)
+            if profileEditVM.canAddMoreLanguages {
+                Button {
+                    isPresentedLanguagePicker = true
+                } label: {
+                    Label {
+                        Text("Add")
+                    } icon: {
+                        IconSet.plusCircleFilled.icon.symbolRenderingMode(.multicolor)
+                    }
                 }
             }
         }
@@ -114,27 +112,47 @@ struct ProfileEditView: View {
 
     private var bioLinksSection: some View {
         Section("Social Links") {
-            ForEach(profileEditVM.editingUserInfo.bioLinks) { url in
-                Link(destination: url) {
-                    Label(url.description, systemImage: IconSet.link.systemName)
-                }
-                .swipeActions {
-                    Button(role: .destructive) {
-                        profileEditVM.removeUrl(url)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+            ForEach(Array(profileEditVM.tempBioLinks.enumerated()), id: \.offset) { index, url in
+                HStack {
+                    IconSet.link.icon
+                        .foregroundStyle(.gray)
+                    TextField("Enter URL", text: Binding(
+                        get: { url },
+                        set: { newValue in
+                            if index < profileEditVM.tempBioLinks.count {
+                                profileEditVM.tempBioLinks[index] = newValue
+                            }
+                        }
+                    ))
+                    .focused($focusedField, equals: index)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.URL)
+                    .autocorrectionDisabled()
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            if focusedField == index {
+                                focusedField = nil
+                            }
+                            profileEditVM.removeUrl(at: index)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .tint(.red)
                     }
-                    .tint(.red)
                 }
             }
             
-            Button {
-                isPresentedURLEditor = true
-            } label: {
-                Label {
-                    Text("Add")
-                } icon: {
-                    IconSet.plusCircleFilled.icon.symbolRenderingMode(.multicolor)
+            if profileEditVM.canAddMoreLinks {
+                Button {
+                    let newIndex = profileEditVM.tempBioLinks.count
+                    profileEditVM.tempBioLinks.append("")
+                    focusedField = newIndex
+                } label: {
+                    Label {
+                        Text("Add")
+                    } icon: {
+                        IconSet.plusCircleFilled.icon.symbolRenderingMode(.multicolor)
+                    }
                 }
             }
         }

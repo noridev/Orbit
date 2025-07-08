@@ -9,10 +9,17 @@ import SwiftUI
 import VRCKit
 
 extension UserDetailView {
-    func bioSection(_ bio: String) -> some View {
+    func bioSection(_ bio: String?) -> some View {
         GroupBox("Profile") {
-            ShowMoreText(bio, lineLimit: 5)
-                .font(.body)
+            if let bio = bio, !bio.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                ShowMoreText(bio, lineLimit: 5)
+                    .font(.body)
+            } else {
+                Text("No bio")
+                    .foregroundStyle(.gray)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
         .groupBoxStyle(.card)
     }

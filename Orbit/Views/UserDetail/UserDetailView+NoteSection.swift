@@ -19,6 +19,7 @@ extension UserDetailView {
                     Text(user.note)
                         .font(.body)
                 }
+                Spacer()
                 Button("Edit") {
                     isPresentedNoteEditor = true
                 }
