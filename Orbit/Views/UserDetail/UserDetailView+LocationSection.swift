@@ -65,11 +65,11 @@ extension UserDetailView {
         if let instance = instance {
             instance.world.name
         } else if user.platform == .some(.web) {
-            "Active on Website"
+            String(localized: "Active on Website")
         } else if user.location == .private {
-            "Private World"
+            String(localized: "User is online in a private instance")
         } else if user.location == .offline {
-            "Offline"
+            String(localized: "Offline")
         } else if isRequesting {
             String(repeating: " ", count: 15)
         } else {

@@ -15,7 +15,7 @@ extension UserDetailView {
                 ShowMoreText(bio, lineLimit: 5)
                     .font(.body)
             } else {
-                Text("No bio")
+                Text("No bio added")
                     .foregroundStyle(.gray)
                     .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)

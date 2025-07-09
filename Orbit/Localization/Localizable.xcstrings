@@ -101,6 +101,9 @@
         }
       }
     },
+    "Active on Website" : {
+
+    },
     "Activity" : {
       "localizations" : {
         "ja" : {
@@ -1457,12 +1460,12 @@
         }
       }
     },
-    "No bio" : {
+    "No bio added" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로필 소개가 없습니다."
+            "value" : "자기소개가 없습니다."
           }
         }
       }
@@ -1543,7 +1546,7 @@
         }
       }
     },
-    "No notes" : {
+    "No note added" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2305,6 +2308,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解除好友关系"
+          }
+        }
+      }
+    },
+    "User is online in a private instance" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비공개 인스턴스에 있음"
           }
         }
       }

@@ -13,7 +13,7 @@ extension UserDetailView {
         GroupBox("Note") {
             VStack(alignment: .leading) {
                 if user.note.isEmpty {
-                    Text("No notes")
+                    Text("No note added")
                         .foregroundStyle(.gray)
                 } else {
                     Text(user.note)
