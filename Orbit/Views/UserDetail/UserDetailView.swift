@@ -38,7 +38,10 @@ struct UserDetailView: View {
                     GradientOverlayImageView(
                         imageUrl: user.imageUrl(.x1024),
                         thumbnailImageUrl: user.imageUrl(.x256),
-                        size: CGSize(width: geometry.size.width, height: headerHeight),
+                        size: CGSize(
+                            width: max(geometry.size.width, 1), 
+                            height: max(headerHeight, 1)
+                        ),
                         topContent: { topOverlay },
                         bottomContent: { bottomOverlay }
                     )
@@ -133,7 +136,9 @@ struct UserDetailView: View {
             let service = appVM.services.instanceService
             instance = try await service.fetchInstance(location: id)
         } catch {
-            appVM.handleError(error)
+            if !error.isCancelled {
+                appVM.handleError(error)
+            }
         }
     }
 
