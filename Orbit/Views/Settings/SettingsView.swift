@@ -72,12 +72,20 @@ struct SettingsView: View {
             NavigationStack {
                 RawHistoryDataView()
             }
+        case .friendBackup:
+            FriendBackupView()
         }
     }
 
     private var settingsContent: some View {
         List(selection: $destination) {
+            Section("데이터 관리") {
+                Label("친구 데이터 관리", systemImage: "person.2.circle")
+                    .tag(SettingsDestination.friendBackup)
+            }
+            
             AboutSection()
+            
             Section("Debug") {
                 Label("Raw History Data", systemImage: "doc.text.magnifyingglass")
                     .tag(SettingsDestination.rawHistoryData)

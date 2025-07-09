@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    "(%@)" : {
+
+    },
     "#%@" : {
       "shouldTranslate" : false
     },
@@ -38,6 +41,21 @@
           }
         }
       }
+    },
+    "%lld개" : {
+
+    },
+    "%lld명" : {
+
+    },
+    "• 기기 변경 시 백업 파일로 데이터를 쉽게 이전할 수 있습니다." : {
+
+    },
+    "• 백업 파일은 개인정보를 포함하므로 안전하게 보관하세요." : {
+
+    },
+    "• 정기적인 백업으로 데이터 손실을 방지하세요." : {
+
     },
     "About This App" : {
       "localizations" : {
@@ -399,46 +417,6 @@
         }
       }
     },
-    "Close" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "閉じる"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭"
-          }
-        }
-      }
-    },
-    "Confirm" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "確定"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "승인"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "确认"
-          }
-        }
-      }
-    },
     "Connect your VRChat account." : {
       "localizations" : {
         "ja" : {
@@ -570,29 +548,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "详情"
-          }
-        }
-      }
-    },
-    "Display Name" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "表示名"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "표시 이름"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示名称"
           }
         }
       }
@@ -1583,7 +1538,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록이 없습니다."
+            "value" : "기록 없음"
           }
         }
       }
@@ -1685,29 +1640,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最早"
-          }
-        }
-      }
-    },
-    "Opening URL" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URLを開く"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL 열기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 URL"
           }
         }
       }
@@ -2467,6 +2399,69 @@
           }
         }
       }
+    },
+    "가져오기" : {
+
+    },
+    "데이터 관리" : {
+
+    },
+    "데이터 상태" : {
+
+    },
+    "마지막 업데이트" : {
+
+    },
+    "백업에는 친구 목록과 친구 기록이 모두 포함됩니다." : {
+
+    },
+    "백업을 복원하면 기존 데이터와 자동으로 병합됩니다." : {
+
+    },
+    "변경사항이 없습니다. 그래도 가져오시겠습니까?" : {
+
+    },
+    "새로 추가될 기록" : {
+
+    },
+    "새로 추가될 친구" : {
+
+    },
+    "알림" : {
+
+    },
+    "업데이트될 친구" : {
+
+    },
+    "진행 전 안내" : {
+
+    },
+    "총 데이터 크기" : {
+
+    },
+    "취소" : {
+
+    },
+    "친구 기록" : {
+
+    },
+    "친구 데이터 관리" : {
+
+    },
+    "친구 데이터 복원" : {
+
+    },
+    "친구 목록" : {
+
+    },
+    "친구 목록과 기록을 안전하게 백업하고 복원할 수 있습니다" : {
+
+    },
+    "현재 저장된 친구 데이터 정보" : {
+
+    },
+    "확인" : {
+
     }
   },
   "version" : "1.0"
