@@ -759,6 +759,8 @@ class FriendCacheManager {
         }
         
         do {
+            cleanupOldBackupFiles()
+            
             let fileManager = FileManager.default
             var accounts: [String: AccountData] = [:]
             var totalFriends = 0
@@ -1003,6 +1005,37 @@ class FriendCacheManager {
     }
 
     // MARK: - Helper Functions
+    
+    private static func cleanupOldBackupFiles() {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        
+        do {
+            let files = try FileManager.default.contentsOfDirectory(at: documentsDirectory, includingPropertiesForKeys: nil)
+            
+            let backupFiles = files.filter { url in
+                let filename = url.lastPathComponent
+                return (filename.hasPrefix("Orbit_Backup_") && 
+                       (filename.hasSuffix(".json") || filename.hasSuffix(".json.lzfse")))
+            }
+            
+            if !backupFiles.isEmpty {
+                print("🗑️ [cleanupOldBackupFiles] Found \(backupFiles.count) old backup files to clean up")
+                
+                for file in backupFiles {
+                    try FileManager.default.removeItem(at: file)
+                    print("🗑️ [cleanupOldBackupFiles] Deleted: \(file.lastPathComponent)")
+                }
+                
+                print("✅ [cleanupOldBackupFiles] Cleaned up \(backupFiles.count) old backup files")
+            } else {
+                print("ℹ️ [cleanupOldBackupFiles] No old backup files found")
+            }
+        } catch {
+            print("❌ [cleanupOldBackupFiles] Error cleaning up old backup files: \(error)")
+        }
+    }
     
     private static func setFileAttributes(for url: URL) throws {
         let attributes: [FileAttributeKey: Any] = [
