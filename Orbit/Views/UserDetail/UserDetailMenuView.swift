@@ -107,6 +107,7 @@ struct UserDetailToolbarMenu: ToolbarContent {
                 friend: friend,
                 targetGroup: group
             )
+            friendVM.favoriteFriends = favoriteVM.favoriteFriends
         } catch {
             appVM.handleError(error)
         }

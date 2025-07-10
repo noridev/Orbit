@@ -212,6 +212,7 @@ struct FavoritesView: View {
             ) { favorite in
                 friendVM.getFriend(id: favorite.favoriteId)
             }
+            friendVM.favoriteFriends = favoriteVM.favoriteFriends
         } catch {
             appVM.handleError(error)
         }
