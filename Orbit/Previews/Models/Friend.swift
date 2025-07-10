@@ -89,6 +89,8 @@ private extension Friend {
         status: UserStatus
     ) {
         self.init(
+            ageVerificationStatus: .hidden,
+            ageVerified: false,
             bio: "Biography",
             bioLinks: SafeDecodingArray(),
             avatarImageUrl: profile?.imageUrl(),
