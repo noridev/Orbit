@@ -125,10 +125,16 @@ struct FavoritesView: View {
         DisclosureGroup {
             ForEach(friends) { friend in
                 NavigationLabel {
-                    Label {
-                        Text(friend.displayName)
-                    } icon: {
-                        UserIcon(user: friend, size: Constants.IconSize.thumbnail)
+                    HStack {
+                        UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
+
+                        VStack(alignment: .leading) {
+                            Text(friend.displayName)
+                                .font(.headline)
+                            
+                            FriendStatusView(friend: friend)
+                        }
+                        .padding(.leading, 4)
                     }
                 }
                 .tag(SegmentIdSelection(friendId: friend.id))
