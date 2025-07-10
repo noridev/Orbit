@@ -11,6 +11,7 @@ import VRCKit
 struct FriendsView: View {
     @Environment(FriendViewModel.self) var friendVM
     @Environment(FavoriteViewModel.self) var favoriteVM
+    @Environment(AppViewModel.self) var appVM
     @State private var selected: String?
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
@@ -28,6 +29,13 @@ struct FriendsView: View {
         )
         .onSubmit(of: .search) {
             friendVM.applyFilters()
+        }
+        .onAppear {
+            Task {
+                await friendVM.fetchAllFriends { error in
+                    appVM.handleError(error)
+                }
+            }
         }
     }
 
