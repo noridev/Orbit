@@ -11,6 +11,7 @@ import VRCKit
 
 struct FriendBackupView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppViewModel.self) var appVM
     @State private var isExporting = false
     @State private var isImporting = false
     @State private var showingFilePicker = false
@@ -19,6 +20,10 @@ struct FriendBackupView: View {
     @State private var showingCompleteBackupPicker = false
     @State private var showingCompleteBackupConfirmation = false
     @State private var showingShareSheet = false
+    @State private var showingResetMenu = false
+    @State private var showingResetConfirmation = false
+    @State private var resetType: ResetType = .all
+    @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var showingAlert = false
     @State private var previewResult: FriendCacheManager.PreviewResult?
@@ -26,16 +31,51 @@ struct FriendBackupView: View {
     @State private var selectedBackupURL: URL?
     @State private var backupType: BackupType = .friendsOnly
     @State private var exportedFileURL: URL?
-    @State private var dataStatus = FriendCacheManager.getDataStatus()
+    @State private var dataStatus = FriendCacheManager.DataStatus(friendsCount: 0, friendsDataSize: 0, historyCount: 0, historyDataSize: 0, totalDataSize: 0, lastModified: nil)
+    @State private var accountManager = AccountManager.shared
     
     enum BackupType {
         case friendsOnly
         case complete
     }
     
+    enum ResetType: CaseIterable {
+        case all
+        case historyOnly
+        
+        var title: String {
+            switch self {
+            case .all: return "모두 재설정"
+            case .historyOnly: return "친구 기록만 재설정"
+            }
+        }
+        
+        var description: String {
+            switch self {
+            case .all: return "모든 계정의 친구 데이터와 기록을 삭제합니다."
+            case .historyOnly: return "모든 계정의 친구 기록을 삭제합니다. (친구 데이터는 유지됨)"
+            }
+        }
+        
+        var icon: String {
+            switch self {
+            case .all: return "trash.fill"
+            case .historyOnly: return "clock.arrow.2.circlepath"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .all: return .red
+            case .historyOnly: return .orange
+            }
+        }
+    }
+    
     var body: some View {
         List {
             headerSection
+            accountInfoSection
             dataStatusSection
             dataManagementSection
             importantNoticeSection
@@ -45,10 +85,33 @@ struct FriendBackupView: View {
         .onAppear {
             refreshDataStatus()
         }
+        .task {
+            refreshDataStatus()
+        }
         .sheet(isPresented: $showingShareSheet) {
             if let url = exportedFileURL {
-                ShareSheet(items: [url])
+                SafeShareSheet(fileURL: url)
             }
+        }
+        .sheet(isPresented: $showingResetMenu) {
+            ResetSelectionSheet(
+                resetType: $resetType,
+                onConfirm: {
+                    showingResetMenu = false
+                    showingResetConfirmation = true
+                },
+                onCancel: {
+                    showingResetMenu = false
+                }
+            )
+        }
+        .alert("데이터 재설정 확인", isPresented: $showingResetConfirmation) {
+            Button("재설정", role: .destructive) {
+                performReset(type: resetType)
+            }
+            Button("취소", role: .cancel) {}
+        } message: {
+            Text("\(resetType.description)\n\n이 작업은 되돌릴 수 없습니다.")
         }
         .sheet(isPresented: $showingPreview) {
             if let previewResult = previewResult {
@@ -70,7 +133,10 @@ struct FriendBackupView: View {
         }
         .fileImporter(
             isPresented: $showingFilePicker,
-            allowedContentTypes: [.json],
+            allowedContentTypes: [
+                .json,
+                UTType(filenameExtension: "lzfse") ?? UTType.data
+            ],
             allowsMultipleSelection: false
         ) { result in
             switch result {
@@ -80,11 +146,12 @@ struct FriendBackupView: View {
                     generatePreview(for: url)
                 }
             case .failure(let error):
+                alertTitle = "오류 발생"
                 alertMessage = "파일 선택 오류: \(error.localizedDescription)"
                 showingAlert = true
             }
         }
-        .alert("확인", isPresented: $showingConfirmation) {
+        .alert("가져올 데이터 없음", isPresented: $showingConfirmation) {
             Button("가져오기") {
                 if let url = selectedBackupURL {
                     importFriendData(from: url)
@@ -94,9 +161,9 @@ struct FriendBackupView: View {
                 selectedBackupURL = nil
             }
         } message: {
-            Text("변경사항이 없습니다. 그래도 가져오시겠습니까?")
+            Text("모든 데이터가 최신입니다. 그래도 가져오시겠습니까?")
         }
-        .alert("알림", isPresented: $showingAlert) {
+        .alert(alertTitle, isPresented: $showingAlert) {
             Button("확인") { }
         } message: {
             Text(alertMessage)
@@ -129,16 +196,93 @@ struct FriendBackupView: View {
                 .font(.title2)
                 .fontWeight(.bold)
             
-            Text("친구 목록과 기록을 안전하게 백업하고 복원할 수 있습니다")
+            Text("모든 계정의 친구 데이터를 안전하게 백업하고 복원할 수 있습니다")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
     }
     
+    private var accountInfoSection: some View {
+        Section {
+            accountInfoContent
+        } header: {
+            Text("계정 정보")
+        }
+    }
+    
+    private var accountInfoContent: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "person.circle.fill")
+                    .foregroundColor(.blue)
+                    .font(.title2)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("현재 계정")
+                        .font(.headline)
+                    if let currentAccount = accountManager.availableAccounts.first(where: { $0.userId == accountManager.currentUserId }) {
+                        Text(currentAccount.userName)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("총 계정")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("\(accountManager.availableAccounts.count)")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                }
+            }
+            
+            if accountManager.availableAccounts.count > 1 {
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("등록된 계정")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    
+                    ForEach(accountManager.availableAccounts.prefix(3)) { account in
+                        HStack {
+                            Image(systemName: account.userId == accountManager.currentUserId ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(account.userId == accountManager.currentUserId ? .green : .secondary)
+                                .font(.caption)
+                            
+                            Text(account.userName)
+                                .font(.caption)
+                                .foregroundColor(account.userId == accountManager.currentUserId ? .primary : .secondary)
+                            
+                            Spacer()
+                            
+                            Text(RelativeDateTimeFormatter().localizedString(for: account.lastLoginDate, relativeTo: Date()))
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    if accountManager.availableAccounts.count > 3 {
+                        Text("그 외 \(accountManager.availableAccounts.count - 3)개 계정")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 2)
+                    }
+                }
+            }
+        }
+        .padding(8)
+    }
+    
     private var dataStatusSection: some View {
         Section {
             dataStatusContent
+        } header: {
+            Text("데이터 정보")
         }
     }
     
@@ -226,6 +370,7 @@ struct FriendBackupView: View {
         Section {
             exportButton
             importButton
+            resetButton
         } header: {
             Text("데이터 관리")
         } footer: {
@@ -263,13 +408,28 @@ struct FriendBackupView: View {
         .disabled(isExporting || isImporting)
     }
     
+    private var resetButton: some View {
+        Button {
+            showingResetMenu = true
+        } label: {
+            BackupActionRow(
+                icon: "trash.fill",
+                title: "데이터 재설정",
+                subtitle: "모든 계정의 데이터 재설정",
+                color: .red,
+                isLoading: false
+            )
+        }
+        .disabled(isExporting || isImporting)
+    }
+    
     private var footerContent: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
                 Image(systemName: "info.circle")
                     .foregroundColor(.blue)
                     .frame(width: 16, height: 16)
-                Text("백업에는 친구 목록과 친구 기록이 모두 포함됩니다.")
+                Text("백업에는 모든 계정의 친구 목록과 기록이 포함됩니다.")
             }
             
             HStack(spacing: 6) {
@@ -277,6 +437,13 @@ struct FriendBackupView: View {
                     .foregroundColor(.green)
                     .frame(width: 16, height: 16)
                 Text("백업을 복원하면 기존 데이터와 자동으로 병합됩니다.")
+            }
+            
+            HStack(spacing: 6) {
+                Image(systemName: "archivebox")
+                    .foregroundColor(.purple)
+                    .frame(width: 16, height: 16)
+                Text("대용량 백업은 자동으로 압축되어 저장됩니다.")
             }
         }
         .font(.caption)
@@ -319,17 +486,16 @@ struct FriendBackupView: View {
     private func exportFriendData() {
         isExporting = true
         
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let exportURL = FriendCacheManager.exportCompleteBackup() {
-                DispatchQueue.main.async {
-                    isExporting = false
+        Task {
+            let exportURL = FriendCacheManager.exportCompleteBackup()
+            await MainActor.run {
+                isExporting = false
+                if let exportURL = exportURL {
                     exportedFileURL = exportURL
                     showingShareSheet = true
-                }
-            } else {
-                DispatchQueue.main.async {
-                    isExporting = false
-                    alertMessage = "백업 생성에 실패했습니다. 친구 데이터가 없거나 오류가 발생했습니다."
+                } else {
+                    alertTitle = "백업을 생성할 수 없음"
+                    alertMessage = "친구 데이터가 없거나 오류가 발생했습니다."
                     showingAlert = true
                 }
             }
@@ -339,7 +505,7 @@ struct FriendBackupView: View {
     private func generatePreview(for url: URL) {
         isImporting = true
         
-        DispatchQueue.global(qos: .userInitiated).async {
+        Task {
             let success = url.startAccessingSecurityScopedResource()
             defer {
                 if success {
@@ -350,7 +516,7 @@ struct FriendBackupView: View {
             do {
                 let preview = try FriendCacheManager.generatePreview(from: url)
                 
-                DispatchQueue.main.async {
+                await MainActor.run {
                     isImporting = false
                     previewResult = preview
                     
@@ -361,9 +527,10 @@ struct FriendBackupView: View {
                     }
                 }
             } catch {
-                DispatchQueue.main.async {
+                await MainActor.run {
                     isImporting = false
-                    alertMessage = "백업 파일을 읽을 수 없습니다: \(error.localizedDescription)"
+                    alertTitle = "데이터 가져오기가 실패함"
+                    alertMessage = "백업 파일을 불러오는 중 문제 발생: \(error.localizedDescription)"
                     showingAlert = true
                 }
             }
@@ -373,7 +540,7 @@ struct FriendBackupView: View {
     private func importFriendData(from url: URL) {
         isImporting = true
         
-        DispatchQueue.global(qos: .userInitiated).async {
+        Task {
             let success = url.startAccessingSecurityScopedResource()
             defer {
                 if success {
@@ -385,13 +552,14 @@ struct FriendBackupView: View {
                 print("🔄 Starting complete backup import...")
                 let result = try FriendCacheManager.importCompleteBackup(from: url)
                 
-                DispatchQueue.main.async {
+                await MainActor.run {
                     isImporting = false
                     
-                    let friendMessage = "친구 \(result.friendMergeResult.addedCount)명 추가, \(result.friendMergeResult.updatedCount)명 업데이트"
-                    let historyMessage = "기록 \(result.historyImported)개 추가"
+                    let friendMessage = "추가된 친구: \(result.friendMergeResult.addedCount)명\n업데이트된 친구: \(result.friendMergeResult.updatedCount)명"
+                    let historyMessage = "추가된 기록: \(result.historyImported)개"
                     
-                    alertMessage = "복원 완료!\n\(friendMessage)\n\(historyMessage)"
+                    alertTitle = "데이터 복원이 완료됨"
+                    alertMessage = "\(friendMessage)\n\(historyMessage)"
                     showingAlert = true
                     
                     selectedBackupURL = nil
@@ -399,9 +567,10 @@ struct FriendBackupView: View {
                     refreshDataStatus()
                 }
             } catch {
-                DispatchQueue.main.async {
+                await MainActor.run {
                     isImporting = false
-                    alertMessage = "복원 실패: \(error.localizedDescription)"
+                    alertTitle = "데이터 복원이 실패함"
+                    alertMessage = "\(error.localizedDescription)"
                     showingAlert = true
                 }
             }
@@ -409,7 +578,41 @@ struct FriendBackupView: View {
     }
     
     private func refreshDataStatus() {
-        dataStatus = FriendCacheManager.getDataStatus()
+        Task {
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            
+            await MainActor.run {
+                dataStatus = FriendCacheManager.getDataStatus()
+                print("📊 [refreshDataStatus] Data status updated: \(dataStatus.friendsCount) friends, \(dataStatus.historyCount) history")
+            }
+        }
+    }
+    
+    private func performReset(type: ResetType) {
+        Task {
+            do {
+                switch type {
+                case .all:
+                    try await FriendCacheManager.resetAllAccountsData(restoreCurrentUser: appVM.user)
+                case .historyOnly:
+                    try FriendCacheManager.resetAllAccountsHistory()
+                }
+                
+                await MainActor.run {
+                    alertTitle = "재설정 완료"
+                    alertMessage = "\(type.title) 작업을 완료했습니다."
+                    showingAlert = true
+                    
+                    refreshDataStatus()
+                }
+            } catch {
+                await MainActor.run {
+                    alertTitle = "재설정 실패"
+                    alertMessage = "재설정 중 오류가 발생했습니다: \(error.localizedDescription)"
+                    showingAlert = true
+                }
+            }
+        }
     }
 }
 
@@ -639,6 +842,119 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+struct SafeShareSheet: UIViewControllerRepresentable {
+    let fileURL: URL
+    @Environment(\.dismiss) private var dismiss
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            print("❌ File does not exist at path: \(fileURL.path)")
+            let emptyController = UIActivityViewController(activityItems: [], applicationActivities: nil)
+            DispatchQueue.main.async {
+                dismiss()
+            }
+            return emptyController
+        }
+        
+        print("✅ Sharing file: \(fileURL.lastPathComponent)")
+        print("📁 File path: \(fileURL.path)")
+        print("📏 File size: \(FileManager.default.fileSize(at: fileURL) ?? "Unknown")")
+        
+        let activityController = UIActivityViewController(
+            activityItems: [fileURL],
+            applicationActivities: nil
+        )
+        
+        activityController.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
+            if let error = activityError {
+                print("❌ Share error: \(error.localizedDescription)")
+            } else if completed {
+                print("✅ Share completed with activity: \(activityType?.rawValue ?? "Unknown")")
+            } else {
+                print("ℹ️ Share cancelled")
+            }
+        }
+        
+        return activityController
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+struct ResetSelectionSheet: View {
+    @Binding var resetType: FriendBackupView.ResetType
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(FriendBackupView.ResetType.allCases, id: \.self) { type in
+                    Button {
+                        resetType = type
+                        onConfirm()
+                    } label: {
+                        HStack(spacing: 16) {
+                            ZStack {
+                                Circle()
+                                    .fill(type.color.opacity(0.1))
+                                    .frame(width: 44, height: 44)
+                                
+                                Image(systemName: type.icon)
+                                    .font(.system(size: 20, weight: .medium))
+                                    .foregroundColor(type.color)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(type.title)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                
+                                Text(type.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.leading)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .navigationTitle("재설정 옵션 선택")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("취소") {
+                        onCancel()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+}
+
+extension FileManager {
+    func fileSize(at url: URL) -> String? {
+        do {
+            let attributes = try attributesOfItem(atPath: url.path)
+            if let size = attributes[.size] as? Int64 {
+                return ByteCountFormatter().string(fromByteCount: size)
+            }
+        } catch {
+            print("Error getting file size: \(error)")
+        }
+        return nil
+    }
 }
 
 #Preview {

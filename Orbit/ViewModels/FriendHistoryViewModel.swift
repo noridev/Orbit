@@ -32,28 +32,21 @@ class FriendHistoryViewModel: ObservableObject {
         }
     }
     
-    let userDefaults = UserDefaults.standard
-    let allHistoryKey = "allFriendHistoryKeys"
+    private let accountManager = AccountManager.shared
     
     private var friendsDict: [String: Friend] = [:]
 
     private init() {}
 
+    @MainActor
     func loadAllHistories(friends: [Friend], userService: UserServiceProtocol?) async -> [MergedHistory] {
         self.friendsDict = Dictionary(uniqueKeysWithValues: friends.map { ($0.id, $0) })
         
-        let allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
+        let allHistoryData = FriendCacheManager.loadAllFriendHistory()
         var allHistories: [FriendHistory] = []
         
-        for key in allKeys {
-            if let data = userDefaults.data(forKey: key) {
-                do {
-                    let histories = try JSONDecoder().decode([FriendHistory].self, from: data)
-                    allHistories.append(contentsOf: histories)
-                } catch {
-                    print("Error decoding history for key \(key): \(error)")
-                }
-            }
+        for (_, histories) in allHistoryData {
+            allHistories.append(contentsOf: histories)
         }
         
         allHistories.sort { $0.date > $1.date }
@@ -91,49 +84,67 @@ class FriendHistoryViewModel: ObservableObject {
     }
     
     func loadHistory(for friendId: String) -> [FriendHistory] {
-        let key = "history_\(friendId)"
-        guard let data = userDefaults.data(forKey: key) else { return [] }
-        do {
-            return try JSONDecoder().decode([FriendHistory].self, from: data)
-        } catch {
-            print("Error decoding history for \(friendId): \(error)")
-            return []
-        }
+        let allHistory = FriendCacheManager.loadAllFriendHistory()
+        return allHistory[friendId] ?? []
     }
 
     func saveHistory(event: HistoryEvent, for friendId: String) {
-        let key = "history_\(friendId)"
+        print("💾 [saveHistory] Attempting to save history for friend: \(friendId), event: \(event)")
+        
+        guard let accountDirectory = accountManager.getCurrentAccountDirectory() else { 
+            print("❌ [saveHistory] Cannot get account directory - accountManager.getCurrentAccountDirectory() returned nil")
+            return 
+        }
+        
+        print("💾 [saveHistory] Account directory: \(accountDirectory.path)")
+        
         var histories = loadHistory(for: friendId)
+        print("💾 [saveHistory] Loaded \(histories.count) existing histories for friend: \(friendId)")
+        
         let newHistory = FriendHistory(friendId: friendId, event: event)
+        print("💾 [saveHistory] Created new history entry with ID: \(newHistory.id)")
         
         if let lastHistory = histories.first, lastHistory.event == newHistory.event {
+            print("⚠️ [saveHistory] Skipping duplicate event for friend: \(friendId)")
             return
         }
         
         histories.insert(newHistory, at: 0)
-
+        print("💾 [saveHistory] Added new history, total count now: \(histories.count)")
+        
+        var allHistory = FriendCacheManager.loadAllFriendHistory()
+        allHistory[friendId] = histories
+        
+        let historyFileURL = accountDirectory.appendingPathComponent("friendHistory.json")
+        print("💾 [saveHistory] Saving to file: \(historyFileURL.path)")
+        
         do {
-            let data = try JSONEncoder().encode(histories)
-            userDefaults.set(data, forKey: key)
-            
-            var allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
-            if !allKeys.contains(key) {
-                allKeys.append(key)
-                userDefaults.set(allKeys, forKey: allHistoryKey)
+            if !FileManager.default.fileExists(atPath: accountDirectory.path) {
+                try FileManager.default.createDirectory(at: accountDirectory, withIntermediateDirectories: true, attributes: nil)
+                print("📁 [saveHistory] Created directory: \(accountDirectory.path)")
             }
             
+            let data = try JSONEncoder().encode(allHistory)
+            print("💾 [saveHistory] Encoded \(data.count) bytes")
+            try data.write(to: historyFileURL)
+            print("✅ [saveHistory] Successfully saved history for friend: \(friendId)")
         } catch {
-            print("Error encoding history for \(friendId): \(error)")
+            print("❌ [saveHistory] Error saving history for \(friendId): \(error)")
         }
     }
 
     func clearAllHistory() {
-        let allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
+        guard let accountDirectory = accountManager.getCurrentAccountDirectory() else { return }
         
-        for key in allKeys {
-            userDefaults.removeObject(forKey: key)
+        let historyFileURL = accountDirectory.appendingPathComponent("friendHistory.json")
+        
+        if FileManager.default.fileExists(atPath: historyFileURL.path) {
+            do {
+                try FileManager.default.removeItem(at: historyFileURL)
+                print("All history cleared successfully")
+            } catch {
+                print("Error clearing history: \(error)")
+            }
         }
-        
-        userDefaults.removeObject(forKey: allHistoryKey)
     }
 }

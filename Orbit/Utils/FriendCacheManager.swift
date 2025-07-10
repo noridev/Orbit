@@ -7,15 +7,87 @@
 
 import Foundation
 import VRCKit
+import Compression
+
+extension Data {
+    func compressed(using algorithm: Algorithm) throws -> Data {
+        return try self.withUnsafeBytes { bytes in
+            let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
+            defer { buffer.deallocate() }
+            
+            let compressedSize = compression_encode_buffer(
+                buffer, count,
+                bytes.bindMemory(to: UInt8.self).baseAddress!, count,
+                nil, algorithm.rawValue
+            )
+            
+            guard compressedSize > 0 else {
+                throw NSError(domain: "CompressionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Compression failed"])
+            }
+            
+            return Data(bytes: buffer, count: compressedSize)
+        }
+    }
+    
+    func decompressed(using algorithm: Algorithm) throws -> Data {
+        return try self.withUnsafeBytes { bytes in
+            let destinationBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: count * 4)
+            defer { destinationBuffer.deallocate() }
+            
+            let decompressedSize = compression_decode_buffer(
+                destinationBuffer, count * 4,
+                bytes.bindMemory(to: UInt8.self).baseAddress!, count,
+                nil, algorithm.rawValue
+            )
+            
+            guard decompressedSize > 0 else {
+                throw NSError(domain: "DecompressionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Decompression failed"])
+            }
+            
+            return Data(bytes: destinationBuffer, count: decompressedSize)
+        }
+    }
+}
 
 class FriendCacheManager {
     private static let fileName = "friendCache.json"
+    
+    @MainActor
+    private static var accountManager: AccountManager {
+        return AccountManager.shared
+    }
     
     struct CompleteBackupData: Codable {
         let friends: [Friend]
         let friendHistory: [String: [FriendHistory]]
         let exportDate: Date
         let version: String
+    }
+    
+    struct MultiAccountBackupData: Codable {
+        let version: String
+        let exportDate: Date
+        let exportedBy: String
+        let totalAccounts: Int
+        let accounts: [String: AccountData]
+        let metadata: BackupMetadata
+    }
+    
+    struct AccountData: Codable {
+        let userId: String
+        let userName: String
+        let lastUpdated: Date
+        let friendsCount: Int
+        let historyCount: Int
+        let friends: [Friend]
+        let friendHistory: [String: [FriendHistory]]
+    }
+    
+    struct BackupMetadata: Codable {
+        let totalFriends: Int
+        let totalHistoryEntries: Int
+        let appVersion: String
+        let deviceType: String
     }
     
     struct CompleteBackupResult {
@@ -44,36 +116,58 @@ class FriendCacheManager {
         }
     }
 
+    @MainActor
     private static var cacheURL: URL? {
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
-        return documentsDirectory.appendingPathComponent(fileName)
+        guard let accountDirectory = accountManager.getCurrentAccountDirectory() else { return nil }
+        return accountDirectory.appendingPathComponent(fileName)
     }
 
+    @MainActor
     static func saveFriends(_ friends: [Friend]) {
-        guard let url = cacheURL else { return }
+        guard let url = cacheURL else { 
+            print("❌ [saveFriends] Cannot get cache URL - accountManager.getCurrentAccountDirectory() returned nil")
+            return 
+        }
+        
+        print("📝 [saveFriends] Saving \(friends.count) friends to: \(url.path)")
+        
         do {
+            let directory = url.deletingLastPathComponent()
+            if !FileManager.default.fileExists(atPath: directory.path) {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+                print("📁 [saveFriends] Created directory: \(directory.path)")
+            }
+            
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .formatted(.iso8601Full)
-            print("--- Saving Cache ---")
             let data = try encoder.encode(friends)
-            print("Attempting to save \(data.count) bytes to friendCache.json")
+            print("📝 [saveFriends] Encoded \(data.count) bytes")
             try data.write(to: url, options: .atomic)
-            print("Save successful.")
-            print("--------------------")
+            print("✅ [saveFriends] Save successful to: \(url.path)")
         } catch {
-            print("Error saving friend cache to file: \(error)")
+            print("❌ [saveFriends] Error saving friend cache: \(error)")
         }
     }
 
+    @MainActor
     static func loadFriends() throws -> [Friend] {
-        guard let url = cacheURL, FileManager.default.fileExists(atPath: url.path) else {
+        guard let url = cacheURL else {
+            print("❌ [loadFriends] Cannot get cache URL - accountManager.getCurrentAccountDirectory() returned nil")
+            return []
+        }
+        
+        print("📖 [loadFriends] Attempting to load from: \(url.path)")
+        
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            print("⚠️ [loadFriends] File does not exist at: \(url.path)")
             return []
         }
 
         let data = try Data(contentsOf: url)
+        print("📖 [loadFriends] Loaded \(data.count) bytes from file")
         
         guard let rawString = String(data: data, encoding: .utf8) else {
-            print("Could not convert data to UTF-8 string.")
+            print("⚠️ [loadFriends] Could not convert data to UTF-8 string")
             return try JSONDecoder().decode([Friend].self, from: data)
         }
         
@@ -84,12 +178,17 @@ class FriendCacheManager {
         }
 
         if let sanitizedData = sanitizedString.data(using: .utf8) {
-            return try JSONDecoder().decode([Friend].self, from: sanitizedData)
+            let friends = try JSONDecoder().decode([Friend].self, from: sanitizedData)
+            print("✅ [loadFriends] Successfully loaded \(friends.count) friends")
+            return friends
         }
         
-        return try JSONDecoder().decode([Friend].self, from: data)
+        let friends = try JSONDecoder().decode([Friend].self, from: data)
+        print("✅ [loadFriends] Successfully loaded \(friends.count) friends (fallback)")
+        return friends
     }
     
+    @MainActor
     static func deleteCache() {
         guard let url = cacheURL, FileManager.default.fileExists(atPath: url.path) else { return }
         do {
@@ -100,6 +199,7 @@ class FriendCacheManager {
         }
     }
     
+    @MainActor
     static func loadRawData() -> String? {
         guard let url = cacheURL, let data = try? Data(contentsOf: url) else {
             return nil
@@ -116,30 +216,36 @@ class FriendCacheManager {
     
     // MARK: - Backup & Restore Functions
     
-    private static func loadAllFriendHistory() -> [String: [FriendHistory]] {
-        let userDefaults = UserDefaults.standard
-        let allHistoryKey = "allFriendHistoryKeys"
-        let allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
-        
-        var allHistory: [String: [FriendHistory]] = [:]
-        
-        for key in allKeys {
-            if let data = userDefaults.data(forKey: key) {
-                do {
-                    let histories = try JSONDecoder().decode([FriendHistory].self, from: data)
-                    let friendId = String(key.dropFirst(8)) // "history_".count = 8
-                    allHistory[friendId] = histories
-                } catch {
-                    print("Error decoding history for key \(key): \(error)")
-                }
-            }
+    @MainActor
+    static func loadAllFriendHistory() -> [String: [FriendHistory]] {
+        guard let accountDirectory = accountManager.getCurrentAccountDirectory() else { 
+            print("❌ [loadAllFriendHistory] Cannot get account directory - accountManager.getCurrentAccountDirectory() returned nil")
+            return [:]
         }
         
-        return allHistory
+        let historyFileURL = accountDirectory.appendingPathComponent("friendHistory.json")
+        print("📖 [loadAllFriendHistory] Attempting to load from: \(historyFileURL.path)")
+        
+        guard FileManager.default.fileExists(atPath: historyFileURL.path) else { 
+            print("⚠️ [loadAllFriendHistory] File does not exist at: \(historyFileURL.path)")
+            return [:]
+        }
+        
+        do {
+            let data = try Data(contentsOf: historyFileURL)
+            print("📖 [loadAllFriendHistory] Loaded \(data.count) bytes from file")
+            let allHistory = try JSONDecoder().decode([String: [FriendHistory]].self, from: data)
+            let totalEntries = allHistory.values.reduce(0) { $0 + $1.count }
+            print("✅ [loadAllFriendHistory] Successfully loaded \(allHistory.count) friend histories with \(totalEntries) total entries")
+            return allHistory
+        } catch {
+            print("❌ [loadAllFriendHistory] Failed to load friend history: \(error)")
+            return [:]
+        }
     }
     
-    private static func loadCompleteBackup(url: URL) throws -> CompleteBackupData {
-        print("--- Loading Complete Backup ---")
+    private static func loadBackupData(url: URL) throws -> Data {
+        print("--- Loading Backup File ---")
         print("Backup file URL: \(url)")
         
         let fileExists = url.startAccessingSecurityScopedResource()
@@ -165,6 +271,24 @@ class FriendCacheManager {
         
         let data = try Data(contentsOf: url)
         print("Loaded \(data.count) bytes from backup file")
+        
+        if url.pathExtension.lowercased() == "lzfse" {
+            print("Decompressing LZFSE file...")
+            do {
+                let decompressedData = try data.decompressed(using: .lzfse)
+                print("Decompressed from \(data.count) to \(decompressedData.count) bytes")
+                return decompressedData
+            } catch {
+                print("Decompression failed: \(error)")
+                throw NSError(domain: "DecompressionError", code: 500, userInfo: [NSLocalizedDescriptionKey: "압축 해제에 실패했습니다: \(error.localizedDescription)"])
+            }
+        }
+        
+        return data
+    }
+    
+    private static func loadCompleteBackup(url: URL) throws -> CompleteBackupData {
+        let data = try loadBackupData(url: url)
         
         if let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
             print("JSON keys: \(Array(jsonObject.keys))")
@@ -198,12 +322,125 @@ class FriendCacheManager {
         }
     }
     
+    private static func loadMultiAccountBackup(url: URL) throws -> MultiAccountBackupData {
+        let data = try loadBackupData(url: url)
+        
+        if let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            print("JSON keys: \(Array(jsonObject.keys))")
+            
+            if let accounts = jsonObject["accounts"] as? [String: Any] {
+                print("Accounts count in JSON: \(accounts.count)")
+            }
+            if let exportDate = jsonObject["exportDate"] {
+                print("Export date: \(exportDate)")
+            }
+            if let version = jsonObject["version"] {
+                print("Version: \(version)")
+            }
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .formatted(.iso8601Full)
+            let multiAccountBackup = try decoder.decode(MultiAccountBackupData.self, from: data)
+            print("✅ Successfully loaded backup: \(multiAccountBackup.accounts.count) accounts")
+            print("Export date: \(multiAccountBackup.exportDate)")
+            print("Version: \(multiAccountBackup.version)")
+            print("---------------------------")
+            return multiAccountBackup
+        } catch {
+            print("❌ Backup decoding failed: \(error)")
+            throw NSError(domain: "BackupLoadError", code: 400, userInfo: [NSLocalizedDescriptionKey: "백업 파일 형식이 올바르지 않습니다: \(error.localizedDescription)"])
+        }
+    }
+    
+    @MainActor
     static func generatePreview(from backupURL: URL) throws -> PreviewResult {
-        let completeBackup = try loadCompleteBackup(url: backupURL)
+        do {
+            let multiAccountBackup = try loadMultiAccountBackup(url: backupURL)
+            return try generateMultiAccountPreview(multiAccountBackup: multiAccountBackup)
+        } catch {
+            print("Backup loading failed, trying legacy format...")
+            let completeBackup = try loadCompleteBackup(url: backupURL)
+            return try generateLegacyPreview(completeBackup: completeBackup)
+        }
+    }
+    
+    @MainActor
+    private static func generateMultiAccountPreview(multiAccountBackup: MultiAccountBackupData) throws -> PreviewResult {
+        guard let currentUserId = accountManager.currentUserId else {
+            throw NSError(domain: "NoCurrentUser", code: 400, userInfo: [NSLocalizedDescriptionKey: "현재 로그인된 사용자가 없습니다."])
+        }
+        
         let currentFriends = try loadFriends()
         let currentHistory = loadAllFriendHistory()
         
-        print("--- Preview Generation ---")
+        print("--- Multi-Account Preview Generation ---")
+        print("Backup accounts: \(multiAccountBackup.accounts.count)")
+        print("Current user: \(currentUserId)")
+        
+        var addedCount = 0
+        var updatedCount = 0
+        var historyAddedCount = 0
+        var historyFriendsCount = 0
+        var backupFriendsCount = 0
+        
+        for (accountId, accountData) in multiAccountBackup.accounts {
+            print("Processing account \(accountId): \(accountData.friends.count) friends, \(accountData.historyCount) history entries")
+            
+            backupFriendsCount += accountData.friends.count
+            
+            // 친구 목록 변경사항 확인
+            let currentFriendsDict = Dictionary(uniqueKeysWithValues: currentFriends.map { ($0.id, $0) })
+            
+            for backupFriend in accountData.friends {
+                if let currentFriend = currentFriendsDict[backupFriend.id] {
+                    if shouldUpdateFriend(current: currentFriend, backup: backupFriend) {
+                        updatedCount += 1
+                    }
+                } else {
+                    addedCount += 1
+                }
+            }
+            
+            // 친구 기록 변경사항 확인
+            for (friendId, backupHistories) in accountData.friendHistory {
+                let currentHistories = currentHistory[friendId] ?? []
+                let currentHistoryIds = Set(currentHistories.map { $0.id })
+                
+                var newHistoriesCount = 0
+                for backupHistory in backupHistories {
+                    if !currentHistoryIds.contains(backupHistory.id) {
+                        newHistoriesCount += 1
+                    }
+                }
+                
+                if newHistoriesCount > 0 {
+                    historyAddedCount += newHistoriesCount
+                    historyFriendsCount += 1
+                }
+            }
+        }
+        
+        print("Multi-account preview result: Added \(addedCount), Updated \(updatedCount), History Added \(historyAddedCount), History Friends \(historyFriendsCount)")
+        print("-------------------------")
+        
+        return PreviewResult(
+            addedCount: addedCount,
+            updatedCount: updatedCount,
+            backupFriendsCount: backupFriendsCount,
+            currentFriendsCount: currentFriends.count,
+            historyAddedCount: historyAddedCount,
+            historyFriendsCount: historyFriendsCount
+        )
+    }
+    
+    @MainActor
+    private static func generateLegacyPreview(completeBackup: CompleteBackupData) throws -> PreviewResult {
+        let currentFriends = try loadFriends()
+        let currentHistory = loadAllFriendHistory()
+        
+        print("--- Legacy Preview Generation ---")
         print("Backup friends: \(completeBackup.friends.count)")
         print("Current friends: \(currentFriends.count)")
         print("Backup history entries: \(completeBackup.friendHistory.count)")
@@ -257,7 +494,7 @@ class FriendCacheManager {
             }
         }
         
-        print("Preview result: Added \(addedCount), Updated \(updatedCount), History Added \(historyAddedCount), History Friends \(historyFriendsCount)")
+        print("Legacy preview result: Added \(addedCount), Updated \(updatedCount), History Added \(historyAddedCount), History Friends \(historyFriendsCount)")
         print("-------------------------")
         
         return PreviewResult(
@@ -270,15 +507,103 @@ class FriendCacheManager {
         )
     }
     
+    @MainActor
     static func importCompleteBackup(from backupURL: URL) throws -> CompleteBackupResult {
-        let completeBackup = try loadCompleteBackup(url: backupURL)
+        do {
+            let multiAccountBackup = try loadMultiAccountBackup(url: backupURL)
+            return try importMultiAccountBackup(multiAccountBackup: multiAccountBackup)
+        } catch {
+            print("Backup loading failed, trying legacy format...")
+            let completeBackup = try loadCompleteBackup(url: backupURL)
+            return try importLegacyBackup(completeBackup: completeBackup)
+        }
+    }
+    
+    @MainActor
+    private static func importMultiAccountBackup(multiAccountBackup: MultiAccountBackupData) throws -> CompleteBackupResult {
+        guard let currentUserId = accountManager.currentUserId else {
+            throw NSError(domain: "NoCurrentUser", code: 400, userInfo: [NSLocalizedDescriptionKey: "현재 로그인된 사용자가 없습니다."])
+        }
+        
+        print("--- Multi-Account Import ---")
+        print("Importing \(multiAccountBackup.accounts.count) accounts")
+        
+        let currentFriends = try loadFriends()
+        var totalImportedHistory = 0
+        var friendMergeResult: MergeResult?
+        
+        if let currentAccountData = multiAccountBackup.accounts[currentUserId] {
+            print("Found data for current account \(currentUserId)")
+            friendMergeResult = mergeFriends(current: currentFriends, backup: currentAccountData.friends)
+            saveFriends(friendMergeResult!.mergedFriends)
+            totalImportedHistory += importFriendHistory(currentAccountData.friendHistory)
+        }
+        
+        var allBackupFriends: [Friend] = []
+        var allBackupHistory: [String: [FriendHistory]] = [:]
+        
+        for (accountId, accountData) in multiAccountBackup.accounts {
+            if accountId != currentUserId {
+                print("Processing account \(accountId): \(accountData.friends.count) friends")
+                
+                for friend in accountData.friends {
+                    if !allBackupFriends.contains(where: { $0.id == friend.id }) {
+                        allBackupFriends.append(friend)
+                    }
+                }
+                
+                for (friendId, histories) in accountData.friendHistory {
+                    if allBackupHistory[friendId] == nil {
+                        allBackupHistory[friendId] = []
+                    }
+                    
+                    let existingIds = Set(allBackupHistory[friendId]!.map { $0.id })
+                    for history in histories {
+                        if !existingIds.contains(history.id) {
+                            allBackupHistory[friendId]!.append(history)
+                        }
+                    }
+                }
+            }
+        }
+        
+        if !allBackupFriends.isEmpty {
+            let currentMergedFriends = friendMergeResult?.mergedFriends ?? currentFriends
+            let additionalMergeResult = mergeFriends(current: currentMergedFriends, backup: allBackupFriends)
+            saveFriends(additionalMergeResult.mergedFriends)
+            
+            if friendMergeResult == nil {
+                friendMergeResult = additionalMergeResult
+            } else {
+                friendMergeResult = MergeResult(
+                    mergedFriends: additionalMergeResult.mergedFriends,
+                    addedCount: friendMergeResult!.addedCount + additionalMergeResult.addedCount,
+                    updatedCount: friendMergeResult!.updatedCount + additionalMergeResult.updatedCount,
+                    unchangedCount: friendMergeResult!.unchangedCount + additionalMergeResult.unchangedCount
+                )
+            }
+        }
+        
+        if !allBackupHistory.isEmpty {
+            totalImportedHistory += importFriendHistory(allBackupHistory)
+        }
+        
+        print("Multi-account import completed")
+        
+        return CompleteBackupResult(
+            friendMergeResult: friendMergeResult ?? MergeResult(mergedFriends: [], addedCount: 0, updatedCount: 0, unchangedCount: 0),
+            historyImported: totalImportedHistory,
+            isCompleteBackup: true
+        )
+    }
+    
+    @MainActor
+    private static func importLegacyBackup(completeBackup: CompleteBackupData) throws -> CompleteBackupResult {
         let currentFriends = try loadFriends()
         
-        // 친구 목록 병합
         let friendMergeResult = mergeFriends(current: currentFriends, backup: completeBackup.friends)
         saveFriends(friendMergeResult.mergedFriends)
         
-        // 친구 기록 병합
         let historyImported = importFriendHistory(completeBackup.friendHistory)
         
         return CompleteBackupResult(
@@ -288,23 +613,19 @@ class FriendCacheManager {
         )
     }
     
+    @MainActor
     private static func importFriendHistory(_ historyData: [String: [FriendHistory]]) -> Int {
-        let userDefaults = UserDefaults.standard
-        let allHistoryKey = "allFriendHistoryKeys"
-        var allKeys = userDefaults.stringArray(forKey: allHistoryKey) ?? []
+        guard let accountDirectory = accountManager.getCurrentAccountDirectory() else { return 0 }
+        
+        let historyFileURL = accountDirectory.appendingPathComponent("friendHistory.json")
+        var existingHistory = loadAllFriendHistory()
         var importedCount = 0
         
         for (friendId, histories) in historyData {
-            let key = "history_\(friendId)"
-            
-            var existingHistories = [FriendHistory]()
-            if let existingData = userDefaults.data(forKey: key) {
-                existingHistories = (try? JSONDecoder().decode([FriendHistory].self, from: existingData)) ?? []
-            }
-            
-            // 병합 (중복 제거)
-            var mergedHistories = existingHistories
+            let existingHistories = existingHistory[friendId] ?? []
             let existingIds = Set(existingHistories.map { $0.id })
+            
+            var mergedHistories = existingHistories
             
             for history in histories {
                 if !existingIds.contains(history.id) {
@@ -314,21 +635,23 @@ class FriendCacheManager {
             }
             
             mergedHistories.sort { $0.date > $1.date }
-            
-            do {
-                let data = try JSONEncoder().encode(mergedHistories)
-                userDefaults.set(data, forKey: key)
-                
-                if !allKeys.contains(key) {
-                    allKeys.append(key)
-                }
-            } catch {
-                print("Error encoding history for \(friendId): \(error)")
-            }
+            existingHistory[friendId] = mergedHistories
         }
         
-        userDefaults.set(allKeys, forKey: allHistoryKey)
-        print("Imported \(importedCount) friend history entries")
+        do {
+            let directory = historyFileURL.deletingLastPathComponent()
+            if !FileManager.default.fileExists(atPath: directory.path) {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+                print("📁 [importFriendHistory] Created directory: \(directory.path)")
+            }
+            
+            let data = try JSONEncoder().encode(existingHistory)
+            try data.write(to: historyFileURL)
+            print("Imported \(importedCount) friend history entries")
+        } catch {
+            print("Failed to save friend history: \(error)")
+        }
+        
         return importedCount
     }
     
@@ -423,47 +746,271 @@ class FriendCacheManager {
         return false
     }
     
+    @MainActor
     static func exportCompleteBackup() -> URL? {
-        guard let cacheURL = cacheURL,
-              FileManager.default.fileExists(atPath: cacheURL.path) else {
+        return exportMultiAccountBackup()
+    }
+    
+    @MainActor
+    static func exportMultiAccountBackup() -> URL? {
+        guard let currentUserId = accountManager.currentUserId else {
+            print("No current user ID")
             return nil
         }
         
         do {
-            let friendsData = try Data(contentsOf: cacheURL)
-            let friends = try JSONDecoder().decode([Friend].self, from: friendsData)
+            let fileManager = FileManager.default
+            var accounts: [String: AccountData] = [:]
+            var totalFriends = 0
+            var totalHistoryEntries = 0
             
-            let friendHistory = loadAllFriendHistory()
+            if let currentAccountData = loadCurrentAccountData() {
+                accounts[currentUserId] = currentAccountData
+                totalFriends = currentAccountData.friendsCount
+                totalHistoryEntries = currentAccountData.historyCount
+                print("Loaded current account \(currentUserId): \(currentAccountData.friendsCount) friends, \(currentAccountData.historyCount) history entries")
+            } else {
+                let accountInfo = accountManager.availableAccounts.first { $0.userId == currentUserId }
+                let userName = accountInfo?.userName ?? "Current User"
+                let lastUpdated = accountInfo?.lastLoginDate ?? Date()
+                
+                let emptyAccountData = AccountData(
+                    userId: currentUserId,
+                    userName: userName,
+                    lastUpdated: lastUpdated,
+                    friendsCount: 0,
+                    historyCount: 0,
+                    friends: [],
+                    friendHistory: [:]
+                )
+                
+                accounts[currentUserId] = emptyAccountData
+                print("Created empty account data for current user \(currentUserId)")
+            }
             
-            let completeBackup = CompleteBackupData(
-                friends: friends,
-                friendHistory: friendHistory,
+            if let accountsBaseDirectory = AccountManager.getAccountsBaseDirectory(),
+               fileManager.fileExists(atPath: accountsBaseDirectory.path) {
+                let accountDirectories = try fileManager.contentsOfDirectory(at: accountsBaseDirectory, includingPropertiesForKeys: nil)
+                
+                for accountDir in accountDirectories {
+                    let userId = accountDir.lastPathComponent
+                    
+                    if userId == currentUserId {
+                        continue
+                    }
+                    
+                    let friendCacheURL = accountDir.appendingPathComponent("friendCache.json")
+                    var friends: [Friend] = []
+                    
+                    if fileManager.fileExists(atPath: friendCacheURL.path) {
+                        let friendsData = try Data(contentsOf: friendCacheURL)
+                        friends = try JSONDecoder().decode([Friend].self, from: friendsData)
+                    }
+                    
+                    let historyURL = accountDir.appendingPathComponent("friendHistory.json")
+                    var friendHistory: [String: [FriendHistory]] = [:]
+                    
+                    if fileManager.fileExists(atPath: historyURL.path) {
+                        let historyData = try Data(contentsOf: historyURL)
+                        friendHistory = try JSONDecoder().decode([String: [FriendHistory]].self, from: historyData)
+                    }
+                    
+                    let accountInfo = accountManager.availableAccounts.first { $0.userId == userId }
+                    let userName = accountInfo?.userName ?? "Unknown User"
+                    let lastUpdated = accountInfo?.lastLoginDate ?? Date()
+                    
+                    let historyCount = friendHistory.values.reduce(0) { $0 + $1.count }
+                    
+                    let accountData = AccountData(
+                        userId: userId,
+                        userName: userName,
+                        lastUpdated: lastUpdated,
+                        friendsCount: friends.count,
+                        historyCount: historyCount,
+                        friends: friends,
+                        friendHistory: friendHistory
+                    )
+                    
+                    accounts[userId] = accountData
+                    totalFriends += friends.count
+                    totalHistoryEntries += historyCount
+                    
+                    print("Loaded additional account \(userId): \(friends.count) friends, \(historyCount) history entries")
+                }
+            }
+            
+            let metadata = BackupMetadata(
+                totalFriends: totalFriends,
+                totalHistoryEntries: totalHistoryEntries,
+                appVersion: BundleUtil.appVersion,
+                deviceType: "iOS"
+            )
+            
+            let multiAccountBackup = MultiAccountBackupData(
+                version: "2.0",
                 exportDate: Date(),
-                version: "1.0"
+                exportedBy: currentUserId,
+                totalAccounts: accounts.count,
+                accounts: accounts,
+                metadata: metadata
             )
             
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .formatted(.iso8601Full)
-            let backupData = try encoder.encode(completeBackup)
+            let backupData = try encoder.encode(multiAccountBackup)
             
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
             let timestamp = dateFormatter.string(from: Date())
-            let filename = "Orbit_Friends_Data_Backup_\(timestamp).json"
             
             guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
                 return nil
             }
+            
+            let originalSize = backupData.count
+            if let compressedData = try? backupData.compressed(using: .lzfse) {
+                let compressedSize = compressedData.count
+                let compressionRatio = Double(compressedSize) / Double(originalSize)
+                
+                if compressionRatio < 0.7 {
+                    let filename = "Orbit_Backup_\(timestamp).json.lzfse"
+                    let exportURL = documentsDirectory.appendingPathComponent(filename)
+                    
+                    try compressedData.write(to: exportURL)
+                    try setFileAttributes(for: exportURL)
+                    
+                    print("Backup exported (compressed): \(accounts.count) accounts, \(totalFriends) friends, \(totalHistoryEntries) history entries")
+                    print("Original size: \(ByteCountFormatter().string(fromByteCount: Int64(originalSize)))")
+                    print("Compressed size: \(ByteCountFormatter().string(fromByteCount: Int64(compressedSize)))")
+                    print("Compression ratio: \(String(format: "%.1f", compressionRatio * 100))%")
+                    return exportURL
+                }
+            }
+            
+            let filename = "Orbit_Backup_\(timestamp).json"
             let exportURL = documentsDirectory.appendingPathComponent(filename)
             
             try backupData.write(to: exportURL)
-            print("Complete backup exported: \(friends.count) friends, \(friendHistory.count) history entries")
+            try setFileAttributes(for: exportURL)
+            
+            print("Backup exported (uncompressed): \(accounts.count) accounts, \(totalFriends) friends, \(totalHistoryEntries) history entries")
+            print("File size: \(ByteCountFormatter().string(fromByteCount: Int64(originalSize)))")
             return exportURL
             
         } catch {
-            print("Error exporting complete backup: \(error)")
+            print("Error exporting backup: \(error)")
             return nil
         }
+    }
+    
+    @MainActor
+    private static func loadCurrentAccountData() -> AccountData? {
+        guard let currentUserId = accountManager.currentUserId else { return nil }
+        
+        do {
+            let friends = try loadFriends()
+            let friendHistory = loadAllFriendHistory()
+            let historyCount = friendHistory.values.reduce(0) { $0 + $1.count }
+            
+            let accountInfo = accountManager.availableAccounts.first { $0.userId == currentUserId }
+            let userName = accountInfo?.userName ?? "Current User"
+            let lastUpdated = accountInfo?.lastLoginDate ?? Date()
+            
+            return AccountData(
+                userId: currentUserId,
+                userName: userName,
+                lastUpdated: lastUpdated,
+                friendsCount: friends.count,
+                historyCount: historyCount,
+                friends: friends,
+                friendHistory: friendHistory
+            )
+        } catch {
+            print("Error loading current account data: \(error)")
+            return nil
+        }
+    }
+
+    // MARK: - Reset Functions
+    
+    @MainActor
+    static func resetAllAccountsData(restoreCurrentUser: User? = nil) throws {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw NSError(domain: "FileManagerError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Documents 디렉토리를 찾을 수 없습니다."])
+        }
+        
+        let accountsDirectory = documentsDirectory.appendingPathComponent("accounts")
+        
+        if FileManager.default.fileExists(atPath: accountsDirectory.path) {
+            try FileManager.default.removeItem(at: accountsDirectory)
+            print("✅ All accounts data deleted successfully")
+        }
+        
+        deleteLegacyFiles()
+        accountManager.resetAllAccounts()
+        
+        if let currentUser = restoreCurrentUser {
+            print("🔄 [resetAllAccountsData] Restoring current user after reset: \(currentUser.displayName)")
+            accountManager.setCurrentUser(currentUser)
+        }
+    }
+
+    static func resetAllAccountsHistory() throws {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw NSError(domain: "FileManagerError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Documents 디렉토리를 찾을 수 없습니다."])
+        }
+        
+        let accountsDirectory = documentsDirectory.appendingPathComponent("accounts")
+        
+        if FileManager.default.fileExists(atPath: accountsDirectory.path) {
+            let accountDirectories = try FileManager.default.contentsOfDirectory(at: accountsDirectory, includingPropertiesForKeys: nil)
+            
+            for accountDir in accountDirectories where accountDir.hasDirectoryPath {
+                let historyFile = accountDir.appendingPathComponent("friendHistory.json")
+                if FileManager.default.fileExists(atPath: historyFile.path) {
+                    try FileManager.default.removeItem(at: historyFile)
+                    print("✅ Deleted friend history for account: \(accountDir.lastPathComponent)")
+                }
+            }
+        }
+        
+        let legacyHistoryFile = documentsDirectory.appendingPathComponent("friendHistory.json")
+        if FileManager.default.fileExists(atPath: legacyHistoryFile.path) {
+            try FileManager.default.removeItem(at: legacyHistoryFile)
+            print("✅ Deleted legacy friend history")
+        }
+    }
+    
+    private static func deleteLegacyFiles() {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        
+        let legacyFiles = [
+            "friendCache.json",
+            "friendHistory.json"
+        ]
+        
+        for fileName in legacyFiles {
+            let fileURL = documentsDirectory.appendingPathComponent(fileName)
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                do {
+                    try FileManager.default.removeItem(at: fileURL)
+                    print("✅ Deleted legacy file: \(fileName)")
+                } catch {
+                    print("❌ Failed to delete legacy file \(fileName): \(error)")
+                }
+            }
+        }
+    }
+
+    // MARK: - Helper Functions
+    
+    private static func setFileAttributes(for url: URL) throws {
+        let attributes: [FileAttributeKey: Any] = [
+            .posixPermissions: 0o644
+        ]
+        
+        try FileManager.default.setAttributes(attributes, ofItemAtPath: url.path)
+        print("✅ File attributes set for: \(url.lastPathComponent)")
     }
 
     // MARK: - Data Status Information
@@ -493,6 +1040,7 @@ class FriendCacheManager {
         }
     }
     
+    @MainActor
     static func getDataStatus() -> DataStatus {
         let friends = (try? loadFriends()) ?? []
         let friendHistory = loadAllFriendHistory()
@@ -513,11 +1061,9 @@ class FriendCacheManager {
         let totalHistoryCount = friendHistory.values.reduce(0) { $0 + $1.count }
         
         // 친구 캐시 파일의 마지막 수정 날짜
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let cacheURL = documentsPath.appendingPathComponent(fileName)
-        
         var lastModified: Date?
-        if let attributes = try? FileManager.default.attributesOfItem(atPath: cacheURL.path),
+        if let cacheURL = cacheURL,
+           let attributes = try? FileManager.default.attributesOfItem(atPath: cacheURL.path),
            let modificationDate = attributes[.modificationDate] as? Date {
             lastModified = modificationDate
         }

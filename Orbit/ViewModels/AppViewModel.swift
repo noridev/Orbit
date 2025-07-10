@@ -20,6 +20,7 @@ final class AppViewModel {
     var screenSize: CGSize = .zero
     @ObservationIgnored var client: APIClient
     @ObservationIgnored let userDefaults: UserDefaults
+    @ObservationIgnored let accountManager = AccountManager.shared
 
     init() {
         let client = APIClient()
@@ -49,7 +50,7 @@ final class AppViewModel {
             guard try await service.verifyAuthToken() else { return next }
             let result = try await service.loginUserInfo()
             if case .left(let user) = result {
-                self.user = user
+                setUser(user)
                 next = .done(user)
             }
         } catch {
@@ -92,8 +93,15 @@ final class AppViewModel {
     }
 
     private func setUser(_ user: User) {
+        print("🚀 [AppViewModel.setUser] Setting user: \(user.displayName) (ID: \(user.id))")
+        
         self.user = user
         step = .done(user)
+        
+        accountManager.setCurrentUser(user)
+        accountManager.checkAndMigrateLegacyData()
+        
+        print("✅ [AppViewModel.setUser] User setup completed")
     }
 
     /// Attempts to log in the user and returns the result of the authentication process.

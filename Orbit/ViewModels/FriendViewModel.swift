@@ -121,10 +121,16 @@ final class FriendViewModel {
     }
 
     private func processFriendListChanges() throws {
+        print("🔄 [processFriendListChanges] Starting friend list change processing")
+        
         let oldFriends = try loadFriendsFromLocal()
         let newFriends = self.allFriends
 
+        print("🔄 [processFriendListChanges] Old friends count: \(oldFriends.count)")
+        print("🔄 [processFriendListChanges] New friends count: \(newFriends.count)")
+
         guard !oldFriends.isEmpty else {
+            print("🔄 [processFriendListChanges] No old friends data, saving new friends and skipping change detection")
             saveFriendsLocally(newFriends)
             return
         }
@@ -135,30 +141,50 @@ final class FriendViewModel {
         let oldIDs = Set(oldFriendsDict.keys)
         let newIDs = Set(newFriendsDict.keys)
 
-        for id in newIDs.subtracting(oldIDs) {
-            if newFriendsDict[id] != nil {
+        print("🔄 [processFriendListChanges] Old friend IDs count: \(oldIDs.count)")
+        print("🔄 [processFriendListChanges] New friend IDs count: \(newIDs.count)")
+
+        let addedIDs = newIDs.subtracting(oldIDs)
+        print("🔄 [processFriendListChanges] Added friends: \(addedIDs.count)")
+        for id in addedIDs {
+            if let newFriend = newFriendsDict[id] {
+                print("➕ [processFriendListChanges] New friend: \(newFriend.displayName) (ID: \(id))")
                 historyVM.saveHistory(event: .newFriend, for: id)
             }
         }
 
-        for id in oldIDs.subtracting(newIDs) {
-            if oldFriendsDict[id] != nil {
+        let removedIDs = oldIDs.subtracting(newIDs)
+        print("🔄 [processFriendListChanges] Removed friends: \(removedIDs.count)")
+        for id in removedIDs {
+            if let oldFriend = oldFriendsDict[id] {
+                print("➖ [processFriendListChanges] Removed friend: \(oldFriend.displayName) (ID: \(id))")
                 historyVM.saveHistory(event: .unfriend, for: id)
             }
         }
 
-        for id in newIDs.intersection(oldIDs) {
+        let commonIDs = newIDs.intersection(oldIDs)
+        print("🔄 [processFriendListChanges] Common friends to check for changes: \(commonIDs.count)")
+        
+        var changedCount = 0
+        for id in commonIDs {
             guard let oldFriend = oldFriendsDict[id], let newFriend = newFriendsDict[id] else { continue }
 
             if oldFriend.displayName != newFriend.displayName {
+                print("📝 [processFriendListChanges] Name changed for \(id): \(oldFriend.displayName) → \(newFriend.displayName)")
                 historyVM.saveHistory(event: .displayNameChanged(from: oldFriend.displayName, to: newFriend.displayName), for: id)
+                changedCount += 1
             }
             if oldFriend.trustRank != newFriend.trustRank {
+                print("🛡️ [processFriendListChanges] Trust rank changed for \(id): \(oldFriend.trustRank.description) → \(newFriend.trustRank.description)")
                 historyVM.saveHistory(event: .trustRankChanged(from: oldFriend.trustRank.description, to: newFriend.trustRank.description), for: id)
+                changedCount += 1
             }
         }
+        
+        print("🔄 [processFriendListChanges] Total changes recorded: \(changedCount)")
 
         saveFriendsLocally(newFriends)
+        print("✅ [processFriendListChanges] Friend list processing completed")
     }
 
     var isContentUnavailable: Bool {
