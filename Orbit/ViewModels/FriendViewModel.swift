@@ -80,7 +80,10 @@ final class FriendViewModel {
 
     func fetchAllFriends(errorHandler: @escaping (_ error: any Error) -> Void) async {
         isCacheCorrupted = false
-        defer { isFetchingAllFriends = false }
+        defer { 
+            isFetchingAllFriends = false
+            applyFilters()
+        }
         isFetchingAllFriends = true
         guard let appVM = appVM else {
             errorHandler(ApplicationError.appVMIsNotSetError)
@@ -109,7 +112,6 @@ final class FriendViewModel {
             return
         }
         friendsLocations = await appVM.services.friendService.friendsGroupedByLocation(onlineFriends)
-        applyFilters()
     }
 
     private func saveFriendsLocally(_ friends: [Friend]) {

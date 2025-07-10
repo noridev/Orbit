@@ -214,6 +214,7 @@ struct FriendsHistoryView: View {
     private func loadAndRefreshData() async {
         await friendVM.fetchAllFriends { _ in }
         self.allHistories = await historyVM.loadAllHistories(friends: friendVM.allFriends, userService: friendVM.appVM?.services.userService)
+        print("🔄 [loadAndRefreshData] Refreshed friend history with \(allHistories?.count ?? 0) entries")
     }
 }
 

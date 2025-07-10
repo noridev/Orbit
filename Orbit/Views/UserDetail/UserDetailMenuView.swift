@@ -108,7 +108,9 @@ struct UserDetailToolbarMenu: ToolbarContent {
                 targetGroup: group
             )
             friendVM.favoriteFriends = favoriteVM.favoriteFriends
+            print("✅ [updateFavoriteAction] Favorite updated for \(friend.displayName)")
         } catch {
+            print("❌ [updateFavoriteAction] Error updating favorite: \(error)")
             appVM.handleError(error)
         }
     }

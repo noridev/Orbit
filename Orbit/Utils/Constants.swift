@@ -68,3 +68,7 @@ extension Constants.Messages {
         }
     }
 }
+
+extension Notification.Name {
+    static let profileUpdated = Notification.Name("profileUpdated")
+}

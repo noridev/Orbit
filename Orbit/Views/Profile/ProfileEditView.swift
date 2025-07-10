@@ -189,8 +189,18 @@ struct ProfileEditView: View {
         do {
             guard let user = appVM.user else { throw ApplicationError.userIsNotSetError }
             try await profileEditVM.saveProfile(service: appVM.services.userService)
-            appVM.user = User(user: user, editedUserInfo: profileEditVM.editingUserInfo)
+            print("✅ [saveProfileAction] Profile saved to server successfully")
+            
+            let updatedUser = User(user: user, editedUserInfo: profileEditVM.editingUserInfo)
+            appVM.user = updatedUser
+            print("✅ [saveProfileAction] AppViewModel user updated locally")
+            print("🔄 [saveProfileAction] Updated status: \(updatedUser.status.description)")
+            print("🔄 [saveProfileAction] Updated bio: \(updatedUser.bio ?? "nil")")
+            
+            NotificationCenter.default.post(name: .profileUpdated, object: updatedUser)
+            print("🔔 [saveProfileAction] Profile update notification sent")
         } catch {
+            print("❌ [saveProfileAction] Error saving profile: \(error)")
             appVM.handleError(error)
         }
     }

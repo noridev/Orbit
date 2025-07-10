@@ -147,13 +147,16 @@ struct UserDetailView: View {
             Task {
                 do {
                     try await appVM.services.friendService.unfriend(id: user.id)
+                    print("✅ [unfriendTaskButton] Successfully unfriended user: \(user.displayName)")
+                    
+                    await friendVM.fetchAllFriends { error in
+                        appVM.handleError(error)
+                    }
+                    dismiss()
                 } catch {
+                    print("❌ [unfriendTaskButton] Error unfriending user: \(error)")
                     appVM.handleError(error)
                 }
-                await friendVM.fetchAllFriends { error in
-                    appVM.handleError(error)
-                }
-                dismiss()
             }
         }
     }
