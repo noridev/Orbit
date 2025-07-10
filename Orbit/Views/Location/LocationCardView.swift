@@ -53,10 +53,7 @@ struct LocationCardView: View {
                             .font(.body)
                             .lineLimit(1)
                         HStack {
-                            Text("#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId))")
-                                .font(.caption)
-                                .foregroundStyle(Color.gray)
-                            Text(instance.typeDescription)
+                            Text(InstanceUtil.getInstanceWithInstanceType(instance))
                                 .font(.caption)
                                 .foregroundStyle(Color.gray)
                             Text(personAmount(instance))

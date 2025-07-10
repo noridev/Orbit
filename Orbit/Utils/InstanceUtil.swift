@@ -30,6 +30,25 @@ struct InstanceUtil {
         return "\(instance.world.name) #\(instanceNumber)"
     }
     
+    static func getInstanceWithUserCount(_ instance: Instance) -> String {
+        let instanceNumber = extractInstanceNumber(from: instance.instanceId)
+        let userCount = getUserCountString(instance)
+        return "#\(instanceNumber) - \(userCount)"
+    }
+    
+    static func getInstanceWithInstanceType(_ instance: Instance) -> String {
+        let instanceNumber = extractInstanceNumber(from: instance.instanceId)
+        let typeDescription = getInstanceTypeDescription(instance)
+        return "#\(instanceNumber) - \(typeDescription)"
+    }
+
+    static func getInstanceDescription(_ instance: Instance) -> String {
+        let instanceNumber = extractInstanceNumber(from: instance.instanceId)
+        let typeDescription = getInstanceTypeDescription(instance)
+        let userCount = getUserCountString(instance)
+        return "#\(instanceNumber) - \(typeDescription) \(userCount)"
+    }
+
     static func getInstanceTypeWithUserCount(_ instance: Instance) -> String {
         let typeDescription = getInstanceTypeDescription(instance)
         let userCount = getUserCountString(instance)

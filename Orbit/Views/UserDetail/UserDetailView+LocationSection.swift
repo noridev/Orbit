@@ -34,7 +34,7 @@ extension UserDetailView {
                                     .padding(.leading, 8)
                                     .lineLimit(2)
                                     .truncationMode(.tail)
-                                Text("#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId)) \(InstanceUtil.getInstanceTypeWithUserCount(instance))")
+                                Text(InstanceUtil.getInstanceDescription(instance))
                                     .font(.caption)
                                     .foregroundColor(.gray)
                                     .padding(.leading, 8)

@@ -58,7 +58,7 @@ struct InstanceLocationView: View {
                         .foregroundColor(.gray)
                         .lineLimit(1)
                         .truncationMode(.tail)
-                    Text("#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId)) \(InstanceUtil.getInstanceTypeWithUserCount(instance))")
+                    Text(InstanceUtil.getInstanceDescription(instance))
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
