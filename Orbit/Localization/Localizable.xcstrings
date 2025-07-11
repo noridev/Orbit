@@ -380,6 +380,9 @@
         }
       }
     },
+    "Check your email's spam folder, then try again." : {
+
+    },
     "Clear" : {
       "localizations" : {
         "ja" : {
@@ -412,7 +415,11 @@
         }
       }
     },
+    "Connect to your world" : {
+
+    },
     "Connect your VRChat account." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -546,6 +553,9 @@
           }
         }
       }
+    },
+    "Didn't receive a code?" : {
+
     },
     "Display Settings" : {
       "localizations" : {
@@ -690,6 +700,7 @@
       }
     },
     "Enter" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -733,7 +744,11 @@
         }
       }
     },
+    "Enter the 6-digit code from your %@" : {
+
+    },
     "Enter the 6-digit two-factor verification code recieved in your %@." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1298,6 +1313,7 @@
       }
     },
     "Login" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1615,7 +1631,14 @@
       }
     },
     "OK" : {
-      "shouldTranslate" : false
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "확인"
+          }
+        }
+      }
     },
     "Oldest" : {
       "localizations" : {
@@ -1650,6 +1673,7 @@
       }
     },
     "Password" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1858,6 +1882,9 @@
         }
       }
     },
+    "Securely store in iCloud Keychain" : {
+
+    },
     "Select a Friend" : {
       "localizations" : {
         "ja" : {
@@ -1956,6 +1983,9 @@
         }
       }
     },
+    "Session Expired" : {
+
+    },
     "Settings" : {
       "localizations" : {
         "ja" : {
@@ -2021,6 +2051,12 @@
           }
         }
       }
+    },
+    "Sign In" : {
+
+    },
+    "Signing in..." : {
+
     },
     "Social" : {
       "localizations" : {
@@ -2250,7 +2286,11 @@
         }
       }
     },
+    "Two-Factor Authentication" : {
+
+    },
     "Two-step verification" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2315,6 +2355,7 @@
       }
     },
     "Username" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2357,6 +2398,12 @@
           }
         }
       }
+    },
+    "Verify Code" : {
+
+    },
+    "Verifying..." : {
+
     },
     "Version" : {
       "localizations" : {
@@ -2404,6 +2451,9 @@
           }
         }
       }
+    },
+    "Your session has expired. Please log in again to continue." : {
+
     },
     "가져오기" : {
 
