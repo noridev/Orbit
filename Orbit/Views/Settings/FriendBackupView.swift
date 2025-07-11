@@ -73,12 +73,33 @@ struct FriendBackupView: View {
     }
     
     var body: some View {
-        List {
-            headerSection
-            accountInfoSection
-            dataStatusSection
-            dataManagementSection
-            importantNoticeSection
+        ZStack {
+            // 그라데이션 배경
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.1),
+                    Color.purple.opacity(0.05),
+                    Color.clear
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    Spacer(minLength: 20)
+                    
+                    headerSection
+                    accountInfoCard
+                    dataStatusCard
+                    dataManagementCard
+                    importantNoticeCard
+                    
+                    Spacer(minLength: 40)
+                }
+                .padding(.horizontal, 24)
+            }
         }
         .navigationTitle("친구 데이터 관리")
         .navigationBarTitleDisplayMode(.inline)
@@ -173,312 +194,396 @@ struct FriendBackupView: View {
     // MARK: - View Components
     
     private var headerSection: some View {
-        Section {
-            VStack(spacing: 16) {
-                headerIcon
-                headerContent
+        VStack(spacing: 16) {
+            // 아이콘
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.blue, Color.purple]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 80, height: 80)
+                    .shadow(color: Color.blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                
+                Image(systemName: "person.2.circle.fill")
+                    .font(.system(size: 36, weight: .medium))
+                    .foregroundColor(.white)
             }
-            .frame(maxWidth: .infinity)
-        }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets())
-    }
-    
-    private var headerIcon: some View {
-        Image(systemName: "person.2.circle.fill")
-            .font(.system(size: 48))
-            .foregroundStyle(.blue.gradient)
-    }
-    
-    private var headerContent: some View {
-        VStack(spacing: 8) {
-            Text("친구 데이터 관리")
-                .font(.title2)
-                .fontWeight(.bold)
             
-            Text("모든 계정의 친구 데이터를 안전하게 백업하고 복원할 수 있습니다")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-    
-    private var accountInfoSection: some View {
-        Section {
-            accountInfoContent
-        } header: {
-            Text("계정 정보")
-        }
-    }
-    
-    private var accountInfoContent: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Image(systemName: "person.circle.fill")
-                    .foregroundColor(.blue)
+            VStack(spacing: 8) {
+                Text("친구 데이터 관리")
                     .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
                 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("현재 계정")
-                        .font(.headline)
-                    if let currentAccount = accountManager.availableAccounts.first(where: { $0.userId == accountManager.currentUserId }) {
-                        Text(currentAccount.userName)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
+                Text("모든 계정의 친구 데이터를 안전하게 백업하고 복원할 수 있습니다")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.9)
+            }
+        }
+    }
+    
+    private var accountInfoCard: some View {
+        VStack(spacing: 16) {
+            // 카드 헤더
+            HStack {
+                Label("계정 정보", systemImage: "person.circle.fill")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
                 Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("총 계정")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("\(accountManager.availableAccounts.count)")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                }
             }
             
-            if accountManager.availableAccounts.count > 1 {
-                Divider()
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("등록된 계정")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+            // 현재 계정 정보
+            VStack(spacing: 12) {
+                HStack {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundColor(.blue)
+                        .font(.title2)
                     
-                    ForEach(accountManager.availableAccounts.prefix(3)) { account in
-                        HStack {
-                            Image(systemName: account.userId == accountManager.currentUserId ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(account.userId == accountManager.currentUserId ? .green : .secondary)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("현재 계정")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        if let currentAccount = accountManager.availableAccounts.first(where: { $0.userId == accountManager.currentUserId }) {
+                            Text(currentAccount.userName)
                                 .font(.caption)
-                            
-                            Text(account.userName)
-                                .font(.caption)
-                                .foregroundColor(account.userId == accountManager.currentUserId ? .primary : .secondary)
-                            
-                            Spacer()
-                            
-                            Text(RelativeDateTimeFormatter().localizedString(for: account.lastLoginDate, relativeTo: Date()))
-                                .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
                     }
                     
-                    if accountManager.availableAccounts.count > 3 {
-                        Text("그 외 \(accountManager.availableAccounts.count - 3)개 계정")
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("총 계정")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                            .padding(.top, 2)
+                        Text("\(accountManager.availableAccounts.count)")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                    }
+                }
+                
+                if accountManager.availableAccounts.count > 1 {
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("등록된 계정")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        
+                        ForEach(accountManager.availableAccounts.prefix(3)) { account in
+                            HStack {
+                                Image(systemName: account.userId == accountManager.currentUserId ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(account.userId == accountManager.currentUserId ? .green : .secondary)
+                                    .font(.caption)
+                                
+                                Text(account.userName)
+                                    .font(.caption)
+                                    .foregroundColor(account.userId == accountManager.currentUserId ? .primary : .secondary)
+                                
+                                Spacer()
+                                
+                                Text(RelativeDateTimeFormatter().localizedString(for: account.lastLoginDate, relativeTo: Date()))
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        if accountManager.availableAccounts.count > 3 {
+                            Text("그 외 \(accountManager.availableAccounts.count - 3)개 계정")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 2)
+                        }
                     }
                 }
             }
         }
-        .padding(8)
-    }
-    
-    private var dataStatusSection: some View {
-        Section {
-            dataStatusContent
-        } header: {
-            Text("데이터 정보")
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.regularMaterial)
+                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
         }
     }
     
-    private var dataStatusContent: some View {
-        VStack(spacing: 12) {
+    private var dataStatusCard: some View {
+        VStack(spacing: 16) {
+            // 카드 헤더
             HStack {
-                Image(systemName: "chart.bar.doc.horizontal")
-                    .foregroundColor(.blue)
-                    .font(.title2)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("데이터 상태")
-                        .font(.headline)
-                    Text("현재 저장된 친구 데이터 정보")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
+                Label("데이터 정보", systemImage: "chart.bar.doc.horizontal")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
                 Spacer()
             }
             
-            Divider()
-            
-            VStack(spacing: 8) {
-                HStack {
-                    Image(systemName: "externaldrive")
-                        .foregroundColor(.purple)
-                        .frame(width: 16, height: 16)
-                    Text("총 데이터 크기")
-                    Spacer()
-                    Text(dataStatus.formattedTotalSize)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                }
-                .font(.subheadline)
+            // 데이터 상태
+            VStack(spacing: 12) {
+                dataStatusRow(
+                    icon: "externaldrive",
+                    title: "총 데이터 크기",
+                    value: dataStatus.formattedTotalSize,
+                    color: .purple
+                )
                 
-                HStack {
-                    Image(systemName: "person.2")
-                        .foregroundColor(.blue)
-                        .frame(width: 16, height: 16)
-                    Text("친구 목록")
-                    Spacer()
-                    HStack(spacing: 4) {
-                        Text("\(dataStatus.friendsCount)명")
-                        Text("(\(dataStatus.formattedFriendsSize))")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
-                }
-                .font(.subheadline)
+                dataStatusRow(
+                    icon: "person.2",
+                    title: "친구 목록",
+                    value: "\(dataStatus.friendsCount)명 (\(dataStatus.formattedFriendsSize))",
+                    color: .blue
+                )
                 
-                HStack {
-                    Image(systemName: "clock.arrow.circlepath")
-                        .foregroundColor(.green)
-                        .frame(width: 16, height: 16)
-                    Text("친구 기록")
-                    Spacer()
-                    HStack(spacing: 4) {
-                        Text("\(dataStatus.historyCount)개")
-                        Text("(\(dataStatus.formattedHistorySize))")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
-                }
-                .font(.subheadline)
+                dataStatusRow(
+                    icon: "clock.arrow.circlepath",
+                    title: "친구 기록",
+                    value: "\(dataStatus.historyCount)개 (\(dataStatus.formattedHistorySize))",
+                    color: .green
+                )
                 
                 if let lastModified = dataStatus.lastModified {
-                    HStack {
-                        Image(systemName: "calendar.badge.clock")
-                            .foregroundColor(.orange)
-                            .frame(width: 16, height: 16)
-                        Text("마지막 업데이트")
-                        Spacer()
-                        Text(RelativeDateTimeFormatter().localizedString(for: lastModified, relativeTo: Date()))
-                            .foregroundColor(.secondary)
-                    }
-                    .font(.subheadline)
+                    dataStatusRow(
+                        icon: "calendar.badge.clock",
+                        title: "마지막 업데이트",
+                        value: RelativeDateTimeFormatter().localizedString(for: lastModified, relativeTo: Date()),
+                        color: .orange
+                    )
                 }
             }
         }
-        .padding(8)
-    }
-    
-    private var dataManagementSection: some View {
-        Section {
-            exportButton
-            importButton
-            resetButton
-        } header: {
-            Text("데이터 관리")
-        } footer: {
-            footerContent
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.regularMaterial)
+                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
         }
     }
     
-    private var exportButton: some View {
-        Button {
-            exportFriendData()
-        } label: {
-            BackupActionRow(
-                icon: "square.and.arrow.up",
-                title: "백업 생성",
-                subtitle: "친구 목록과 기록을 파일로 저장",
-                color: .blue,
-                isLoading: isExporting
-            )
-        }
-        .disabled(isExporting || isImporting)
-    }
-    
-    private var importButton: some View {
-        Button {
-            showingFilePicker = true
-        } label: {
-            BackupActionRow(
-                icon: "square.and.arrow.down",
-                title: "백업 복원",
-                subtitle: "백업 파일에서 데이터 가져오기",
-                color: .green,
-                isLoading: isImporting
-            )
-        }
-        .disabled(isExporting || isImporting)
-    }
-    
-    private var resetButton: some View {
-        Button {
-            showingResetMenu = true
-        } label: {
-            BackupActionRow(
-                icon: "trash.fill",
-                title: "데이터 재설정",
-                subtitle: "모든 계정의 데이터 재설정",
-                color: .red,
-                isLoading: false
-            )
-        }
-        .disabled(isExporting || isImporting)
-    }
-    
-    private var footerContent: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 6) {
-                Image(systemName: "info.circle")
-                    .foregroundColor(.blue)
-                    .frame(width: 16, height: 16)
-                Text("백업에는 모든 계정의 친구 목록과 기록이 포함됩니다.")
-            }
+    private func dataStatusRow(icon: String, title: String, value: String, color: Color) -> some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(color)
+                .frame(width: 20, height: 20)
+                .font(.system(size: 16, weight: .medium))
             
-            HStack(spacing: 6) {
-                Image(systemName: "arrow.triangle.merge")
-                    .foregroundColor(.green)
-                    .frame(width: 16, height: 16)
-                Text("백업을 복원하면 기존 데이터와 자동으로 병합됩니다.")
-            }
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.primary)
             
-            HStack(spacing: 6) {
-                Image(systemName: "archivebox")
-                    .foregroundColor(.purple)
-                    .frame(width: 16, height: 16)
-                Text("대용량 백업은 자동으로 압축되어 저장됩니다.")
-            }
-        }
-        .font(.caption)
-        .foregroundColor(.secondary)
-    }
-    
-    private var importantNoticeSection: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 12) {
-                noticeHeader
-                noticeItems
-            }
-            .padding(.vertical, 8)
-        }
-    }
-    
-    private var noticeHeader: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.orange)
-            Text("진행 전 안내")
+            Spacer()
+            
+            Text(value)
                 .font(.subheadline)
                 .fontWeight(.semibold)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.trailing)
         }
     }
     
-    private var noticeItems: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("• 백업 파일은 개인정보를 포함하므로 안전하게 보관하세요.")
-            Text("• 정기적인 백업으로 데이터 손실을 방지하세요.")
-            Text("• 기기 변경 시 백업 파일로 데이터를 쉽게 이전할 수 있습니다.")
+    private var dataManagementCard: some View {
+        VStack(spacing: 16) {
+            // 카드 헤더
+            HStack {
+                Label("데이터 관리", systemImage: "externaldrive.badge.icloud")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                Spacer()
+            }
+            
+            // 관리 버튼들
+            VStack(spacing: 12) {
+                gradientActionButton(
+                    icon: "square.and.arrow.up",
+                    title: "백업 생성",
+                    subtitle: "친구 목록과 기록을 파일로 저장",
+                    gradientColors: [.blue, .cyan],
+                    isLoading: isExporting
+                ) {
+                    exportFriendData()
+                }
+                
+                gradientActionButton(
+                    icon: "square.and.arrow.down",
+                    title: "백업 복원",
+                    subtitle: "백업 파일에서 데이터 가져오기",
+                    gradientColors: [.green, .mint],
+                    isLoading: isImporting
+                ) {
+                    showingFilePicker = true
+                }
+                
+                gradientActionButton(
+                    icon: "trash.fill",
+                    title: "데이터 재설정",
+                    subtitle: "모든 계정의 데이터 재설정",
+                    gradientColors: [.red, .orange],
+                    isLoading: false
+                ) {
+                    showingResetMenu = true
+                }
+            }
+            
+            // 도움말 정보
+            VStack(alignment: .leading, spacing: 8) {
+                infoRow(icon: "info.circle", text: "백업에는 모든 계정의 친구 목록과 기록이 포함됩니다.", color: .blue)
+                infoRow(icon: "arrow.triangle.merge", text: "백업을 복원하면 기존 데이터와 자동으로 병합됩니다.", color: .green)
+                infoRow(icon: "archivebox", text: "대용량 백업은 자동으로 압축되어 저장됩니다.", color: .purple)
+            }
+            .padding(.top, 8)
         }
-        .font(.caption)
-        .foregroundColor(.secondary)
-        .padding(.horizontal, 8)
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.regularMaterial)
+                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        }
+    }
+    
+    private func gradientActionButton(
+        icon: String,
+        title: String,
+        subtitle: String,
+        gradientColors: [Color],
+        isLoading: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                // 아이콘
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: gradientColors),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 48, height: 48)
+                    
+                    if isLoading {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Image(systemName: icon)
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+                
+                // 텍스트
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                
+                Spacer()
+                
+                // 화살표
+                if !isLoading {
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(16)
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.systemGray6).opacity(0.5))
+            }
+        }
+        .disabled(isExporting || isImporting)
+        .buttonStyle(.plain)
+    }
+    
+    private func infoRow(icon: String, text: String, color: Color) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundColor(color)
+                .frame(width: 16, height: 16)
+                .font(.caption)
+            
+            Text(text)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Spacer()
+        }
+    }
+    
+    private var importantNoticeCard: some View {
+        VStack(spacing: 16) {
+            // 카드 헤더
+            HStack {
+                Label("진행 전 안내", systemImage: "exclamationmark.triangle.fill")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.orange)
+                Spacer()
+            }
+            
+            // 안내 사항들
+            VStack(alignment: .leading, spacing: 12) {
+                noticeRow(
+                    icon: "lock.shield",
+                    text: "백업 파일은 개인정보를 포함하므로 안전하게 보관하세요.",
+                    color: .red
+                )
+                
+                noticeRow(
+                    icon: "clock.arrow.circlepath",
+                    text: "정기적인 백업으로 데이터 손실을 방지하세요.",
+                    color: .blue
+                )
+                
+                noticeRow(
+                    icon: "iphone.and.arrow.forward",
+                    text: "기기 변경 시 백업 파일로 데이터를 쉽게 이전할 수 있습니다.",
+                    color: .green
+                )
+            }
+        }
+        .padding(20)
+        .background {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.regularMaterial)
+                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        }
+    }
+    
+    private func noticeRow(icon: String, text: String, color: Color) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(color)
+                .frame(width: 20, height: 20)
+                .font(.system(size: 14, weight: .medium))
+            
+            Text(text)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            Spacer()
+        }
     }
     
     // MARK: - Private Methods
@@ -599,16 +704,15 @@ struct FriendBackupView: View {
                 }
                 
                 await MainActor.run {
-                    alertTitle = "재설정 완료"
-                    alertMessage = "\(type.title) 작업을 완료했습니다."
+                    alertTitle = "데이터 재설정 완료"
+                    alertMessage = type == .all ? "모든 데이터가 재설정되었습니다." : "친구 기록이 재설정되었습니다."
                     showingAlert = true
-                    
                     refreshDataStatus()
                 }
             } catch {
                 await MainActor.run {
                     alertTitle = "재설정 실패"
-                    alertMessage = "재설정 중 오류가 발생했습니다: \(error.localizedDescription)"
+                    alertMessage = "\(error.localizedDescription)"
                     showingAlert = true
                 }
             }
@@ -616,7 +720,7 @@ struct FriendBackupView: View {
     }
 }
 
-// MARK: - Supporting Views
+// MARK: - Support Views
 
 struct BackupActionRow: View {
     let icon: String
@@ -683,46 +787,82 @@ struct PreviewSheet: View {
     let onCancel: () -> Void
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 24) {
-                VStack(spacing: 12) {
-                    previewIcon
-                    previewTitle
+        ZStack {
+            // 그라데이션 배경
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.1),
+                    Color.green.opacity(0.05),
+                    Color.clear
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 32) {
+                Spacer(minLength: 60)
+                
+                // 헤더 섹션
+                VStack(spacing: 16) {
+                    // 아이콘
+                    ZStack {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.blue, Color.green]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 80, height: 80)
+                            .shadow(color: Color.blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                        
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(.system(size: 36, weight: .medium))
+                            .foregroundColor(.white)
+                    }
+                    
+                    VStack(spacing: 8) {
+                        Text("친구 데이터 복원")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                        
+                        Text("백업 파일을 확인하고 복원하세요")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
                 }
-                changesSummary
+                
+                // 변경사항 요약 카드
+                VStack(spacing: 24) {
+                    previewCards
+                    changesDetail
+                }
+                .padding(24)
+                .background {
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(.regularMaterial)
+                        .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 10)
+                }
+                .frame(maxWidth: 400)
+                
                 Spacer()
+                
+                // 액션 버튼들
                 actionButtons
+                
+                Spacer(minLength: 40)
             }
-            .padding(24)
-            .navigationBarHidden(true)
+            .padding(.horizontal, 24)
         }
-    }
-    
-    private var previewIcon: some View {
-        Image(systemName: "clock.arrow.circlepath")
-            .font(.system(size: 60))
-            .foregroundStyle(.blue.gradient)
-    }
-    
-    private var previewTitle: some View {
-        Text("친구 데이터 복원")
-            .font(.title2)
-            .fontWeight(.bold)
-    }
-    
-    private var changesSummary: some View {
-        VStack(spacing: 16) {
-            previewCards
-            Divider()
-            changesDetail
-        }
-        .padding(20)
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .navigationBarHidden(true)
     }
     
     private var previewCards: some View {
-        VStack(spacing: 16) {
+        HStack(spacing: 20) {
             PreviewCard(
                 title: "백업 파일",
                 value: "\(previewResult.backupFriendsCount)명",
@@ -774,22 +914,41 @@ struct PreviewSheet: View {
     }
     
     private var actionButtons: some View {
-        VStack(spacing: 12) {
-            Button("가져오기", systemImage: "square.and.arrow.down", action: onConfirm)
-                .fontWeight(.bold)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(.blue)
+        VStack(spacing: 16) {
+            Button(action: onConfirm) {
+                HStack {
+                    Image(systemName: "square.and.arrow.down")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("가져오기")
+                        .fontWeight(.semibold)
+                }
                 .foregroundColor(.white)
-                .cornerRadius(10)
-            
-            Button("취소", action: onCancel)
                 .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color(.systemGray5))
-                .foregroundColor(.primary)
-                .cornerRadius(10)
+                .frame(height: 56)
+                .background {
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.blue, Color.green]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 28))
+                .shadow(color: Color.blue.opacity(0.3), radius: 8, x: 0, y: 4)
+            }
+            
+            Button(action: onCancel) {
+                Text("취소")
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 48)
+                    .background {
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(Color(.systemGray6).opacity(0.5))
+                    }
+            }
         }
+        .frame(maxWidth: 400)
     }
 }
 
@@ -800,35 +959,28 @@ struct PreviewCard: View {
     let color: Color
     
     var body: some View {
-        HStack(spacing: 16) {
-            cardIcon
-            cardContent
-            Spacer()
-        }
-    }
-    
-    private var cardIcon: some View {
-        ZStack {
-            Circle()
-                .fill(color.opacity(0.1))
-                .frame(width: 44, height: 44)
+        VStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.1))
+                    .frame(width: 48, height: 48)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(color)
+            }
             
-            Image(systemName: icon)
-                .font(.system(size: 20, weight: .medium))
-                .foregroundColor(color)
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text(value)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+            }
         }
-    }
-    
-    private var cardContent: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.title3)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-        }
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -889,57 +1041,123 @@ struct ResetSelectionSheet: View {
     let onCancel: () -> Void
     
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(FriendBackupView.ResetType.allCases, id: \.self) { type in
-                    Button {
-                        resetType = type
-                        onConfirm()
-                    } label: {
-                        HStack(spacing: 16) {
-                            ZStack {
-                                Circle()
-                                    .fill(type.color.opacity(0.1))
-                                    .frame(width: 44, height: 44)
+        ZStack {
+            // 그라데이션 배경
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.orange.opacity(0.1),
+                    Color.red.opacity(0.05),
+                    Color.clear
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 24) {
+                Spacer(minLength: 20)
+                
+                // 헤더
+                VStack(spacing: 16) {
+                    ZStack {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.orange, Color.red]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 80, height: 80)
+                            .shadow(color: Color.orange.opacity(0.3), radius: 8, x: 0, y: 4)
+                        
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 36, weight: .medium))
+                            .foregroundColor(.white)
+                    }
+                    
+                    VStack(spacing: 8) {
+                        Text("재설정 옵션 선택")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                        
+                        Text("삭제할 데이터 범위를 선택하세요")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                
+                // 옵션 카드들
+                VStack(spacing: 16) {
+                    ForEach(FriendBackupView.ResetType.allCases, id: \.self) { type in
+                        Button {
+                            resetType = type
+                            onConfirm()
+                        } label: {
+                            HStack(spacing: 16) {
+                                ZStack {
+                                    Circle()
+                                        .fill(type.color.opacity(0.1))
+                                        .frame(width: 56, height: 56)
+                                    
+                                    Image(systemName: type.icon)
+                                        .font(.system(size: 24, weight: .medium))
+                                        .foregroundColor(type.color)
+                                }
                                 
-                                Image(systemName: type.icon)
-                                    .font(.system(size: 20, weight: .medium))
-                                    .foregroundColor(type.color)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(type.title)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(type.title)
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.primary)
+                                    
+                                    Text(type.description)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.leading)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
                                 
-                                Text(type.description)
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
                                     .font(.caption)
+                                    .fontWeight(.semibold)
                                     .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.leading)
                             }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            .padding(20)
+                            .background {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(.regularMaterial)
+                                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+                            }
                         }
-                        .padding(.vertical, 8)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .navigationTitle("재설정 옵션 선택")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("취소") {
-                        onCancel()
+                        .buttonStyle(.plain)
                     }
                 }
+                
+                Spacer()
+                
+                // 취소 버튼
+                Button(action: onCancel) {
+                    Text("취소")
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 48)
+                        .background {
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(Color(.systemGray6).opacity(0.5))
+                        }
+                }
+                
+                Spacer(minLength: 40)
             }
+            .padding(.horizontal, 24)
         }
-        .presentationDetents([.medium])
+        .navigationBarHidden(true)
     }
 }
 
