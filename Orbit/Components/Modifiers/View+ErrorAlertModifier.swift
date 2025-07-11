@@ -38,6 +38,7 @@ extension ErrorAlertModifier: ViewModifier {
         content
             .errorAlert(isThrownError(\.vrckError), appVM.vrckError, action)
             .errorAlert(isThrownError(\.applicationError), appVM.applicationError, action)
+            .sessionExpiredAlert(appVM: appVM)
     }
 }
 
@@ -50,7 +51,7 @@ private extension View {
         alert(
             isPresented: isPresented,
             error: error
-        ) { _ in
+        ) { error in
             Button("OK", action: action)
         } message: { error in
             errorText(error)
@@ -58,6 +59,36 @@ private extension View {
     }
 
     private func errorText<E>(_ error: E) -> Text where E: LocalizedError {
-        Text(verbatim: error.failureReason ?? String(localized: "Try again later"))
+        let message = error.failureReason ?? String(localized: "Try again later")
+        return Text(verbatim: message)
+    }
+    
+    @ViewBuilder
+    func sessionExpiredAlert(appVM: AppViewModel) -> some View {
+        let isSessionExpired = Binding<Bool>(
+            get: {
+                if let vrckError = appVM.vrckError,
+                   case .unauthorized(let context) = vrckError,
+                   !context.isLoginFailure {
+                    return true
+                }
+                return false
+            },
+            set: { _ in
+                appVM.vrckError = nil
+            }
+        )
+        
+        self.alert(
+            "Session Expired",
+            isPresented: isSessionExpired
+        ) {
+            Button("OK") {
+                appVM.step = .loggingIn
+                appVM.dispose()
+            }
+        } message: {
+            Text("Your session has expired. Please log in again to continue.")
+        }
     }
 }

@@ -28,26 +28,33 @@ struct OtpView: View {
                     .font(.caption2)
             }
             .padding(.horizontal, 8)
-            enterButton
+            verifyButton
         }
         .frame(maxWidth: 560)
         .padding(32)
         .ignoresSafeArea(.keyboard)
+        .onDisappear {
+            if appVM.step == .loggingIn && appVM.verifyType != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    appVM.verifyType = nil
+                }
+            }
+        }
     }
 
-    private var enterButton: some View {
+    private var verifyButton: some View {
         AsyncButton {
             await otpAction()
         } label: {
             if isRequesting {
                 ProgressView()
             } else {
-                Text("Enter")
+                Text("Verify")
             }
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.borderedProminent)
         .buttonBorderShape(.capsule)
-        .disabled(isDisabledEnterButton)
+        .disabled(isDisabledVerifyButton)
     }
 
     private func otpAction() async {
@@ -64,7 +71,7 @@ struct OtpView: View {
         appVM.verifyType?.description ?? ""
     }
 
-    private var isDisabledEnterButton: Bool {
+    private var isDisableVerifyButton: Bool {
         isRequesting || code.count < 6
     }
 }

@@ -44,17 +44,39 @@ final class AppViewModel {
     func setup(service: AuthenticationServiceProtocol) async -> Step {
         var next: Step = .loggingIn
         // check local data
-        guard await client.cookieManager.cookieExists else { return next }
+        guard await client.cookieManager.cookieExists else { 
+            print("🍪 [setup] No cookies found, proceeding to login")
+            return next 
+        }
+        
+        print("🍪 [setup] Cookies found, verifying auth token")
         do {
             // verify auth token and fetch user data
-            guard try await service.verifyAuthToken() else { return next }
+            guard try await service.verifyAuthToken() else { 
+                print("🔐 [setup] Auth token verification failed")
+                await client.cookieManager.deleteCookies()
+                return next 
+            }
+            
+            print("🔐 [setup] Auth token verified, fetching user info")
             let result = try await service.loginUserInfo()
             if case .left(let user) = result {
                 setUser(user)
                 next = .done(user)
+                print("✅ [setup] Setup completed successfully for user: \(user.displayName)")
+            } else {
+                print("🔐 [setup] User info fetch returned 2FA requirement")
+                await client.cookieManager.deleteCookies()
             }
         } catch {
-            handleError(error)
+            print("❌ [setup] Setup failed with error: \(error)")
+            await client.cookieManager.deleteCookies()
+            if let vrckError = error as? VRCKitError,
+               case .unauthorized = vrckError {
+                print("🔐 [setup] Authentication error, clearing session")
+            } else {
+                handleError(error)
+            }
         }
         return next
     }
@@ -120,12 +142,17 @@ final class AppViewModel {
     func verifyTwoFA(code: String) async {
         guard let verifyType = verifyType else { return }
         do {
-            defer { dispose() }
             guard try await services.authenticationService.verify2FA(
                 verifyType: verifyType,
                 code: code
             ) else {
                 throw ApplicationError(text: "Authentication failed")
+            }
+            
+            let result = try await services.authenticationService.loginUserInfo()
+            if case .left(let user) = result {
+                setUser(user)
+                self.verifyType = nil
             }
         } catch {
             handleError(error)
@@ -135,10 +162,10 @@ final class AppViewModel {
     func logout() async {
         do {
             try await services.authenticationService.logout()
-            dispose()
         } catch {
-            handleError(error)
+            print("⚠️ [logout] Logout request failed: \(error), but clearing local state")
         }
+        dispose()
     }
 
     /// Resets the application's state and clears user-related data.
@@ -146,24 +173,58 @@ final class AppViewModel {
     /// This function removes stored user data from `UserDefaults`, including the
     /// Keychain save preference and username, resets the current authentication step
     /// to `.initializing`, and reinitializes the API client to a default state.
-    private func dispose() {
+    func dispose() {
+        print("🗑️ [dispose] Clearing application state")
+        
         userDefaults.removeObject(forKey: Constants.Keys.isSavedOnKeyChain.rawValue)
         userDefaults.removeObject(forKey: Constants.Keys.username.rawValue)
+        
+        Task {
+            await client.cookieManager.deleteCookies()
+        }
+        
+        user = nil
+        verifyType = nil
+        vrckError = nil
+        applicationError = nil
+        
         step = .initializing
         client = APIClient()
+        
+        print("✅ [dispose] Application state cleared")
     }
 
     func handleError(_ error: Error) {
         if let error = error as? VRCKitError {
-            guard error != .unauthorized else {
-                step = .loggingIn
-                return
+            switch error {
+            case .unauthorized(let context):
+                if context.isLoginFailure {
+                    vrckError = error
+                } else {
+                    vrckError = error
+                }
+            case .networkError, .serverError:
+                vrckError = error
+            default:
+                vrckError = error
             }
-            vrckError = error
         } else if let error = error as? ApplicationError {
             applicationError = error
         } else if !error.isCancelled {
-            applicationError = ApplicationError(error)
+            if let urlError = error as? URLError {
+                switch urlError.code {
+                case .notConnectedToInternet, .networkConnectionLost:
+                    vrckError = VRCKitError.networkError("No internet connection. Please check your network settings.")
+                case .timedOut:
+                    vrckError = VRCKitError.networkError("Request timed out. Please try again.")
+                case .cannotConnectToHost:
+                    vrckError = VRCKitError.networkError("Cannot connect to server. Please try again later.")
+                default:
+                    vrckError = VRCKitError.networkError("Network error: \(urlError.localizedDescription)")
+                }
+            } else {
+                applicationError = ApplicationError(error)
+            }
         }
     }
 }

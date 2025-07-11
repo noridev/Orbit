@@ -29,7 +29,7 @@ struct LoginView: View {
                 VStack(spacing: 16) {
                     loginFields
                     keychainToggle
-                    enterButton
+                    loginButton
                 }
             }
             .frame(maxWidth: 560)
@@ -55,6 +55,9 @@ struct LoginView: View {
             if let url = URL(string: "https://vrchat.com/home/register") {
                 SafariView(url: url)
             }
+        }
+        .errorAlert {
+            isRequesting = false
         }
     }
 
@@ -149,7 +152,7 @@ struct LoginView: View {
         }
     }
 
-    private var enterButton: some View {
+    private var loginButton: some View {
         AsyncButton {
             defer { isRequesting = false }
             isRequesting = true
@@ -161,12 +164,14 @@ struct LoginView: View {
                 Text("Login")
             }
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.borderedProminent)
         .buttonBorderShape(.capsule)
-        .disabled(isDisabledEnterButton)
+        .disabled(isDisabledLoginButton)
+        .frame(maxWidth: .infinity, minHeight: 50)
+        .padding()
     }
 
-    private var isDisabledEnterButton: Bool {
+    private var isDisabledLoginButton: Bool {
         isRequesting || username.count < 4 || password.count < 8
     }
 }
