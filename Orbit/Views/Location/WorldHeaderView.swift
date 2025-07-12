@@ -11,16 +11,16 @@ import VRCKit
 struct WorldHeaderView<Content: View>: View {
     let world: World
     @ViewBuilder let content: Content
-    private let isRedacted: Bool
+    private let isRequesting: Bool
     
     init(world: World, @ViewBuilder content: () -> Content) {
         self.world = world
         self.content = content()
-        self.isRedacted = false
+        self.isRequesting = false
     }
     
     init(redacted: Bool, world: World, @ViewBuilder content: () -> Content) {
-        self.isRedacted = redacted
+        self.isRequesting = redacted
         self.world = world
         self.content = content()
     }
@@ -39,7 +39,7 @@ struct WorldHeaderView<Content: View>: View {
                 VStack {
                     HStack {
                         Spacer()
-                        if !isRedacted {
+                        if !isRequesting {
                            PlatformIconView(platform: world.platform)
                         }
                     }
@@ -47,7 +47,7 @@ struct WorldHeaderView<Content: View>: View {
                 }
                 .frame(width: 80, height: 65)
                 
-                if isRedacted {
+                if isRequesting {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(.regularMaterial)
                         .frame(width: 80, height: 65)
@@ -58,7 +58,6 @@ struct WorldHeaderView<Content: View>: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(world.name)
                     .font(.headline)
-                    .fontWeight(.medium)
                     .foregroundColor(.primary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -68,6 +67,6 @@ struct WorldHeaderView<Content: View>: View {
             
             Spacer()
         }
-        .redacted(reason: isRedacted ? .placeholder : [])
+        .redacted(reason: isRequesting ? .placeholder : [])
     }
 }

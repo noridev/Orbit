@@ -39,6 +39,9 @@ struct UserIcon<T>: View where T: ProfileElementRepresentable {
                 if showTrustRankBorder {
                     Circle()
                         .stroke(borderColor, lineWidth: borderWidth * 1.25)
+                } else {
+                    Circle()
+                        .stroke(Color(.systemGray5), lineWidth: 1)
                 }
             }
             .clipShape(Circle())

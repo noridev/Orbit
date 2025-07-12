@@ -22,21 +22,54 @@ struct PrivateLocationView: View {
 
     var body: some View {
         List(selection: $selection) {
-            Section("Friends") {
+            Section {
                 ForEach(friends) { friend in
                     NavigationLabel {
-                        Label {
-                            Text(friend.displayName)
-                        } icon: {
-                            UserIcon(user: friend, size: Constants.IconSize.thumbnail)
+                        HStack {
+                            UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
+
+                            VStack(alignment: .leading) {
+                                Text(friend.displayName)
+                                    .font(.headline)
+                                
+                                FriendStatusInLocationView(friend: friend)
+                            }
+                            .padding(.leading, 4)
                         }
                     }
                     .tag(SegmentIdSelection(friendId: friend.id))
+                }
+            } header: {
+                HStack {
+                    Text("Friends")
+                    Spacer()
+                    Text("\(friends.count)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.blue.opacity(0.1))
+                        .clipShape(Capsule())
                 }
             }
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Private")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private struct FriendStatusInLocationView: View {
+        let friend: Friend
+        
+        var body: some View {
+            if !friend.statusDescription.isEmpty {
+                Text(friend.statusDescription)
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            } else if let lastLogin = friend.lastLogin {
+                LastLoginView(lastLogin: lastLogin)
+            }
+        }
     }
 }

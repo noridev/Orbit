@@ -195,6 +195,13 @@ struct FavoritesView: View {
     ) -> LabeledContent<some View, some View> {
         LabeledContent {
             Text("\(count.description) / \(max.description)")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.blue)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.blue.opacity(0.1))
+                .clipShape(Capsule())
         } label: {
             Text(title)
         }

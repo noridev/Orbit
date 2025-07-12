@@ -138,7 +138,6 @@ private struct PrivateLocationContent: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Private Instances")
                             .font(.headline)
-                            .fontWeight(.medium)
                             .foregroundColor(.primary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)

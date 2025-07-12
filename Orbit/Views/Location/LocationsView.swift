@@ -116,7 +116,15 @@ struct LocationsView: View {
         } header: {
             HStack {
                 Text("Friend Locations")
-                Text(verbatim: "(\(friendVM.visibleFriendsLocations.count))")
+                Spacer()
+                Text("\(friendVM.visibleFriendsLocations.count)")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.blue.opacity(0.1))
+                    .clipShape(Capsule())
                     .redacted(reason: friendVM.isFetchingAllFriends ? .placeholder : [])
             }
         }

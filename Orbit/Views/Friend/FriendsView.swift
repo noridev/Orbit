@@ -18,8 +18,14 @@ struct FriendsView: View {
     var body: some View {
         @Bindable var friendVM = friendVM
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            FriendsListView(selected: $selected)
-                .navigationTitle("Friends")
+            if #available(iOS 26.0, *) {
+                FriendsListView(selected: $selected)
+                    .navigationTitle("Friends")
+                    .navigationSubtitle("\(friendVM.filterResultFriends.count) friends")
+            } else {
+                FriendsListView(selected: $selected)
+                    .navigationTitle("Friends")
+            }
         } detail: { detail }
         .navigationSplitViewStyle(.balanced)
         .tint(Color(UIColor { $0.userInterfaceStyle == .dark ? .white : .black }))
