@@ -1686,6 +1686,12 @@
         }
       }
     },
+    "Pronouns" : {
+
+    },
+    "Pronouns (e.g., they/them, she/her)" : {
+
+    },
     "Raw History Data" : {
       "shouldTranslate" : false
     },

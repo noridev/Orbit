@@ -58,6 +58,7 @@ private extension UserDetail {
             lastLogin: Date(),
             lastPlatform: "standalonewindows",
             profilePicOverride: profile?.imageUrl(),
+            pronouns: "they/them",
             state: state,
             status: status,
             statusDescription: statusDescription,

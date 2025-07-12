@@ -26,6 +26,7 @@ struct ProfileEditView: View {
         NavigationStack {
             Form {
                 statusSection
+                pronounsSection
                 descriptionSection
                 languageSection
                 bioLinksSection
@@ -73,6 +74,15 @@ struct ProfileEditView: View {
                 "Status Description",
                 text: $profileEditVM.editingUserInfo.statusDescription
             )
+        }
+    }
+    
+    private var pronounsSection: some View {
+        Section("Pronouns") {
+            TextField("Pronouns (e.g., they/them, she/her)", text: Binding(
+                get: { profileEditVM.editingUserInfo.pronouns ?? "" },
+                set: { profileEditVM.editingUserInfo.pronouns = $0.isEmpty ? nil : $0 }
+            ))
         }
     }
 
@@ -195,6 +205,7 @@ struct ProfileEditView: View {
             appVM.user = updatedUser
             print("✅ [saveProfileAction] AppViewModel user updated locally")
             print("🔄 [saveProfileAction] Updated status: \(updatedUser.status.description)")
+            print("🔄 [saveProfileAction] Updated pronouns: \(updatedUser.pronouns ?? "nil")")
             print("🔄 [saveProfileAction] Updated bio: \(updatedUser.bio ?? "nil")")
             
             NotificationCenter.default.post(name: .profileUpdated, object: updatedUser)

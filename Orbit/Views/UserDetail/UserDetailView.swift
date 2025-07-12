@@ -47,7 +47,7 @@ struct UserDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
+        let content = ScrollView {
             VStack {
                 header
                 userInfoSection
@@ -92,6 +92,23 @@ struct UserDetailView: View {
             if let lastActivity = user.lastActivity {
                 self.lastActivity = await DateUtil.shared.formatRelative(from: lastActivity)
             }
+        }
+        
+        if #available(iOS 26.0, *) {
+            let subtitle: String
+            
+            if let pronouns = user.pronouns, !pronouns.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                subtitle = pronouns
+            } else if user.state == .offline {
+                subtitle = UserStatus.offline.description
+            } else {
+                subtitle = user.statusDescription.isEmpty ? user.status.description : user.statusDescription
+            }
+            
+            return content
+                .navigationSubtitle(subtitle)
+        } else {
+            return content
         }
     }
     
@@ -212,10 +229,19 @@ extension UserDetailView {
                 Spacer().frame(height: 52)
                 
                 VStack(spacing: 4) {
-                    Text(user.displayName)
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundStyle(.primary)
-                        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+                    VStack(spacing: 0) {
+                        Text(user.displayName)
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .foregroundStyle(.primary)
+                            .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+
+                        if let pronouns = user.pronouns, !pronouns.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text(pronouns)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
 
                     Text(statusDescription)
                         .font(.subheadline)
@@ -223,8 +249,7 @@ extension UserDetailView {
                         .lineLimit(1)
                 }
 
-                badges
-                    .padding(.top, 4)
+                badges.padding(.top, 4)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 20)

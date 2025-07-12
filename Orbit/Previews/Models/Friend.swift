@@ -103,6 +103,7 @@ private extension Friend {
             lastPlatform: "standalonewindows",
             platform: .blank,
             profilePicOverride: nil,
+            pronouns: "she/her",
             status: status,
             statusDescription: "",
             tags: UserTags(),

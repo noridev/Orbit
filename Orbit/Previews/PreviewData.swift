@@ -59,6 +59,7 @@ final class PreviewData: Sendable {
             onlineFriends: onlineFriends.map(\.id),
             pastDisplayNames: [],
             profilePicOverride: PreviewData.iconImageUrl,
+            pronouns: "he/him",
             state: .active,
             status: .active,
             statusDescription: "status",
