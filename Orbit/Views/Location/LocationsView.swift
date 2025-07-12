@@ -102,14 +102,14 @@ struct LocationsView: View {
                 ForEach(0...7, id: \.self) { _ in
                     LocationCardView(
                         selected: .constant(nil),
-                        location: PreviewData.friendsLocation
+                        data: .friendLocation(PreviewData.friendsLocation)
                     )
                 }
             } else {
                 ForEach(friendVM.visibleFriendsLocations) { location in
                     LocationCardView(
                         selected: $selectedInstance,
-                        location: location
+                        data: .friendLocation(location)
                     )
                 }
             }
@@ -124,25 +124,10 @@ struct LocationsView: View {
 
     private var inPrivateInstance: some View {
         Section("Private") {
-            HStack(spacing: 16) {
-                SquareURLImage(imageUrl: Const.privateWorldImageUrl)
-                VStack(spacing: 8) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Private Instances")
-                                .font(.body)
-                                .lineLimit(1)
-                            Text(friendVM.friendsInPrivate.count.description)
-                                .font(.caption)
-                                .foregroundStyle(Color.gray)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        NavigationLabel()
-                    }
-                    HorizontalProfileImages(friendVM.friendsInPrivate)
-                }
-            }
-            .tag(InstanceLocation(friends: friendVM.friendsInPrivate))
+            LocationCardView(
+                selected: $selectedInstance,
+                data: .privateLocation(friendVM.friendsInPrivate)
+            )
         }
     }
 }

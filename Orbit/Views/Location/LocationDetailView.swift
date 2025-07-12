@@ -33,21 +33,11 @@ struct LocationDetailView: View {
         List {
             Section("World") {
                 NavigationLink(destination: WorldPresentationView(id: instance.world.id)) {
-                    HStack(spacing: 12) {
-                        SquareURLImage(
-                            imageUrl: instance.world.imageUrl(.x1024),
-                            thumbnailImageUrl: instance.world.imageUrl(.x256)
-                        )
-                        VStack(alignment: .leading) {
-                            Text(instance.world.name)
-                                .font(.body)
-                                .lineLimit(1)
-                            Text(instance.world.description ?? "")
-                                .font(.footnote)
-                                .foregroundStyle(Color.gray)
-                                .lineLimit(2)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    WorldHeaderView(world: instance.world) {
+                        Text(instance.world.description ?? "")
+                            .font(.footnote)
+                            .foregroundStyle(Color.gray)
+                            .lineLimit(2)
                     }
                 }
             }
@@ -74,10 +64,16 @@ struct LocationDetailView: View {
             } else {
                 ForEach(location.friends) { friend in
                     NavigationLink(destination: UserDetailPresentationView(id: friend.id)) {
-                        Label {
-                            Text(friend.displayName)
-                        } icon: {
+                        HStack {
                             UserIcon(user: friend, size: Constants.IconSize.thumbnail)
+
+                            VStack(alignment: .leading) {
+                                Text(friend.displayName)
+                                    .font(.headline)
+                                
+                                FriendStatusInLocationView(friend: friend)
+                            }
+                            .padding(.leading, 4)
                         }
                     }
                 }
@@ -91,6 +87,20 @@ struct LocationDetailView: View {
                 Text(informationItem.value)
             } label: {
                 Text(informationItem.title)
+            }
+        }
+    }
+    
+    private struct FriendStatusInLocationView: View {
+        let friend: Friend
+        
+        var body: some View {
+            if !friend.statusDescription.isEmpty {
+                Text(friend.statusDescription)
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            } else if let lastLogin = friend.lastLogin {
+                LastLoginView(lastLogin: lastLogin)
             }
         }
     }

@@ -25,5 +25,16 @@ struct HorizontalProfileImages<T>: View where T: ProfileElementRepresentable {
                 }
             }
         }
+        .mask(
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: .black, location: 0),
+                    .init(color: .black, location: 0.7),
+                    .init(color: .clear, location: 1.0)
+                ]),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
     }
 }
