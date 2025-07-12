@@ -34,7 +34,9 @@ struct LocationsView: View {
     }
 
     private var sidebar: some View {
-        List(selection: $selectedInstance) {
+        let totalFriends = friendVM.visibleFriendsLocations.count + friendVM.friendsInPrivate.count
+        
+        let list = List(selection: $selectedInstance) {
             friendLocations
             if !friendVM.isFetchingAllFriends {
                 inPrivateInstance
@@ -50,6 +52,13 @@ struct LocationsView: View {
         }
         .navigationTitle("Social")
         .setColumn(appVM.screenSize)
+
+        if #available(iOS 26.0, *) {
+            return list
+                .navigationSubtitle("\(totalFriends) friends")
+        } else {
+            return list
+        }
     }
 
     private var content: some View {

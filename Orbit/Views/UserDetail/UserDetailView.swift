@@ -6,8 +6,23 @@
 //
 
 import AsyncSwiftUI
+import SwiftUI
 import NukeUI
 import VRCKit
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
+    }
+}
 
 struct UserDetailView: View {
     @Environment(AppViewModel.self) var appVM
@@ -34,19 +49,8 @@ struct UserDetailView: View {
     var body: some View {
         ScrollView {
             VStack {
-                GeometryReader { geometry in
-                    GradientOverlayImageView(
-                        imageUrl: user.imageUrl(.x1024),
-                        thumbnailImageUrl: user.imageUrl(.x256),
-                        size: CGSize(
-                            width: max(geometry.size.width, 1), 
-                            height: max(headerHeight, 1)
-                        ),
-                        topContent: { topOverlay },
-                        bottomContent: { bottomOverlay }
-                    )
-                }
-                .frame(height: headerHeight)
+                header
+                userInfoSection
                 contentStacks
             }
         }
@@ -92,7 +96,7 @@ struct UserDetailView: View {
     }
     
     private var contentStacks: some View {
-        VStack {
+        VStack(spacing: 12) {
             locationSection
             noteSection
             
@@ -159,5 +163,103 @@ struct UserDetailView: View {
                 }
             }
         }
+    }
+}
+
+extension UserDetailView {
+    var header: some View {
+        GeometryReader { geometry in
+            GradientOverlayImageView(
+                imageUrl: user.imageUrl(.x1024),
+                thumbnailImageUrl: user.imageUrl(.x256),
+                size: CGSize(
+                    width: max(geometry.size.width, 1),
+                    height: max(headerHeight, 1)
+                ),
+                topContent: { topOverlay }
+            )
+        }
+        .frame(height: headerHeight)
+    }
+    
+    var userInfoSection: some View {
+        ZStack(alignment: .top) {
+            VStack(spacing: 0) {
+                RoundedCorner(radius: 28, corners: [.bottomLeft, .bottomRight])
+                    .fill(Color(.secondarySystemGroupedBackground))
+                    //.shadow(color: .black.opacity(0.08), radius: 16, x: 0, y: 8)
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
+            
+            ZStack {
+                Circle()
+                    .fill(user.trustRank.color.opacity(0.25))
+                    .frame(width: 120, height: 120)
+                    .blur(radius: 12)
+                    .offset(y: 6)
+                
+                UserIcon(
+                    user: user,
+                    size: CGSize(width: 104, height: 104),
+                    showStatusIndicator: true,
+                    showTrustRankBorder: true
+                )
+            }
+            .offset(y: -60)
+
+            VStack(spacing: 12) {
+                Spacer().frame(height: 52)
+                
+                VStack(spacing: 4) {
+                    Text(user.displayName)
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundStyle(.primary)
+                        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+
+                    Text(statusDescription)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                badges
+                    .padding(.top, 4)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 0)
+        .padding(.bottom, 4)
+    }
+
+    var badges: some View {
+        HStack(spacing: 10) {
+            if user.vrcPlus.isSupporter {
+                badgeView(icon: IconSet.vrcplus.icon, text: "VRC+", color: user.vrcPlus.color)
+            }
+            if let ageVerificationStatusLabel = user.ageVerification.ageVerificationStatusLabel {
+                badgeView(icon: IconSet.ageVerification.icon, text: ageVerificationStatusLabel, color: user.ageVerification.ageVerificationStatus.color)
+            }
+            badgeView(icon: IconSet.shield.icon, text: user.trustRank.description, color: user.trustRank.color)
+        }
+    }
+
+    func badgeView(icon: some View, text: String, color: Color) -> some View {
+        HStack(spacing: 6) {
+            icon.font(.caption)
+            Text(text).font(.caption.bold())
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 7)
+        .background(
+            Capsule()
+                .fill(color.opacity(0.13))
+                .overlay(
+                    Capsule().stroke(color.opacity(0.35), lineWidth: 1)
+                )
+        )
+        .foregroundStyle(color)
     }
 }

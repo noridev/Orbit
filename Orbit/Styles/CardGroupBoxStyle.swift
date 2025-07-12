@@ -18,10 +18,11 @@ struct CardGroupBoxStyle: GroupBoxStyle {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 24)
                 .foregroundStyle(Color(.secondarySystemGroupedBackground))
         }
-        .padding(.horizontal, 8)
+        //.shadow(color: .black.opacity(0.08), radius: 16, x: 0, y: 8)
+        .padding(.horizontal, 16)
     }
 }
 
