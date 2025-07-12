@@ -226,27 +226,8 @@
         }
       }
     },
-    "authenticator app" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "二段階認証アプリ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "인증 앱"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "双重验证应用程序"
-          }
-        }
-      }
+    "Authenticator" : {
+
     },
     "Author" : {
       "localizations" : {
@@ -405,29 +386,6 @@
     },
     "Connect to your world" : {
 
-    },
-    "Connect your VRChat account." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VRChatアカウントを連携しましょう"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VRChat 계정 로그인이 필요합니다."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "连接您的 VRChat 账户"
-          }
-        }
-      }
     },
     "Create an account" : {
       "localizations" : {
@@ -665,50 +623,8 @@
         }
       }
     },
-    "email" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "メール"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이메일"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "邮件"
-          }
-        }
-      }
-    },
-    "Enter" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "入力"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "입력"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "输入"
-          }
-        }
-      }
+    "Email" : {
+
     },
     "Enter note" : {
       "localizations" : {
@@ -732,11 +648,7 @@
         }
       }
     },
-    "Enter the 6-digit code from your %@" : {
-
-    },
-    "Enter the 6-digit two-factor verification code recieved in your %@." : {
-      "extractionState" : "stale",
+    "Enter the 6-digit two-factor verification code recieved in your %@" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -747,7 +659,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 에서 받은 6자리 인증 코드를 입력해 주세요."
+            "value" : "%@ 에서 받은 6자리 인증 코드를 입력해 주세요"
           }
         },
         "zh-Hans" : {
@@ -1300,29 +1212,6 @@
         }
       }
     },
-    "Login" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログイン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그인"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登录"
-          }
-        }
-      }
-    },
     "Login latest" : {
       "localizations" : {
         "ja" : {
@@ -1661,7 +1550,6 @@
       }
     },
     "Password" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2275,10 +2163,6 @@
       }
     },
     "Two-Factor Authentication" : {
-
-    },
-    "Two-step verification" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2343,7 +2227,6 @@
       }
     },
     "Username" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

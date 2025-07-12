@@ -163,7 +163,7 @@ struct LoginView: View {
     }
 
     private func customTextField(
-        title: String,
+        title: LocalizedStringKey,
         text: Binding<String>,
         icon: String,
         contentType: UITextContentType
@@ -197,7 +197,7 @@ struct LoginView: View {
     }
 
     private func customSecureField(
-        title: String,
+        title: LocalizedStringKey,
         text: Binding<String>,
         icon: String,
         contentType: UITextContentType

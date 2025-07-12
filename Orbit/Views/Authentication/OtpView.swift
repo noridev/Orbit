@@ -74,7 +74,7 @@ struct OtpView: View {
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
                 
-                Text("Enter the 6-digit code from your \(verifyTypeDescription)")
+                Text("Enter the 6-digit two-factor verification code recieved in your \(verifyTypeDescription)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -246,9 +246,9 @@ extension VerifyType: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .emailOtp:
-            String(localized: "email")
+            String(localized: "Email")
         case .otp, .totp:
-            String(localized: "authenticator app")
+            String(localized: "Authenticator")
         }
     }
 }
