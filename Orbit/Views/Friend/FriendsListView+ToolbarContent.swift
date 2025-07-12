@@ -23,7 +23,7 @@ extension FriendsListView {
     }
 
     private var presentSheetButton: some View {
-        Button("", systemImage: IconSet.dots.systemName) {
+        Button("", systemImage: IconSet.filter.systemName) {
             isPresentedSheet.toggle()
         }
     }

@@ -138,16 +138,20 @@ struct FriendsHistoryView: View {
     @ToolbarContentBuilder
     private var navigationToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            Button("", systemImage: "trash") {
-                showClearHistoryAlert = true
-            }
-            .tint(.red)
-            .disabled(allHistories == nil || allHistories?.isEmpty == true)
-            
-            Button("", systemImage: IconSet.dots.systemName) {
+            Button("", systemImage: IconSet.filter.systemName) {
                 isPresentedSheet.toggle()
             }
             .disabled(allHistories == nil)
+            
+            Menu {
+                Button("모든 기록 삭제", systemImage: "trash", role: .destructive) {
+                    showClearHistoryAlert = true
+                }
+                .tint(.red)
+                .disabled(allHistories == nil || allHistories?.isEmpty == true)
+            } label: {
+                IconSet.dots.icon
+            }
         }
     }
 

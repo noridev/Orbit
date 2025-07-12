@@ -342,7 +342,7 @@ struct RawHistoryDataView: View {
                     Image(systemName: "arrow.clockwise")
                 }
                 Button(action: { isPresentedSheet.toggle() }) {
-                    Image(systemName: IconSet.dots.systemName)
+                    Image(systemName: IconSet.filter.systemName)
                 }
             }
         }
