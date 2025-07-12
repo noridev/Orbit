@@ -24,11 +24,25 @@ struct ProfileEditView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                statusSection
-                descriptionSection
-                languageSection
-                bioLinksSection
+            ZStack {
+                // 그라데이션 배경
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.teal.opacity(0.08),
+                        Color.mint.opacity(0.05),
+                        Color.clear
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                Form {
+                    statusSection
+                    descriptionSection
+                    languageSection
+                    bioLinksSection
+                }
             }
             .toolbar { toolbarContents }
             .navigationTitle("Edit Profile")
@@ -187,7 +201,10 @@ struct ProfileEditView: View {
         }
         isRequesting = true
         do {
-            guard let user = appVM.user else { throw ApplicationError.userIsNotSetError }
+            guard let user = appVM.user else { 
+                print("ℹ️ [saveProfileAction] User is not set, likely due to logout. Skipping save.")
+                return 
+            }
             try await profileEditVM.saveProfile(service: appVM.services.userService)
             print("✅ [saveProfileAction] Profile saved to server successfully")
             

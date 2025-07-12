@@ -4,19 +4,11 @@
     "" : {
       "shouldTranslate" : false
     },
-    "%@\n\n이 작업은 되돌릴 수 없습니다." : {
+    "(%lld)" : {
 
     },
-    "%@ / %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ / %2$@"
-          }
-        }
-      },
-      "shouldTranslate" : false
+    "%@\n\n이 작업은 되돌릴 수 없습니다." : {
+
     },
     "%@'s History" : {
       "localizations" : {
@@ -31,10 +23,23 @@
     "%lld" : {
 
     },
+    "%lld / %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / %2$@"
+          }
+        }
+      }
+    },
     "%lld개" : {
 
     },
     "%lld명" : {
+
+    },
+    "%lld명의 친구" : {
 
     },
     "About This App" : {
@@ -933,6 +938,7 @@
       }
     },
     "Friend Locations" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1467,6 +1473,7 @@
       }
     },
     "No Favorites" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1489,6 +1496,7 @@
       }
     },
     "No Friend Location" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1511,6 +1519,7 @@
       }
     },
     "No Friends" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1727,7 +1736,11 @@
         }
       }
     },
+    "Private Instance" : {
+
+    },
     "Private Instances" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1874,6 +1887,7 @@
 
     },
     "Select a Friend" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1896,6 +1910,7 @@
       }
     },
     "Select a friend or world" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1918,6 +1933,7 @@
       }
     },
     "Select a location" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2476,6 +2492,9 @@
     "백업 파일을 확인하고 복원하세요" : {
 
     },
+    "비공개 인스턴스" : {
+
+    },
     "삭제할 데이터 범위를 선택하세요" : {
 
     },
@@ -2485,13 +2504,40 @@
     "새로 추가될 친구" : {
 
     },
+    "아직 즐겨찾기에 추가한 친구나 월드가 없습니다" : {
+
+    },
+    "아직 친구를 추가하지 않았거나 모든 친구가 오프라인 상태입니다" : {
+
+    },
     "업데이트될 친구" : {
+
+    },
+    "온라인 친구가 없거나 모든 친구가 비공개 상태입니다" : {
+
+    },
+    "왼쪽에서 친구를 선택하여 자세한 정보를 확인하세요" : {
+
+    },
+    "왼쪽에서 친구의 위치를 선택하여 상세 정보를 확인하세요" : {
+
+    },
+    "월드" : {
+
+    },
+    "위치를 선택하세요" : {
+
+    },
+    "위치에서 친구나 월드를 선택하여 자세한 정보를 확인하세요" : {
 
     },
     "재설정" : {
 
     },
     "재설정 옵션 선택" : {
+
+    },
+    "즐겨찾기가 없습니다" : {
 
     },
     "진행 전 안내" : {
@@ -2503,10 +2549,31 @@
     "취소" : {
 
     },
+    "친구" : {
+
+    },
     "친구 데이터 관리" : {
 
     },
     "친구 데이터 복원" : {
+
+    },
+    "친구 또는 월드를 선택하세요" : {
+
+    },
+    "친구 위치" : {
+
+    },
+    "친구 위치 없음" : {
+
+    },
+    "친구가 없습니다" : {
+
+    },
+    "친구를 선택하세요" : {
+
+    },
+    "표시할 위치가 없습니다" : {
 
     },
     "현재 계정" : {

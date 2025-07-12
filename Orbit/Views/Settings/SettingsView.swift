@@ -18,19 +18,47 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            settingsContent
-                .navigationTitle("Settings")
-                .toolbar(removing: .sidebarToggle)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done", action: {
-                            dismiss()
-                        })
-                    }
+            ZStack {
+                // 그라데이션 배경
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.gray.opacity(0.08),
+                        Color.secondary.opacity(0.03),
+                        Color.clear
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                settingsContent
+            }
+            .navigationTitle("Settings")
+            .toolbar(removing: .sidebarToggle)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done", action: {
+                        dismiss()
+                    })
                 }
+            }
         } detail: {
-            if let destination = destination {
-                presentDestination(destination)
+            ZStack {
+                // 그라데이션 배경
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.blue.opacity(0.08),
+                        Color.indigo.opacity(0.05),
+                        Color.clear
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                if let destination = destination {
+                    presentDestination(destination)
+                }
             }
         }
         .navigationSplitViewStyle(.balanced)

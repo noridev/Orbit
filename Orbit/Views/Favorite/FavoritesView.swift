@@ -20,26 +20,44 @@ struct FavoritesView: View {
     var body: some View {
         @Bindable var favoriteVM = favoriteVM
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            List(selection: $selected) {
-                if segment != .world {
-                    favoriteFriends
-                }
-                if segment != .friends {
-                    favoriteWorlds
-                }
-            }
-            .overlay {
-                if isFetching {
-                    ProgressView()
-                } else if isSelectedEmpty {
-                    ContentUnavailableView {
-                        Label("No Favorites", systemImage: IconSet.favorite.systemName)
-                            .foregroundColor(.gray)
+            ZStack {
+                // 그라데이션 배경
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.pink.opacity(0.08),
+                        Color.purple.opacity(0.05),
+                        Color.clear
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        if !isFetching && !isSelectedEmpty {
+                            if segment != .world {
+                                favoriteFriends
+                            }
+                            if segment != .friends {
+                                favoriteWorlds
+                            }
+                        }
                     }
-                    .background(Color(.systemGroupedBackground))
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                }
+                .overlay {
+                    if isFetching {
+                        ProgressView()
+                            .scaleEffect(1.2)
+                            .padding(32)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    } else if isSelectedEmpty {
+                        emptyStateView
+                    }
                 }
             }
-            .contentMargins(.top, 8)
             .navigationTitle("Favorites")
             .navigationBarTitleDisplayMode(.automatic)
             .toolbarTitleMenu { toolbarTitleMenu }
@@ -68,6 +86,44 @@ struct FavoritesView: View {
                 FavoriteGroupsListView()
             }
         }
+    }
+
+    private var emptyStateView: some View {
+        VStack(spacing: 24) {
+            Spacer(minLength: 80)
+            
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.pink.opacity(0.2), Color.purple.opacity(0.2)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 80, height: 80)
+                
+                Image(systemName: IconSet.favorite.systemName)
+                    .font(.system(size: 36, weight: .medium))
+                    .foregroundColor(.pink)
+            }
+            
+            VStack(spacing: 8) {
+                Text("즐겨찾기가 없습니다")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Text("아직 즐겨찾기에 추가한 친구나 월드가 없습니다")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private var isFetching: Bool {
@@ -109,94 +165,86 @@ struct FavoritesView: View {
     }
 
     var favoriteFriends: some View {
-        Section("Friends") {
+        VStack(spacing: 16) {
+            // 섹션 헤더
+            HStack {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.green.opacity(0.2), Color.blue.opacity(0.2)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: IconSet.friends.systemName)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.green)
+                }
+                
+                Text("친구")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            
+            // 친구 그룹들
             let groups = favoriteVM.favoriteGroups(.friend)
             ForEach(groups) { group in
                 let friends = favoriteVM.getFavoriteFriends(group.id)
-                friendsDisclosureGroup(group.displayName, friends: friends ?? [])
+                FriendGroupCard(
+                    title: group.displayName,
+                    friends: friends ?? [],
+                    selected: $selected
+                )
             }
-        }
-    }
-
-    private func friendsDisclosureGroup(
-        _ title: any StringProtocol,
-        friends: [Friend]
-    ) -> DisclosureGroup<some View, some View> {
-        DisclosureGroup {
-            ForEach(friends) { friend in
-                NavigationLabel {
-                    HStack {
-                        UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
-
-                        VStack(alignment: .leading) {
-                            Text(friend.displayName)
-                                .font(.headline)
-                            
-                            FriendStatusView(friend: friend)
-                        }
-                        .padding(.leading, 4)
-                    }
-                }
-                .tag(SegmentIdSelection(friendId: friend.id))
-            }
-        } label: {
-            groupLabel(title, count: friends.count, max: .friends)
         }
     }
 
     private var favoriteWorlds: some View {
-        Section("World") {
+        VStack(spacing: 16) {
+            // 섹션 헤더
+            HStack {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.purple.opacity(0.2), Color.pink.opacity(0.2)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: "globe")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.purple)
+                }
+                
+                Text("월드")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            
+            // 월드 그룹들
             ForEach(favoriteVM.favoriteWorldGroups) { favoriteWorlds in
                 if let group = favoriteWorlds.group {
-                    worldDisclosureGroup(group.displayName, favoriteWorlds: favoriteWorlds)
+                    WorldGroupCard(
+                        title: group.displayName,
+                        favoriteWorlds: favoriteWorlds,
+                        selected: $selected
+                    )
                 }
             }
-        }
-    }
-
-    private func worldDisclosureGroup(
-        _ title: any StringProtocol,
-        favoriteWorlds: FavoriteWorldGroup
-    ) -> DisclosureGroup<some View, some View> {
-        DisclosureGroup {
-            ForEach(favoriteWorlds.worlds) { world in
-                worldItem(world)
-                    .tag(SegmentIdSelection(worldId: world.id))
-            }
-        } label: {
-            groupLabel(title, count: favoriteWorlds.worlds.count, max: .world)
-        }
-    }
-
-    private func worldItem(_ world: FavoriteWorld) -> some View {
-        HStack(spacing: 12) {
-            SquareURLImage(
-                imageUrl: world.imageUrl(.x512),
-                thumbnailImageUrl: world.imageUrl(.x256)
-            )
-            VStack(alignment: .leading) {
-                Text(world.name)
-                    .font(.body)
-                    .lineLimit(1)
-                Text(world.description ?? "")
-                    .font(.footnote)
-                    .foregroundStyle(Color.gray)
-                    .lineLimit(2)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            IconSet.forward.icon
-        }
-    }
-
-    private func groupLabel(
-        _ title: any StringProtocol,
-        count: Int,
-        max: Constants.MaxCountInFavoriteList
-    ) -> LabeledContent<some View, some View> {
-        LabeledContent {
-            Text("\(count.description) / \(max.description)")
-        } label: {
-            Text(title)
         }
     }
 
@@ -222,6 +270,259 @@ struct FavoritesView: View {
         } catch {
             appVM.handleError(error)
         }
+    }
+}
+
+// MARK: - Friend Group Card
+private struct FriendGroupCard: View {
+    let title: String
+    let friends: [Friend]
+    @Binding var selected: SegmentIdSelection?
+    @State private var isExpanded = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // 그룹 헤더
+            Button {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(title)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Text("\(friends.count) / \(Constants.MaxCountInFavoriteList.friends.description)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                        .animation(.easeInOut(duration: 0.2), value: isExpanded)
+                }
+                .padding(20)
+            }
+            .buttonStyle(.plain)
+            
+            // 친구 목록
+            if isExpanded {
+                VStack(spacing: 8) {
+                    ForEach(friends) { friend in
+                        FriendRowView(friend: friend, selected: $selected)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+            }
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.regularMaterial)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.green.opacity(0.1),
+                                    Color.blue.opacity(0.05)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                }
+                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+        }
+    }
+}
+
+// MARK: - Friend Row View
+private struct FriendRowView: View {
+    let friend: Friend
+    @Binding var selected: SegmentIdSelection?
+    
+    var body: some View {
+        Button {
+            selected = SegmentIdSelection(friendId: friend.id)
+        } label: {
+            HStack(spacing: 12) {
+                UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(friend.displayName)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                    
+                    FriendStatusView(friend: friend)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.systemGray6).opacity(0.3))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.green.opacity(0.3), Color.blue.opacity(0.2)]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                lineWidth: selected?.selected.id == friend.id ? 2 : 0
+                            )
+                    }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - World Group Card
+private struct WorldGroupCard: View {
+    let title: String
+    let favoriteWorlds: FavoriteWorldGroup
+    @Binding var selected: SegmentIdSelection?
+    @State private var isExpanded = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // 그룹 헤더
+            Button {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(title)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Text("\(favoriteWorlds.worlds.count) / \(Constants.MaxCountInFavoriteList.world.description)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.secondary)
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                        .animation(.easeInOut(duration: 0.2), value: isExpanded)
+                }
+                .padding(20)
+            }
+            .buttonStyle(.plain)
+            
+            // 월드 목록
+            if isExpanded {
+                VStack(spacing: 8) {
+                    ForEach(favoriteWorlds.worlds) { world in
+                        WorldRowView(world: world, selected: $selected)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+            }
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.regularMaterial)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.purple.opacity(0.1),
+                                    Color.pink.opacity(0.05)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                }
+                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+        }
+    }
+}
+
+// MARK: - World Row View
+private struct WorldRowView: View {
+    let world: FavoriteWorld
+    @Binding var selected: SegmentIdSelection?
+    
+    var body: some View {
+        Button {
+            selected = SegmentIdSelection(worldId: world.id)
+        } label: {
+            HStack(spacing: 12) {
+                GradientOverlayImageView(
+                    imageUrl: world.imageUrl(.x512),
+                    thumbnailImageUrl: world.imageUrl(.x256),
+                    size: CGSize(width: 60, height: 60)
+                )
+                .frame(width: 60, height: 60)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(world.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                    
+                    Text(world.authorName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.systemGray6).opacity(0.3))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.purple.opacity(0.3), Color.pink.opacity(0.2)]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                lineWidth: selected?.selected.id == world.id ? 2 : 0
+                            )
+                    }
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 

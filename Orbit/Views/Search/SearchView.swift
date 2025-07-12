@@ -21,10 +21,38 @@ struct SearchView: View {
     
     var body: some View {
         NavigationSplitView {
-            UserListView(selected: $selected, searchVM: searchVM)
-                .navigationTitle("Search")
+            ZStack {
+                // 그라데이션 배경
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.indigo.opacity(0.08),
+                        Color.purple.opacity(0.05),
+                        Color.clear
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                UserListView(selected: $selected, searchVM: searchVM)
+            }
+            .navigationTitle("Search")
         } detail: {
-            UserDetailContainerView(selected: $selected)
+            ZStack {
+                // 그라데이션 배경
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.mint.opacity(0.08),
+                        Color.cyan.opacity(0.05),
+                        Color.clear
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                UserDetailContainerView(selected: $selected)
+            }
         }
         .navigationSplitViewStyle(.balanced)
         .searchable(text: $searchVM.searchText, placement: .navigationBarDrawer(displayMode: .always))
