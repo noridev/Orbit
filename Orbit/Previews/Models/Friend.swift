@@ -99,6 +99,7 @@ private extension Friend {
             id: "usr_\(id.uuidString)",
             isFriend: true,
             lastLogin: Date(),
+            lastActivity: Date(),
             lastPlatform: "standalonewindows",
             platform: .blank,
             profilePicOverride: nil,

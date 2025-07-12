@@ -67,8 +67,8 @@ struct PrivateLocationView: View {
                 Text(friend.statusDescription)
                     .font(.caption)
                     .foregroundColor(.gray)
-            } else if let lastLogin = friend.lastLogin {
-                LastLoginView(lastLogin: lastLogin)
+            } else if let lastActivity = friend.lastActivity {
+                LastActivityView(lastActivity: lastActivity)
             }
         }
     }

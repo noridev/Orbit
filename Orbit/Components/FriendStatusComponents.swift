@@ -19,12 +19,12 @@ struct FriendStatusView: View {
                 Text(friend.statusDescription)
                     .font(.caption)
                     .foregroundColor(.gray)
-            } else if let lastLogin = friend.lastLogin {
-                LastLoginView(lastLogin: lastLogin)
+            } else if let lastActivity = friend.lastActivity {
+                LastActivityView(lastActivity: lastActivity)
             }
         } else {
-            if let lastLogin = friend.lastLogin {
-                LastLoginView(lastLogin: lastLogin)
+            if let lastActivity = friend.lastActivity {
+                LastActivityView(lastActivity: lastActivity)
             } else if !friend.statusDescription.isEmpty {
                 Text(friend.statusDescription)
                     .font(.caption)
@@ -104,13 +104,13 @@ struct InstanceLocationView: View {
     }
 }
 
-struct LastLoginView: View {
-    let lastLogin: Date
+struct LastActivityView: View {
+    let lastActivity: Date
     @State private var relativeTimeString = ""
     
     var body: some View {
         HStack(spacing: 2) {
-            Text("Last Login" + ":")
+            Text("Last Activity" + ":")
                 .font(.caption)
                 .foregroundStyle(.gray)
             Text(relativeTimeString)
@@ -128,10 +128,10 @@ struct LastLoginView: View {
     private func updateRelativeTimeSync() {
         let calendar = Calendar.current
         let now = Date()
-        let components = calendar.dateComponents([.day, .hour, .minute], from: lastLogin, to: now)
+        let components = calendar.dateComponents([.day, .hour, .minute], from: lastActivity, to: now)
         
         if let day = components.day, day > 0 {
-            relativeTimeString = lastLogin.formatted(date: .numeric, time: .shortened)
+            relativeTimeString = lastActivity.formatted(date: .numeric, time: .shortened)
         } else {
             Task {
                 await updateRelativeTime()
@@ -141,11 +141,11 @@ struct LastLoginView: View {
     
     private func updateRelativeTime() async {
         let dateUtil = DateUtil.shared
-        let relativeString = await dateUtil.formatRelative(from: lastLogin)
+        let relativeString = await dateUtil.formatRelative(from: lastActivity)
         
         let calendar = Calendar.current
         let now = Date()
-        let components = calendar.dateComponents([.day], from: lastLogin, to: now)
+        let components = calendar.dateComponents([.day], from: lastActivity, to: now)
         
         if let day = components.day, day == 0 {
             relativeTimeString = relativeString

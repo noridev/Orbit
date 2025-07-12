@@ -726,12 +726,12 @@ class FriendCacheManager {
     }
     
     private static func shouldUpdateFriend(current: Friend, backup: Friend) -> Bool {
-        if let currentLastLogin = current.lastLogin,
-           let backupLastLogin = backup.lastLogin {
-            return backupLastLogin > currentLastLogin
+        if let currentLastActivity = current.lastActivity,
+           let backupLastActivity = backup.lastActivity {
+            return backupLastActivity > currentLastActivity
         }
         
-        if current.lastLogin == nil && backup.lastLogin != nil {
+        if current.lastActivity == nil && backup.lastActivity != nil {
             return true
         }
         
