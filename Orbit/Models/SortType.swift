@@ -8,7 +8,7 @@
 import Foundation
 
 enum SortType: String, Hashable, CaseIterable, Identifiable {
-    case name, loginLatest, loginOldest, status, timeDescending, timeAscending
+    case name, loginLatest, loginOldest, latestActivity, oldestActivity, status, timeDescending, timeAscending
     
     var id: String { rawValue }
 
@@ -24,6 +24,10 @@ enum SortType: String, Hashable, CaseIterable, Identifiable {
             String(localized: "Login latest")
         case .loginOldest:
             String(localized: "Login oldest")
+        case .latestActivity:
+            String(localized: "Latest activity")
+        case .oldestActivity:
+            String(localized: "Oldest activity")
         case .status:
             String(localized: "Status")
         case .timeDescending:
@@ -37,6 +41,7 @@ enum SortType: String, Hashable, CaseIterable, Identifiable {
         switch self {
         case .name: IconSet.at
         case .loginLatest, .loginOldest: IconSet.calendar
+        case .latestActivity, .oldestActivity: IconSet.lastActivity
         case .timeAscending, .timeDescending: IconSet.clock
         case .status: IconSet.circleFilled
         }

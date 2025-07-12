@@ -75,6 +75,9 @@ enum IconSet {
     static var key: some Iconizable {
         Icon("key.fill")
     }
+    static var lastActivity: some Iconizable {
+        Icon("person.badge.clock.fill")
+    }
     static var link: some Iconizable {
         Icon("link")
     }
@@ -93,7 +96,7 @@ enum IconSet {
     static var newFriend: some Iconizable {
         Icon("person.fill.checkmark")
     }
-    static var parson: some Iconizable {
+    static var person: some Iconizable {
         Icon("person.fill")
     }
     static var photo: some Iconizable {

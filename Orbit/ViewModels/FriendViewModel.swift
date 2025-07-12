@@ -21,7 +21,7 @@ final class FriendViewModel {
     var filterUserStatus: Set<UserStatus> = []
     var filterFavoriteGroups: Set<FavoriteGroup.ID> = []
     var filterText: String = ""
-    var sortType: SortType = .loginLatest
+    var sortType: SortType = .name
     var excludeWebUsers: Bool = false
     var isFetchingAllFriends = true
     var isProcessingFilter = false
