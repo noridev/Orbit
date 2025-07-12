@@ -17,6 +17,13 @@ struct UserIcon<T>: View where T: ProfileElementRepresentable {
     @Init(.internal, default: true) private let showTrustRankBorder: Bool
     private let borderWidth: CGFloat = 3
 
+    private var userIconUrl: URL? {
+        if let userIcon = user.userIcon {
+            return userIcon
+        }
+        return user.imageUrl(.x256)
+    }
+
     private var borderColor: Color {
         let uiColor = UIColor(user.trustRank.color)
         
@@ -34,7 +41,7 @@ struct UserIcon<T>: View where T: ProfileElementRepresentable {
     }
 
     var body: some View {
-        let imageWithBorder = CircleURLImage(imageUrl: user.imageUrl(.x256), size: size)
+        let imageWithBorder = CircleURLImage(imageUrl: userIconUrl, size: size)
             .overlay {
                 if showTrustRankBorder {
                     Circle()
