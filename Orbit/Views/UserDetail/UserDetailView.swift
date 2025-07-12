@@ -83,7 +83,7 @@ struct UserDetailView: View {
             }
         }
         .sheet(isPresented: $isPresentedJsonView) {
-            UserDetailJsonDetailView(userDetail: user)
+            UserDetailJsonDetailView(userId: user.id, cachedUserDetail: user)
         }
         .task {
             if case let .id(id) = user.location { await fetchInstance(id: id) }

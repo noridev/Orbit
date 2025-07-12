@@ -8,76 +8,236 @@
 import SwiftUI
 import VRCKit
 
-struct FriendJsonDetailView: View {
-    let friend: Friend
-    @State private var jsonString: String = "Generating JSON..."
-
-    var body: some View {
-        TextEditor(text: .constant(jsonString))
-            .font(.system(size: 12, design: .monospaced))
-            .padding(.horizontal, 8)
-            .navigationTitle(friend.displayName)
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear(perform: generateJsonString)
+@MainActor
+class JsonDataViewModel: ObservableObject {
+    @Published var jsonString: String = "Loading..."
+    @Published var isLoading = true
+    @Published var error: Error?
+    @Published var useAPIData = true
+    
+    private let userId: String
+    private let cachedData: Any?
+    var appVM: AppViewModel
+    
+    init(userId: String, cachedData: Any?, appVM: AppViewModel) {
+        self.userId = userId
+        self.cachedData = cachedData
+        self.appVM = appVM
     }
-
-    private func generateJsonString() {
+    
+    func loadData() {
+        Task {
+            await loadDataAsync()
+        }
+    }
+    
+    func loadDataAsync() async {
+        isLoading = true
+        error = nil
+        
+        if useAPIData {
+            await loadAPIData()
+        } else {
+            await loadCachedData()
+        }
+    }
+    
+    private func loadAPIData() async {
+        do {
+            let rawData = try await appVM.services.userService.fetchUserRawJSON(userId: userId)
+            
+            if let jsonObject = try? JSONSerialization.jsonObject(with: rawData),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]),
+               let jsonString = String(data: prettyData, encoding: .utf8) {
+                var finalJsonString = jsonString
+                
+                let pattern = "\\[\\s*\\]"
+                finalJsonString = finalJsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
+                
+                self.jsonString = finalJsonString
+                self.isLoading = false
+            } else {
+                let jsonString = String(data: rawData, encoding: .utf8) ?? "Error: Could not convert raw data to text."
+                
+                self.jsonString = jsonString
+                self.isLoading = false
+            }
+        } catch {
+            self.error = error
+            self.isLoading = false
+            self.jsonString = "Error loading data: \(error.localizedDescription)"
+        }
+    }
+    
+    private func loadCachedData() async {
+        guard let cachedData = cachedData else {
+            let error = NSError(domain: "CacheError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Cached data not available"])
+            self.error = error
+            self.isLoading = false
+            self.jsonString = "Error loading data: \(error.localizedDescription)"
+            return
+        }
+        
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
             encoder.dateEncodingStrategy = .formatted(.iso8601Full)
 
-            let data = try encoder.encode(friend)
-            var finalJsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
-            
-            let pattern = "\\[\\s*\\]"
-            finalJsonString = finalJsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
-            
-            self.jsonString = finalJsonString
+            if let encodableData = cachedData as? Encodable {
+                let data = try encoder.encode(encodableData)
+                var finalJsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
+                
+                let pattern = "\\[\\s*\\]"
+                finalJsonString = finalJsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
+
+                self.jsonString = finalJsonString
+                self.isLoading = false
+            } else {
+                throw NSError(domain: "EncodingError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Data is not encodable"])
+            }
         } catch {
-            self.jsonString = "Error encoding friend data to JSON: \(error.localizedDescription)"
+            self.error = error
+            self.isLoading = false
+            self.jsonString = "Error loading data: \(error.localizedDescription)"
+        }
+    }
+}
+
+struct DataSourcePicker: View {
+    @Binding var useAPIData: Bool
+    
+    var body: some View {
+        HStack {
+            Text("Data Source:")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Picker("Data Source", selection: $useAPIData) {
+                Text("API").tag(true)
+                Text("Cache").tag(false)
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .frame(width: 120)
+            
+            Spacer()
+        }
+        .padding(.horizontal, 8)
+        .padding(.top, 8)
+    }
+}
+
+struct JsonContentView: View {
+    let jsonString: String
+    let isLoading: Bool
+    let error: Error?
+    let useAPIData: Bool
+    
+    var body: some View {
+        if isLoading {
+            ProgressView(useAPIData ? "Loading from VRChat API..." : "Loading from Friend Cache...")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if let error = error {
+            VStack {
+                Text("Error loading data")
+                    .font(.headline)
+                    .foregroundColor(.red)
+                Text(error.localizedDescription)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            TextEditor(text: .constant(jsonString))
+                .font(.system(size: 12, design: .monospaced))
+                .padding(.horizontal, 8)
+        }
+    }
+}
+
+struct FriendJsonDetailView: View {
+    @Environment(AppViewModel.self) var appVM
+    @StateObject private var viewModel: JsonDataViewModel
+    let friendId: String
+    let cachedFriend: Friend?
+
+    init(friendId: String, cachedFriend: Friend?) {
+        self.friendId = friendId
+        self.cachedFriend = cachedFriend
+        self._viewModel = StateObject(wrappedValue: JsonDataViewModel(userId: friendId, cachedData: cachedFriend, appVM: AppViewModel()))
+    }
+
+    var body: some View {
+        VStack {
+            DataSourcePicker(useAPIData: $viewModel.useAPIData)
+            
+            JsonContentView(
+                jsonString: viewModel.jsonString,
+                isLoading: viewModel.isLoading,
+                error: viewModel.error,
+                useAPIData: viewModel.useAPIData
+            )
+        }
+        .navigationTitle("JSON Data")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.appVM = appVM
+            viewModel.loadData()
+        }
+        .onChange(of: viewModel.useAPIData) { _, _ in
+            viewModel.loadData()
+        }
+        .refreshable {
+            await viewModel.loadDataAsync()
         }
     }
 }
 
 struct UserDetailJsonDetailView: View {
-    let userDetail: UserDetail
-    @State private var jsonString: String = "Generating JSON..."
+    let userId: String
+    let cachedUserDetail: UserDetail?
+    @Environment(AppViewModel.self) var appVM
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel: JsonDataViewModel
+
+    init(userId: String, cachedUserDetail: UserDetail?) {
+        self.userId = userId
+        self.cachedUserDetail = cachedUserDetail
+        self._viewModel = StateObject(wrappedValue: JsonDataViewModel(userId: userId, cachedData: cachedUserDetail, appVM: AppViewModel()))
+    }
 
     var body: some View {
         NavigationStack {
-            TextEditor(text: .constant(jsonString))
-                .font(.system(size: 12, design: .monospaced))
-                .padding(.horizontal, 8)
-                .navigationTitle(userDetail.displayName)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") {
-                            dismiss()
-                        }
+            VStack {
+                DataSourcePicker(useAPIData: $viewModel.useAPIData)
+                
+                JsonContentView(
+                    jsonString: viewModel.jsonString,
+                    isLoading: viewModel.isLoading,
+                    error: viewModel.error,
+                    useAPIData: viewModel.useAPIData
+                )
+            }
+            .navigationTitle("JSON Data")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
                     }
                 }
-                .onAppear(perform: generateJsonString)
-        }
-    }
-
-    private func generateJsonString() {
-        do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
-            encoder.dateEncodingStrategy = .formatted(.iso8601Full)
-
-            let data = try encoder.encode(userDetail)
-            var finalJsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
-            
-            let pattern = "\\[\\s*\\]"
-            finalJsonString = finalJsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
-            
-            self.jsonString = finalJsonString
-        } catch {
-            self.jsonString = "Error encoding user detail data to JSON: \(error.localizedDescription)"
+            }
+            .onAppear {
+                viewModel.appVM = appVM
+                viewModel.loadData()
+            }
+            .onChange(of: viewModel.useAPIData) { _, _ in
+                viewModel.loadData()
+            }
+            .refreshable {
+                await viewModel.loadDataAsync()
+            }
         }
     }
 }
@@ -147,7 +307,7 @@ struct RawHistoryDataView: View {
                 .padding()
             } else {
                 List(filteredFriends) { friend in
-                    NavigationLink(destination: FriendJsonDetailView(friend: friend)) {
+                    NavigationLink(destination: FriendJsonDetailView(friendId: friend.id, cachedFriend: friend)) {
                         HStack(spacing: 12) {
                             UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
                             VStack(alignment: .leading, spacing: 4) {

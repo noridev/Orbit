@@ -153,6 +153,9 @@
         }
       }
     },
+    "API" : {
+
+    },
     "App Name" : {
       "localizations" : {
         "ja" : {
@@ -298,6 +301,9 @@
         }
       }
     },
+    "Cache" : {
+
+    },
     "Cache corrupted" : {
       "localizations" : {
         "ko" : {
@@ -411,6 +417,12 @@
           }
         }
       }
+    },
+    "Data Source" : {
+
+    },
+    "Data Source:" : {
+
     },
     "Date Joined" : {
       "localizations" : {
@@ -694,6 +706,9 @@
           }
         }
       }
+    },
+    "Error loading data" : {
+
     },
     "Exclude users who are using VRChat through a web browser" : {
       "localizations" : {
@@ -1195,6 +1210,12 @@
           }
         }
       }
+    },
+    "Loading from Friend Cache..." : {
+
+    },
+    "Loading from VRChat API..." : {
+
     },
     "Loading..." : {
       "localizations" : {
