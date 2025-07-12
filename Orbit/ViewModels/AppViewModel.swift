@@ -160,10 +160,14 @@ final class AppViewModel {
     }
 
     func logout() async {
+        print("🚀 [logout] Starting logout process")
+        user = nil
+        
         do {
             try await services.authenticationService.logout()
+            print("✅ [logout] Server logout successful")
         } catch {
-            print("⚠️ [logout] Logout request failed: \(error), but clearing local state")
+            print("⚠️ [logout] Server logout failed: \(error), but clearing local state")
         }
         dispose()
     }

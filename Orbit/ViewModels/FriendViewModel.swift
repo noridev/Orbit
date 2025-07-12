@@ -90,7 +90,10 @@ final class FriendViewModel {
             return
         }
         do {
-            guard let user = appVM.user else { throw ApplicationError.userIsNotSetError }
+            guard let user = appVM.user else { 
+                print("ℹ️ [fetchAllFriends] User is not set, likely due to logout. Skipping fetch.")
+                return 
+            }
             async let onlineFriendsTask = appVM.services.friendService.fetchFriends(
                 count: user.onlineFriends.count + user.activeFriends.count,
                 offline: false
