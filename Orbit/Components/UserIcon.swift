@@ -15,7 +15,10 @@ struct UserIcon<T>: View where T: ProfileElementRepresentable {
     @Init(.internal) private let size: CGSize
     @Init(.internal, default: true) private let showStatusIndicator: Bool
     @Init(.internal, default: true) private let showTrustRankBorder: Bool
-    private let borderWidth: CGFloat = 3
+    
+    private var borderWidth: CGFloat {
+        max(1, min(size.width * 0.07, 6))
+    }
 
     private var userIconUrl: URL? {
         if let userIcon = user.userIcon {
@@ -53,19 +56,25 @@ struct UserIcon<T>: View where T: ProfileElementRepresentable {
             }
             .clipShape(Circle())
 
-        if showStatusIndicator {
-            BittenView {
+        ZStack {
+            Circle()
+                .fill(Color(.systemGray5).opacity(0.7))
+                .frame(width: size.width, height: size.height)
+
+            if showStatusIndicator {
+                BittenView {
+                    imageWithBorder
+                }
+                .overlay {
+                    StatusIndicator(
+                        user.status.color,
+                        outerSize: size,
+                        isCutOut: user.platform == .some(.web)
+                    )
+                }
+            } else {
                 imageWithBorder
             }
-            .overlay {
-                StatusIndicator(
-                    user.status.color,
-                    outerSize: size,
-                    isCutOut: user.platform == .some(.web)
-                )
-            }
-        } else {
-            imageWithBorder
         }
     }
 }
