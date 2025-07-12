@@ -36,7 +36,7 @@ struct StatusIndicator<S>: View where S: ShapeStyle {
     }
 
     private var offset: CGSize {
-        outerSize * 0.36
+        outerSize * 0.35
     }
 
     var body: some View {
