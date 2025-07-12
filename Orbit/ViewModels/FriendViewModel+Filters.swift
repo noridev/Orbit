@@ -34,11 +34,11 @@ extension FriendViewModel {
             .sorted {
                 switch sortType {
                 case .name: $0.displayName < $1.displayName
-                case .loginLatest: $0.lastLogin ?? .distantPast > $1.lastLogin ?? .distantPast
-                case .loginOldest: $0.lastLogin ?? .distantFuture < $1.lastLogin ?? .distantFuture
+                case .status: $0.status.rawValue < $1.status.rawValue
+                case .latestLogin: $0.lastLogin ?? .distantPast > $1.lastLogin ?? .distantPast
+                case .oldestLogin: $0.lastLogin ?? .distantFuture < $1.lastLogin ?? .distantFuture
                 case .latestActivity: $0.lastActivity ?? .distantPast > $1.lastActivity ?? .distantPast
                 case .oldestActivity: $0.lastActivity ?? .distantFuture < $1.lastActivity ?? .distantFuture
-                case .status: $0.status.rawValue < $1.status.rawValue
                 default: $0.displayName < $1.displayName
                 }
             }

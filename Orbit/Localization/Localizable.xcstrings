@@ -84,9 +84,6 @@
         }
       }
     },
-    "Actiivty oldest" : {
-
-    },
     "Active on Website" : {
 
     },
@@ -111,9 +108,6 @@
           }
         }
       }
-    },
-    "Activity latest" : {
-
     },
     "Add" : {
       "localizations" : {
@@ -1177,6 +1171,31 @@
         }
       }
     },
+    "Latest activity" : {
+
+    },
+    "Latest login" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインの新しい"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최근 로그인"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近登录"
+          }
+        }
+      }
+    },
     "Loading..." : {
       "localizations" : {
         "ja" : {
@@ -1217,50 +1236,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "位置"
-          }
-        }
-      }
-    },
-    "Login latest" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログインの新しい"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "최근 로그인"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最近登录"
-          }
-        }
-      }
-    },
-    "Login oldest" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログインの古い"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오래된 로그인"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最早登录"
           }
         }
       }
@@ -1544,6 +1519,31 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最早"
+          }
+        }
+      }
+    },
+    "Oldest activity" : {
+
+    },
+    "Oldest Login" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインの古い"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오래된 로그인"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最早登录"
           }
         }
       }

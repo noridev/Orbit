@@ -14,7 +14,7 @@ struct SortPickerView: View {
     private var sortCases: [SortType] {
         switch context {
         case .friends:
-            return [.name, .loginLatest, .loginOldest, .latestActivity, .oldestActivity, .status]
+            return [.name, .status, .latestLogin, .oldestLogin, .latestActivity, .oldestActivity]
         case .history:
             return [.name, .timeDescending, .timeAscending]
         }
