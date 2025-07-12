@@ -16,25 +16,34 @@ struct OtpView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.blue.opacity(0.1),
-                    Color.purple.opacity(0.05),
-                    Color.clear
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
-            ScrollView {
-                VStack(spacing: 40) {
-                    Spacer(minLength: 60)
-                    headerSection
-                    otpCard
-                    Spacer(minLength: 40)
+            Color.clear
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    isCodeFieldFocused = false
                 }
-                .padding(.horizontal, 24)
+                .ignoresSafeArea()
+            
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.blue.opacity(0.1),
+                        Color.purple.opacity(0.05),
+                        Color.clear
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 40) {
+                        Spacer(minLength: 60)
+                        headerSection
+                        otpCard
+                        Spacer(minLength: 40)
+                    }
+                    .padding(.horizontal, 24)
+                }
             }
         }
         .ignoresSafeArea(.keyboard)
