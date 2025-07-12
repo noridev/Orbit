@@ -1195,7 +1195,7 @@ class FriendCacheManager {
             encoder.dateEncodingStrategy = .formatted(.iso8601Full)
 
             let data = try encoder.encode(cacheData)
-            var jsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
+            let jsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
 
             let emptyArrayPattern = "\\[\\s*\\]"
             let emptyObjectPattern = "\\{\\s*\\}"
