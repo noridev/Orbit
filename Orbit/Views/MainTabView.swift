@@ -81,6 +81,7 @@ private extension MainTabView {
         let favoriteGroupsIds = Array(friendVM.filterFavoriteGroups)
         UserDefaults.standard.set(favoriteGroupsIds, forKey: Constants.Keys.filterFavoriteGroups.rawValue)
         UserDefaults.standard.set(friendVM.sortType.rawValue, forKey: Constants.Keys.sortType.rawValue)
+        UserDefaults.standard.set(friendVM.excludeWebUsers, forKey: Constants.Keys.excludeWebUsers.rawValue)
     }
 
     private func restoreUserData() {
