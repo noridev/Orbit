@@ -1110,4 +1110,140 @@ class FriendCacheManager {
             lastModified: lastModified
         )
     }
+    
+    /// 특정 유저의 로컬 데이터(friendCache.json과 friendHistory.json)를 가져옵니다.
+    /// - Parameter userId: 유저 ID
+    /// - Returns: 유저의 로컬 데이터 (친구 정보 + 히스토리)
+    @MainActor
+    static func getUserLocalData(userId: String) -> (friend: Friend?, history: [FriendHistory]) {
+        // 친구 정보 가져오기
+        let friends = (try? loadFriends()) ?? []
+        let friend = friends.first { $0.id == userId }
+        
+        // 히스토리 가져오기
+        let allHistory = loadAllFriendHistory()
+        let history = allHistory[userId] ?? []
+        
+        return (friend: friend, history: history)
+    }
+
+    static func getAllLocalDataAsJSON() async -> String {
+        let (friends, friendHistory): ([Friend], [String: [FriendHistory]]) = await withCheckedContinuation { continuation in
+            Task { @MainActor in
+                let friends = (try? loadFriends()) ?? []
+                let friendHistory = loadAllFriendHistory()
+                continuation.resume(returning: (friends, friendHistory))
+            }
+        }
+
+        struct AllLocalDataStruct: Codable {
+            let friends: [Friend]
+            let friendHistory: [String: [FriendHistory]]
+            let exportDate: Date
+            let totalFriends: Int
+            let totalHistoryEntries: Int
+        }
+
+        let localData = AllLocalDataStruct(
+            friends: friends,
+            friendHistory: friendHistory,
+            exportDate: Date(),
+            totalFriends: friends.count,
+            totalHistoryEntries: friendHistory.values.reduce(0) { $0 + $1.count }
+        )
+
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
+            encoder.dateEncodingStrategy = .formatted(.iso8601Full)
+
+            let data = try encoder.encode(localData)
+            var jsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
+
+            let pattern = "\\[\\s*\\]"
+            jsonString = jsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
+
+            return jsonString
+        } catch {
+            return "Error encoding local data: \(error.localizedDescription)"
+        }
+    }
+
+    static func getCacheDataAsJSON() async -> String {
+        let friends: [Friend] = await withCheckedContinuation { continuation in
+            Task { @MainActor in
+                let friends = (try? loadFriends()) ?? []
+                continuation.resume(returning: friends)
+            }
+        }
+
+        struct CacheDataStruct: Codable {
+            let friends: [Friend]
+            let exportDate: Date
+            let totalFriends: Int
+        }
+
+        let cacheData = CacheDataStruct(
+            friends: friends,
+            exportDate: Date(),
+            totalFriends: friends.count
+        )
+
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
+            encoder.dateEncodingStrategy = .formatted(.iso8601Full)
+
+            let data = try encoder.encode(cacheData)
+            var jsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
+
+            let emptyArrayPattern = "\\[\\s*\\]"
+            let emptyObjectPattern = "\\{\\s*\\}"
+            var normalized = jsonString.replacingOccurrences(of: emptyArrayPattern, with: "[]", options: .regularExpression)
+            normalized = normalized.replacingOccurrences(of: emptyObjectPattern, with: "{}", options: .regularExpression)
+
+            return normalized
+        } catch {
+            return "Error encoding cache data: \(error.localizedDescription)"
+        }
+    }
+    
+    /// History 데이터만 JSON 형태로 가져옵니다.
+    /// - Returns: History 데이터의 JSON 문자열
+    static func getHistoryDataAsJSON() async -> String {
+        let friendHistory: [String: [FriendHistory]] = await withCheckedContinuation { continuation in
+            Task { @MainActor in
+                let friendHistory = loadAllFriendHistory()
+                continuation.resume(returning: friendHistory)
+            }
+        }
+
+        struct HistoryDataStruct: Codable {
+            let friendHistory: [String: [FriendHistory]]
+            let exportDate: Date
+            let totalHistoryEntries: Int
+        }
+
+        let historyData = HistoryDataStruct(
+            friendHistory: friendHistory,
+            exportDate: Date(),
+            totalHistoryEntries: friendHistory.values.reduce(0) { $0 + $1.count }
+        )
+
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
+            encoder.dateEncodingStrategy = .formatted(.iso8601Full)
+
+            let data = try encoder.encode(historyData)
+            var jsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
+
+            let pattern = "\\[\\s*\\]"
+            jsonString = jsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
+
+            return jsonString
+        } catch {
+            return "Error encoding history data: \(error.localizedDescription)"
+        }
+    }
 }

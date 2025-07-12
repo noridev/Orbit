@@ -7,13 +7,189 @@
 
 import SwiftUI
 import VRCKit
+import UIKit
+
+struct JsonDataUtils {
+    static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
+        encoder.dateEncodingStrategy = .formatted(.iso8601Full)
+        return encoder
+    }()
+    
+    static func normalizeJsonString(_ jsonString: String) -> String {
+        let emptyArrayPattern = "\\[\\s*\\]"
+        let emptyObjectPattern = "\\{\\s*\\}"
+        var normalized = jsonString.replacingOccurrences(of: emptyArrayPattern, with: "[]", options: .regularExpression)
+        normalized = normalized.replacingOccurrences(of: emptyObjectPattern, with: "{}", options: .regularExpression)
+        return normalized
+    }
+    
+    static func encodeToJsonString<T: Encodable>(_ data: T) throws -> String {
+        let data = try encoder.encode(data)
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw NSError(domain: "EncodingError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Could not convert JSON data to text"])
+        }
+        return normalizeJsonString(jsonString)
+    }
+    
+    static func prettyPrintJsonData(_ rawData: Data) -> String {
+        if let jsonObject = try? JSONSerialization.jsonObject(with: rawData),
+           let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]),
+           let jsonString = String(data: prettyData, encoding: .utf8) {
+            return normalizeJsonString(jsonString)
+        } else {
+            return String(data: rawData, encoding: .utf8) ?? "Error: Could not convert raw data to text."
+        }
+    }
+}
+
+struct LoadingStateManager {
+    @MainActor
+    static func startLoading(_ viewModel: JsonDataViewModel) {
+        viewModel.isLoading = true
+        viewModel.error = nil
+    }
+    
+    @MainActor
+    static func finishLoading(_ viewModel: JsonDataViewModel) {
+        viewModel.isLoading = false
+    }
+    
+    @MainActor
+    static func handleError(_ viewModel: JsonDataViewModel, error: Error) {
+        viewModel.error = error
+        viewModel.isLoading = false
+    }
+}
+
+struct LoadingMessageGenerator {
+    static func generateMessage(isLocalDataView: Bool, useAPIData: Bool) -> String {
+        if isLocalDataView {
+            return useAPIData ? "Fetching Friend History..." : "Fetching Friend Cache..."
+        } else {
+            return useAPIData ? "Fetching VRChat API..." : "Fetching Friend Cache..."
+        }
+    }
+}
+
+struct ErrorDisplayView: View {
+    let error: Error
+    let title: String
+    
+    var body: some View {
+        VStack {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.red)
+            
+            Text(error.localizedDescription)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+struct UserDefaultsSettingsManager {
+    static func loadSettings(
+        sortType: inout SortType,
+        filterUserStatus: inout Set<UserStatus>,
+        filterFavoriteGroups: inout Set<FavoriteGroup.ID>,
+        excludeWebUsers: inout Bool,
+        prefix: String = "raw_history"
+    ) {
+        let defaults = UserDefaults.standard
+        
+        if let rawSortType = defaults.string(forKey: "\(prefix)_sort_type"),
+           let restoredSortType = SortType(rawValue: rawSortType) {
+            sortType = restoredSortType
+        }
+        
+        if let rawStatus = defaults.array(forKey: "\(prefix)_filter_user_status") as? [String] {
+            filterUserStatus = Set(rawStatus.compactMap(UserStatus.init))
+        }
+        
+        if let rawGroups = defaults.array(forKey: "\(prefix)_filter_favorite_groups") as? [String] {
+            filterFavoriteGroups = Set(rawGroups)
+        }
+        
+        excludeWebUsers = defaults.bool(forKey: "\(prefix)_exclude_web_users")
+    }
+    
+    static func saveSettings(
+        sortType: SortType,
+        filterUserStatus: Set<UserStatus>,
+        filterFavoriteGroups: Set<FavoriteGroup.ID>,
+        excludeWebUsers: Bool,
+        prefix: String = "raw_history"
+    ) {
+        let defaults = UserDefaults.standard
+        defaults.set(sortType.rawValue, forKey: "\(prefix)_sort_type")
+        
+        let statusRawValues = filterUserStatus.map { $0.rawValue }
+        defaults.set(statusRawValues, forKey: "\(prefix)_filter_user_status")
+        
+        let groupIDs = Array(filterFavoriteGroups)
+        defaults.set(groupIDs, forKey: "\(prefix)_filter_favorite_groups")
+        
+        defaults.set(excludeWebUsers, forKey: "\(prefix)_exclude_web_users")
+    }
+}
+
+struct FriendListItemView: View {
+    let friend: Friend
+
+    var body: some View {
+        HStack(spacing: 12) {
+            UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(friend.displayName)
+                    .font(.headline)
+                HStack {
+                    HStack(spacing: 3) {
+                        IconSet.shield.icon
+                        Text(friend.trustRank.description)
+                    }
+                    .font(.system(size: 10, weight: .bold))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .foregroundStyle(.white)
+                    .background(friend.trustRank.color.opacity(0.5))
+                    .background(.thinMaterial)
+                    .clipShape(Capsule())
+                    Spacer()
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct CacheLoadingUtils {
+    @MainActor
+    static func loadFriendsFromCache() -> (friends: [Friend], statusMessage: String, showCorruptedAlert: Bool) {
+        do {
+            let loadedFriends = try FriendCacheManager.loadFriends()
+            if loadedFriends.isEmpty {
+                return ([], "Friend Cache file is empty or not found.", false)
+            } else {
+                return (loadedFriends, "", false)
+            }
+        } catch {
+            return ([], "Friend Cache file is corrupted.", true)
+        }
+    }
+}
 
 @MainActor
 class JsonDataViewModel: ObservableObject {
     @Published var jsonString: String = "Loading..."
     @Published var isLoading = true
     @Published var error: Error?
-    @Published var useAPIData = true
+    @Published var useAPIData = false
     
     private let userId: String
     private let cachedData: Any?
@@ -32,8 +208,7 @@ class JsonDataViewModel: ObservableObject {
     }
     
     func loadDataAsync() async {
-        isLoading = true
-        error = nil
+        LoadingStateManager.startLoading(self)
         
         if useAPIData {
             await loadAPIData()
@@ -42,29 +217,64 @@ class JsonDataViewModel: ObservableObject {
         }
     }
     
+    func loadLocalData() {
+        Task {
+            await loadLocalDataAsync()
+        }
+    }
+    
+    func loadLocalDataAsync() async {
+        LoadingStateManager.startLoading(self)
+        
+        await MainActor.run {
+            let localData = FriendCacheManager.getUserLocalData(userId: userId)
+            
+            do {
+                if useAPIData {
+                    struct HistoryDataStruct: Codable {
+                        let history: [FriendHistory]
+                        let friendId: String
+                        let exportDate: Date
+                    }
+                    
+                    let historyData = HistoryDataStruct(
+                        history: localData.history,
+                        friendId: userId,
+                        exportDate: Date()
+                    )
+                    
+                    self.jsonString = try JsonDataUtils.encodeToJsonString(historyData)
+                } else {
+                    struct CacheDataStruct: Codable {
+                        let friend: Friend?
+                        let friendId: String
+                        let exportDate: Date
+                    }
+                    
+                    let cacheData = CacheDataStruct(
+                        friend: localData.friend,
+                        friendId: userId,
+                        exportDate: Date()
+                    )
+                    
+                    self.jsonString = try JsonDataUtils.encodeToJsonString(cacheData)
+                }
+                
+                LoadingStateManager.finishLoading(self)
+            } catch {
+                LoadingStateManager.handleError(self, error: error)
+                self.jsonString = "Error encoding local data: \(error.localizedDescription)"
+            }
+        }
+    }
+    
     private func loadAPIData() async {
         do {
             let rawData = try await appVM.services.userService.fetchUserRawJSON(userId: userId)
-            
-            if let jsonObject = try? JSONSerialization.jsonObject(with: rawData),
-               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]),
-               let jsonString = String(data: prettyData, encoding: .utf8) {
-                var finalJsonString = jsonString
-                
-                let pattern = "\\[\\s*\\]"
-                finalJsonString = finalJsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
-                
-                self.jsonString = finalJsonString
-                self.isLoading = false
-            } else {
-                let jsonString = String(data: rawData, encoding: .utf8) ?? "Error: Could not convert raw data to text."
-                
-                self.jsonString = jsonString
-                self.isLoading = false
-            }
+            self.jsonString = JsonDataUtils.prettyPrintJsonData(rawData)
+            LoadingStateManager.finishLoading(self)
         } catch {
-            self.error = error
-            self.isLoading = false
+            LoadingStateManager.handleError(self, error: error)
             self.jsonString = "Error loading data: \(error.localizedDescription)"
         }
     }
@@ -72,32 +282,20 @@ class JsonDataViewModel: ObservableObject {
     private func loadCachedData() async {
         guard let cachedData = cachedData else {
             let error = NSError(domain: "CacheError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Cached data not available"])
-            self.error = error
-            self.isLoading = false
+            LoadingStateManager.handleError(self, error: error)
             self.jsonString = "Error loading data: \(error.localizedDescription)"
             return
         }
         
         do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
-            encoder.dateEncodingStrategy = .formatted(.iso8601Full)
-
             if let encodableData = cachedData as? Encodable {
-                let data = try encoder.encode(encodableData)
-                var finalJsonString = String(data: data, encoding: .utf8) ?? "Error: Could not convert JSON data to text."
-                
-                let pattern = "\\[\\s*\\]"
-                finalJsonString = finalJsonString.replacingOccurrences(of: pattern, with: "[]", options: .regularExpression)
-
-                self.jsonString = finalJsonString
-                self.isLoading = false
+                self.jsonString = try JsonDataUtils.encodeToJsonString(encodableData)
+                LoadingStateManager.finishLoading(self)
             } else {
                 throw NSError(domain: "EncodingError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Data is not encodable"])
             }
         } catch {
-            self.error = error
-            self.isLoading = false
+            LoadingStateManager.handleError(self, error: error)
             self.jsonString = "Error loading data: \(error.localizedDescription)"
         }
     }
@@ -105,6 +303,7 @@ class JsonDataViewModel: ObservableObject {
 
 struct DataSourcePicker: View {
     @Binding var useAPIData: Bool
+    let isLocalDataView: Bool
     
     var body: some View {
         HStack {
@@ -112,12 +311,21 @@ struct DataSourcePicker: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             
-            Picker("Data Source", selection: $useAPIData) {
-                Text("API").tag(true)
-                Text("Cache").tag(false)
+            if isLocalDataView {
+                Picker("Data Source", selection: $useAPIData) {
+                    Text("Cache").tag(false)
+                    Text("History").tag(true)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .frame(width: 120)
+            } else {
+                Picker("Data Source", selection: $useAPIData) {
+                    Text("API").tag(true)
+                    Text("Cache").tag(false)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .frame(width: 120)
             }
-            .pickerStyle(SegmentedPickerStyle())
-            .frame(width: 120)
             
             Spacer()
         }
@@ -131,114 +339,189 @@ struct JsonContentView: View {
     let isLoading: Bool
     let error: Error?
     let useAPIData: Bool
-    
+    let isLocalDataView: Bool
+
     var body: some View {
         if isLoading {
-            ProgressView(useAPIData ? "Loading from VRChat API..." : "Loading from Friend Cache...")
+            ProgressView(LoadingMessageGenerator.generateMessage(isLocalDataView: isLocalDataView, useAPIData: useAPIData))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let error = error {
-            VStack {
-                Text("Error loading data")
-                    .font(.headline)
-                    .foregroundColor(.red)
-                Text(error.localizedDescription)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ErrorDisplayView(error: error, title: "Error fetching data")
         } else {
-            TextEditor(text: .constant(jsonString))
-                .font(.system(size: 12, design: .monospaced))
+            LargeTextView(text: jsonString)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.horizontal, 8)
         }
     }
 }
 
-struct FriendJsonDetailView: View {
+struct JsonDetailView<Data: Any>: View {
     @Environment(AppViewModel.self) var appVM
     @StateObject private var viewModel: JsonDataViewModel
-    let friendId: String
-    let cachedFriend: Friend?
-
-    init(friendId: String, cachedFriend: Friend?) {
-        self.friendId = friendId
-        self.cachedFriend = cachedFriend
-        self._viewModel = StateObject(wrappedValue: JsonDataViewModel(userId: friendId, cachedData: cachedFriend, appVM: AppViewModel()))
+    let userId: String
+    let cachedData: Data?
+    let isLocalDataView: Bool
+    let title: String
+    let subTitle: String
+    let useNavigationStack: Bool
+    let showToolbar: Bool
+    let onDismiss: (() -> Void)?
+    
+    init(
+        userId: String,
+        cachedData: Data?,
+        isLocalDataView: Bool = false,
+        title: String,
+        subTitle: String,
+        useNavigationStack: Bool = false,
+        showToolbar: Bool = false,
+        onDismiss: (() -> Void)? = nil
+    ) {
+        self.userId = userId
+        self.cachedData = cachedData
+        self.isLocalDataView = isLocalDataView
+        self.title = title
+        self.subTitle = subTitle
+        self.useNavigationStack = useNavigationStack
+        self.showToolbar = showToolbar
+        self.onDismiss = onDismiss
+        self._viewModel = StateObject(wrappedValue: JsonDataViewModel(userId: userId, cachedData: cachedData, appVM: AppViewModel()))
     }
-
+    
     var body: some View {
-        VStack {
-            DataSourcePicker(useAPIData: $viewModel.useAPIData)
+        Group {
+            if useNavigationStack {
+                NavigationStack {
+                    contentView
+                }
+            } else {
+                contentView
+            }
+        }
+    }
+    
+    private var contentView: some View {
+        let content = VStack {
+            DataSourcePicker(useAPIData: $viewModel.useAPIData, isLocalDataView: isLocalDataView)
             
             JsonContentView(
                 jsonString: viewModel.jsonString,
                 isLoading: viewModel.isLoading,
                 error: viewModel.error,
-                useAPIData: viewModel.useAPIData
+                useAPIData: viewModel.useAPIData,
+                isLocalDataView: isLocalDataView
             )
         }
-        .navigationTitle("JSON Data")
+        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if showToolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        onDismiss?()
+                    }
+                }
+            }
+        }
         .onAppear {
             viewModel.appVM = appVM
-            viewModel.loadData()
+            if !isLocalDataView {
+                viewModel.useAPIData = true
+            }
+            if isLocalDataView {
+                viewModel.loadLocalData()
+            } else {
+                viewModel.loadData()
+            }
         }
         .onChange(of: viewModel.useAPIData) { _, _ in
-            viewModel.loadData()
+            if isLocalDataView {
+                viewModel.loadLocalData()
+            } else {
+                viewModel.loadData()
+            }
         }
         .refreshable {
-            await viewModel.loadDataAsync()
+            if isLocalDataView {
+                await viewModel.loadLocalDataAsync()
+            } else {
+                await viewModel.loadDataAsync()
+            }
+        }
+        
+        if #available(iOS 26.0, *) {
+            return content
+                .navigationSubtitle(subTitle)
+        } else {
+            return content
         }
     }
 }
 
+struct FriendJsonDetailView: View {
+    let friendId: String
+    let cachedFriend: Friend?
+    let isLocalDataView: Bool
+    
+    init(friendId: String, cachedFriend: Friend?, isLocalDataView: Bool = false) {
+        self.friendId = friendId
+        self.cachedFriend = cachedFriend
+        self.isLocalDataView = isLocalDataView
+    }
+    
+    var body: some View {
+        JsonDetailView(
+            userId: friendId,
+            cachedData: cachedFriend,
+            isLocalDataView: isLocalDataView,
+            title: cachedFriend?.displayName ?? "Local Data",
+            subTitle: "Local Data"
+        )
+    }
+}
+
 struct UserDetailJsonDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     let userId: String
     let cachedUserDetail: UserDetail?
-    @Environment(AppViewModel.self) var appVM
-    @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel: JsonDataViewModel
+    let isLocalDataView: Bool
 
-    init(userId: String, cachedUserDetail: UserDetail?) {
+    init(userId: String, cachedUserDetail: UserDetail?, isLocalDataView: Bool = false) {
         self.userId = userId
         self.cachedUserDetail = cachedUserDetail
-        self._viewModel = StateObject(wrappedValue: JsonDataViewModel(userId: userId, cachedData: cachedUserDetail, appVM: AppViewModel()))
+        self.isLocalDataView = isLocalDataView
     }
 
     var body: some View {
-        NavigationStack {
-            VStack {
-                DataSourcePicker(useAPIData: $viewModel.useAPIData)
-                
-                JsonContentView(
-                    jsonString: viewModel.jsonString,
-                    isLoading: viewModel.isLoading,
-                    error: viewModel.error,
-                    useAPIData: viewModel.useAPIData
-                )
-            }
-            .navigationTitle("JSON Data")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-            .onAppear {
-                viewModel.appVM = appVM
-                viewModel.loadData()
-            }
-            .onChange(of: viewModel.useAPIData) { _, _ in
-                viewModel.loadData()
-            }
-            .refreshable {
-                await viewModel.loadDataAsync()
-            }
-        }
+        JsonDetailView(
+            userId: userId,
+            cachedData: cachedUserDetail,
+            isLocalDataView: isLocalDataView,
+            title: cachedUserDetail?.displayName ?? "JSON Data",
+            subTitle: "JSON Data",
+            useNavigationStack: true,
+            showToolbar: true,
+            onDismiss: { dismiss() }
+        )
+    }
+}
+
+struct LargeTextView: UIViewRepresentable {
+    let text: String
+
+    func makeUIView(context: Context) -> UITextView {
+        let textView = UITextView()
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.font = UIFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        textView.backgroundColor = .clear
+        textView.textContainer.lineBreakMode = .byWordWrapping
+        textView.alwaysBounceVertical = true
+        return textView
+    }
+
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        uiView.text = text
     }
 }
 
@@ -253,6 +536,7 @@ struct RawHistoryDataView: View {
     @State private var filterFavoriteGroups: Set<FavoriteGroup.ID> = []
     @State private var excludeWebUsers: Bool = false
     @State private var showCorruptedCacheAlert = false
+    @State private var showAllDataView = false
 
     private var filteredFriends: [Friend] {
         let searched = friendsInCache.filter {
@@ -307,29 +591,8 @@ struct RawHistoryDataView: View {
                 .padding()
             } else {
                 List(filteredFriends) { friend in
-                    NavigationLink(destination: FriendJsonDetailView(friendId: friend.id, cachedFriend: friend)) {
-                        HStack(spacing: 12) {
-                            UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(friend.displayName)
-                                    .font(.headline)
-                                HStack {
-                                    HStack(spacing: 3) {
-                                        IconSet.shield.icon
-                                        Text(friend.trustRank.description)
-                                    }
-                                    .font(.system(size: 10, weight: .bold))
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 3)
-                                    .foregroundStyle(.white)
-                                    .background(friend.trustRank.color.opacity(0.5))
-                                    .background(.thinMaterial)
-                                    .clipShape(Capsule())
-                                    Spacer()
-                                }
-                            }
-                        }
-                        .padding(.vertical, 4)
+                    NavigationLink(destination: FriendJsonDetailView(friendId: friend.id, cachedFriend: friend, isLocalDataView: true)) {
+                        FriendListItemView(friend: friend)
                     }
                 }
             }
@@ -338,11 +601,21 @@ struct RawHistoryDataView: View {
         .searchable(text: $searchText, prompt: "Search by name")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button(action: loadCacheFromFile) {
-                    Image(systemName: "arrow.clockwise")
-                }
                 Button(action: { isPresentedSheet.toggle() }) {
                     Image(systemName: IconSet.filter.systemName)
+                }
+                
+                Menu {
+                    Button(action: loadCacheFromFile) {
+                        Image(systemName: "arrow.clockwise")
+                        Text("캐시 새로고침")
+                    }
+                    
+                    Button("모든 데이터 표시", systemImage: "doc.text") {
+                        showAllDataView = true
+                    }
+                } label: {
+                    Image(systemName: IconSet.dots.systemName)
                 }
             }
         }
@@ -357,6 +630,9 @@ struct RawHistoryDataView: View {
                 visibleSections: [.status, .favoriteGroup, .platform]
             )
             .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showAllDataView) {
+            AllLocalDataView()
         }
         .onAppear {
             loadCacheFromFile()
@@ -374,52 +650,98 @@ struct RawHistoryDataView: View {
     }
 
     private func loadCacheFromFile() {
+        Task { @MainActor in
         self.showCorruptedCacheAlert = false
-        do {
-            let loadedFriends = try FriendCacheManager.loadFriends()
-            if loadedFriends.isEmpty {
-                self.statusMessage = "Friend Cache file is empty or not found."
-                self.friendsInCache = []
-            } else {
-                self.friendsInCache = loadedFriends
-                self.statusMessage = ""
-            }
-        } catch {
-            self.showCorruptedCacheAlert = true
-            self.statusMessage = "Friend Cache file is corrupted."
-            self.friendsInCache = []
+            let result = CacheLoadingUtils.loadFriendsFromCache()
+            self.friendsInCache = result.friends
+            self.statusMessage = result.statusMessage
+            self.showCorruptedCacheAlert = result.showCorruptedAlert
         }
     }
     
     private func loadSettings() {
-        let defaults = UserDefaults.standard
-        if let rawSortType = defaults.string(forKey: "raw_history_sort_type"),
-           let restoredSortType = SortType(rawValue: rawSortType) {
-            self.sortType = restoredSortType
-        }
-        
-        if let rawStatus = defaults.array(forKey: "raw_history_filter_user_status") as? [String] {
-            self.filterUserStatus = Set(rawStatus.compactMap(UserStatus.init))
-        }
-        
-        if let rawGroups = defaults.array(forKey: "raw_history_filter_favorite_groups") as? [String] {
-            self.filterFavoriteGroups = Set(rawGroups)
-        }
-        
-        self.excludeWebUsers = defaults.bool(forKey: "raw_history_exclude_web_users")
+        UserDefaultsSettingsManager.loadSettings(
+            sortType: &sortType,
+            filterUserStatus: &filterUserStatus,
+            filterFavoriteGroups: &filterFavoriteGroups,
+            excludeWebUsers: &excludeWebUsers
+        )
     }
     
     private func saveSettings() {
-        let defaults = UserDefaults.standard
-        defaults.set(self.sortType.rawValue, forKey: "raw_history_sort_type")
+        UserDefaultsSettingsManager.saveSettings(
+            sortType: sortType,
+            filterUserStatus: filterUserStatus,
+            filterFavoriteGroups: filterFavoriteGroups,
+            excludeWebUsers: excludeWebUsers
+        )
+    }
+}
+
+struct AllLocalDataView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var jsonString: String = "Loading..."
+    @State private var isLoading = true
+    @State private var error: Error?
+    @State private var useAPIData = false
+
+    var body: some View {
+        NavigationStack {
+            VStack {
+                DataSourcePicker(useAPIData: $useAPIData, isLocalDataView: true)
+                
+                JsonContentView(
+                    jsonString: jsonString,
+                    isLoading: isLoading,
+                    error: error,
+                    useAPIData: useAPIData,
+                    isLocalDataView: true
+                )
+            }
+            .navigationTitle("Local Friend Data")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                loadAllLocalData()
+            }
+            .onChange(of: useAPIData) { _, _ in
+                loadAllLocalData()
+            }
+            .refreshable {
+                await loadAllLocalDataAsync()
+            }
+        }
+    }
+    
+    private func loadAllLocalData() {
+        Task {
+            await loadAllLocalDataAsync()
+        }
+    }
+    
+    private func loadAllLocalDataAsync() async {
+        await MainActor.run {
+            isLoading = true
+            error = nil
+        }
         
-        let statusRawValues = self.filterUserStatus.map { $0.rawValue }
-        defaults.set(statusRawValues, forKey: "raw_history_filter_user_status")
+        let data: String
+        if useAPIData {
+            data = await FriendCacheManager.getHistoryDataAsJSON()
+        } else {
+            data = await FriendCacheManager.getCacheDataAsJSON()
+        }
         
-        let groupIDs = Array(self.filterFavoriteGroups)
-        defaults.set(groupIDs, forKey: "raw_history_filter_favorite_groups")
-        
-        defaults.set(self.excludeWebUsers, forKey: "raw_history_exclude_web_users")
+        await MainActor.run {
+            jsonString = data
+            isLoading = false
+        }
     }
 }
 

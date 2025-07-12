@@ -707,9 +707,6 @@
         }
       }
     },
-    "Error loading data" : {
-
-    },
     "Exclude users who are using VRChat through a web browser" : {
       "localizations" : {
         "ko" : {
@@ -935,6 +932,9 @@
           }
         }
       }
+    },
+    "History" : {
+
     },
     "If your friend changes their nickname, changed their trust rank, or adds or removes a friend, you'll see a record of here." : {
       "localizations" : {
@@ -1211,12 +1211,6 @@
         }
       }
     },
-    "Loading from Friend Cache..." : {
-
-    },
-    "Loading from VRChat API..." : {
-
-    },
     "Loading..." : {
       "localizations" : {
         "ja" : {
@@ -1238,6 +1232,9 @@
           }
         }
       }
+    },
+    "Local Friend Data" : {
+
     },
     "Location" : {
       "localizations" : {
@@ -2383,6 +2380,9 @@
     "모든 기록 삭제" : {
 
     },
+    "모든 데이터 표시" : {
+
+    },
     "모든 데이터가 최신입니다. 그래도 가져오시겠습니까?" : {
 
     },
@@ -2420,6 +2420,9 @@
 
     },
     "친구 데이터 복원" : {
+
+    },
+    "캐시 새로고침" : {
 
     },
     "현재 계정" : {
