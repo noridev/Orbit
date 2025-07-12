@@ -698,7 +698,7 @@ struct FriendBackupView: View {
             do {
                 switch type {
                 case .all:
-                    try await FriendCacheManager.resetAllAccountsData(restoreCurrentUser: appVM.user)
+                    try FriendCacheManager.resetAllAccountsData(restoreCurrentUser: appVM.user)
                 case .historyOnly:
                     try FriendCacheManager.resetAllAccountsHistory()
                 }
