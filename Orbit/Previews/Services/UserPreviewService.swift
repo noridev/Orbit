@@ -32,4 +32,22 @@ final actor UserPreviewService: APIService, UserServiceProtocol {
         // Return an empty array for preview purposes.
         []
     }
+    
+    func updateBadge(currentUserId: String, badgeId: String, request: BadgeUpdateRequest) async throws -> BadgePartialUpdate {
+        // For preview, simulate a successful update
+        print("🎭 [UserPreviewService] Simulating badge update for currentUserId: \(currentUserId), badgeId: \(badgeId)")
+        print("🎭 [UserPreviewService] Request: showcased=\(request.showcased?.description ?? "nil"), hidden=\(request.hidden?.description ?? "nil")")
+        
+        // Return a mock partial update
+        return BadgePartialUpdate(
+            assignedAt: Date(),
+            badgeId: badgeId,
+            badgeName: nil,
+            badgeDescription: nil,
+            badgeImageUrl: nil,
+            hidden: request.hidden,
+            showcased: request.showcased,
+            updatedAt: Date()
+        )
+    }
 }

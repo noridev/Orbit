@@ -69,6 +69,9 @@ enum IconSet {
     static var heart: some Iconizable {
         Icon("heart.fill")
     }
+    static var hidden: some Iconizable {
+        Icon("eye.slash")
+    }
     static var info: some Iconizable {
         Icon("info")
     }
@@ -89,6 +92,9 @@ enum IconSet {
     }
     static var logout: some Iconizable {
         Icon("rectangle.portrait.and.arrow.forward")
+    }
+    static var medal: some Iconizable {
+        Icon("medal.fill")
     }
     static var megaphone: some Iconizable {
         Icon("megaphone.fill")

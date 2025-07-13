@@ -40,6 +40,28 @@ final class PreviewData: Sendable {
             ageVerificationStatus: .hidden,
             ageVerified: false,
             allowAvatarCopying: false,
+            badges: [
+                Badge(
+                    assignedAt: Date(),
+                    badgeDescription: "Awarded for gifting VRC+ (1 Month)",
+                    badgeId: "bdg_123",
+                    badgeImageUrl: URL(string: "https://assets.vrchat.com/badges/29/bdgai_7530140f-1374-472b-9540-5cfbcd592c9.png"),
+                    badgeName: "Gift (1 Month)",
+                    hidden: false,
+                    showcased: true,
+                    updatedAt: Date()
+                ),
+                Badge(
+                    assignedAt: nil,
+                    badgeDescription: "Awarded for subscribing to VRC+ (3 Years)",
+                    badgeId: "bdg_456",
+                    badgeImageUrl: URL(string: "https://assets.vrchat.com/badges/79/bdgai_b49bdd6d-0f98-4d10-a01c-c3c0a0809dd.png"),
+                    badgeName: "VRC+ Subscriber (3 Years)",
+                    hidden: false,
+                    showcased: false,
+                    updatedAt: Date()
+                )
+            ],
             bio: "This is the demo user.",
             bioLinks: SafeDecodingArray(),
             currentAvatar: "",

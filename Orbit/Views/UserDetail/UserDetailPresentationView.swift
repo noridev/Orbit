@@ -29,7 +29,7 @@ struct UserDetailPresentationView: View {
                     .refreshable {
                         await fetchUser(id: id)
                     }
-                    .id("\(userDetail.id)_\(userDetail.status.rawValue)_\(userDetail.statusDescription)_\(userDetail.bio ?? "")_\(userDetail.displayName)_\(userDetail.pronouns ?? "")")
+                    .id("\(userDetail.id)_\(userDetail.status.rawValue)_\(userDetail.statusDescription)_\(userDetail.bio ?? "")_\(userDetail.displayName)_\(userDetail.pronouns ?? "")_\(userDetail.badges.hashValue)")
             } else {
                 ProgressScreen()
                     .task {
@@ -72,6 +72,7 @@ struct UserDetailPresentationView: View {
             ageVerificationStatus: userDetail.ageVerificationStatus,
             ageVerified: userDetail.ageVerified,
             allowAvatarCopying: currentUser.allowAvatarCopying,
+            badges: userDetail.badges,
             bio: userDetail.bio,
             bioLinks: userDetail.bioLinks,
             currentAvatar: currentUser.currentAvatar,

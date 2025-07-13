@@ -18,6 +18,9 @@
       },
       "shouldTranslate" : false
     },
+    "%@ badge" : {
+
+    },
     "%@'s History" : {
       "localizations" : {
         "ko" : {
@@ -232,6 +235,9 @@
         }
       }
     },
+    "Assigned" : {
+
+    },
     "Authenticator" : {
 
     },
@@ -275,6 +281,53 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "模型"
+          }
+        }
+      }
+    },
+    "Badge details for %@" : {
+
+    },
+    "Badges" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッジ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "배지"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "徽章"
+          }
+        }
+      }
+    },
+    "Badge Settings" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッジ設定"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "배지 설정"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "徽章设置"
           }
         }
       }
@@ -933,6 +986,28 @@
         }
       }
     },
+    "Hidden" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "숨김"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏"
+          }
+        }
+      }
+    },
     "History" : {
 
     },
@@ -1164,6 +1239,28 @@
         }
       }
     },
+    "Last Updated" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終更新"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 업데이트"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最后更新"
+          }
+        }
+      }
+    },
     "Latest" : {
       "localizations" : {
         "ja" : {
@@ -1343,6 +1440,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "第一次使用VRChat吗?"
+          }
+        }
+      }
+    },
+    "No badges yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだバッジがありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 배지가 없습니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有徽章"
           }
         }
       }
@@ -1961,6 +2080,28 @@
         }
       }
     },
+    "Showcased" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展示中"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전시 중"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展示中"
+          }
+        }
+      }
+    },
     "Sign In" : {
 
     },
@@ -2120,6 +2261,9 @@
           }
         }
       }
+    },
+    "Tap to view badge details" : {
+
     },
     "The Friend Cache file is corrupted and cannot be read. Do you want to delete it?" : {
       "localizations" : {

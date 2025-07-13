@@ -114,6 +114,10 @@ struct UserDetailView: View {
     
     private var contentStacks: some View {
         VStack(spacing: 12) {
+            if !user.badges.isEmpty {
+                badgeSection(badges: user.badges, isMe: user.id == appVM.user?.id)
+            }
+            
             locationSection
             noteSection
             
@@ -126,10 +130,12 @@ struct UserDetailView: View {
             if !user.tags.languageTags.isEmpty {
                 languageSection
             }
+            
             let urls = user.bioLinks.wrappedValue
             if !urls.isEmpty {
                 socialLinksSection(urls)
             }
+            
             activitySection
             
             Spacer()
