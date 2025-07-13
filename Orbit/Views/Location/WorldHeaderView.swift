@@ -9,9 +9,9 @@ import SwiftUI
 import VRCKit
 
 struct WorldHeaderView<Content: View>: View {
-    let world: World
     @ViewBuilder let content: Content
     private let isRequesting: Bool
+    let world: World
     
     init(world: World, @ViewBuilder content: () -> Content) {
         self.world = world
