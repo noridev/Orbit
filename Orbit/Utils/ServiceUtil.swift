@@ -11,6 +11,7 @@ actor APIServiceUtil {
     let authenticationService: AuthenticationServiceProtocol
     let favoriteService: FavoriteServiceProtocol
     let friendService: FriendServiceProtocol
+    let groupService: GroupServiceProtocol
     let instanceService: InstanceServiceProtocol
     let userNoteService: UserNoteServiceProtocol
     let userService: UserServiceProtocol
@@ -21,6 +22,7 @@ actor APIServiceUtil {
             authenticationService = AuthenticationPreviewService(client: client)
             favoriteService = FavoritePreviewService(client: client)
             friendService = FriendPreviewService(client: client)
+            groupService = GroupPreviewService(client: client)
             instanceService = InstancePreviewService(client: client)
             userNoteService = UserNotePreviewService(client: client)
             userService = UserPreviewService(client: client)
@@ -29,6 +31,7 @@ actor APIServiceUtil {
             authenticationService = AuthenticationService(client: client)
             favoriteService = FavoriteService(client: client)
             friendService = FriendService(client: client)
+            groupService = GroupService(client: client)
             instanceService = InstanceService(client: client)
             userNoteService = UserNoteService(client: client)
             userService = UserService(client: client)

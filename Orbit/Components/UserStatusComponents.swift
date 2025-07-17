@@ -1,5 +1,5 @@
 //
-//  FriendStatusComponents.swift
+//  UserStatusComponents.swift
 //  Orbit
 //
 //  Created by NoriDev on 7/7/25.
@@ -7,6 +7,16 @@
 
 import SwiftUI
 import VRCKit
+
+struct UserStatusView<T>: View where T: ProfileElementRepresentable {
+    let user: T
+    
+    var body: some View {
+        Text(user.status.description)
+            .font(.caption)
+            .foregroundColor(.secondary)
+    }
+}
 
 struct FriendStatusView: View {
     let friend: Friend
@@ -31,6 +41,14 @@ struct FriendStatusView: View {
                     .foregroundColor(.gray)
             }
         }
+    }
+}
+
+struct GroupOwnerStatusView: View {
+    let owner: UserDetail
+    
+    var body: some View {
+        UserStatusView(user: owner)
     }
 }
 

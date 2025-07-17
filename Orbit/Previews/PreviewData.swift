@@ -13,6 +13,51 @@ final class PreviewData: Sendable {
     private let previewUserId = UUID()
     let friends: [Friend]
     let userDetails: [UserDetail]
+    
+    static let sampleGroup = VRCGroup(
+        id: "gmem_sample_member_id",
+        groupId: "grp_sample_group_id",
+        name: "Sample Group",
+        shortCode: "SAMPLE",
+        discriminator: "1234",
+        description: "This is a sample group for preview purposes. It contains various information about the group including member count, privacy settings, and other details.",
+        bannerId: "file_sample_banner",
+        bannerUrl: URL(string: "https://api.vrchat.cloud/api/1/file/file_sample_banner/1/file"),
+        iconId: "file_sample_icon",
+        iconUrl: URL(string: "https://api.vrchat.cloud/api/1/file/file_sample_icon/1/file"),
+        ownerId: "usr_sample_owner",
+        privacy: .default,
+        memberCount: 12345,
+        memberVisibility: .visible,
+        mutualGroup: true,
+        isRepresenting: false,
+        lastPostCreatedAt: Date(),
+        lastPostReadAt: nil,
+        rules: nil,
+        isVerified: true,
+        joinState: .open,
+        tags: ["sample", "preview"],
+        languages: ["korean", "english"],
+        galleries: nil,
+        createdAt: Date(),
+        updatedAt: Date(),
+        memberships: nil,
+        roles: nil,
+        representable: true,
+        myMember: GroupMembership(
+            id: "mem_sample",
+            groupId: "grp_sample_group_id",
+            userId: "usr_sample_user",
+            isRepresenting: false,
+            isSubscribedToAnnouncements: true,
+            visibility: .visible,
+            isSubscribedToEvents: true,
+            roleIds: ["role_member"],
+            joinedAt: Date().addingTimeInterval(-86400 * 30),
+            rolePermissions: nil,
+            roleOrder: nil
+        )
+    )
 
     static let imageBaseURL = "https://images2.imgbox.com"
     static let iconImageUrl = URL(string: "\(imageBaseURL)/44/8f/IQToHkKa_o.jpg")

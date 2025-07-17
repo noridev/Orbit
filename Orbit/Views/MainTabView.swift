@@ -48,6 +48,15 @@ private extension MainTabViewSegment {
         case .social: LocationsView()
         case .friends: FriendsView()
         case .favorites: FavoritesView()
+        case .groups:
+            if let user = appVM.user {
+                NavigationStack {
+                    GroupListView(
+                        userId: user.id,
+                        groupService: appVM.services.groupService
+                    )
+                }
+            }
         case .search: SearchView()
         // case .settings: SettingsView()
         case .profile:

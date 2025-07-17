@@ -270,8 +270,14 @@ class JsonDataViewModel: ObservableObject {
     
     private func loadAPIData() async {
         do {
-            let rawData = try await appVM.services.userService.fetchUserRawJSON(userId: userId)
-            self.jsonString = JsonDataUtils.prettyPrintJsonData(rawData)
+            // Check if this is a group request (groupId starts with "grp_")
+            if userId.hasPrefix("grp_") {
+                let rawData = try await appVM.services.groupService.fetchGroupRawJSON(groupId: userId)
+                self.jsonString = JsonDataUtils.prettyPrintJsonData(rawData)
+            } else {
+                let rawData = try await appVM.services.userService.fetchUserRawJSON(userId: userId)
+                self.jsonString = JsonDataUtils.prettyPrintJsonData(rawData)
+            }
             LoadingStateManager.finishLoading(self)
         } catch {
             LoadingStateManager.handleError(self, error: error)

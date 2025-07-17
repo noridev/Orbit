@@ -8,12 +8,15 @@
 import Foundation
 
 enum SortType: String, Hashable, CaseIterable, Identifiable {
-    case name, status, latestLogin, oldestLogin, latestActivity, oldestActivity, timeDescending, timeAscending
+    case name
+    case status, latestLogin, oldestLogin, latestActivity, oldestActivity
+    case timeDescending, timeAscending
+    case memberCount
     
     var id: String { rawValue }
 
     enum Context {
-        case friends, history
+        case friends, history, groups
     }
 
     func description(for context: Context) -> String {
@@ -34,6 +37,8 @@ enum SortType: String, Hashable, CaseIterable, Identifiable {
             String(localized: "Latest")
         case .timeAscending:
             String(localized: "Oldest")
+        case .memberCount:
+            String(localized: "Member Count")
         }
     }
 
@@ -44,6 +49,7 @@ enum SortType: String, Hashable, CaseIterable, Identifiable {
         case .latestLogin, .oldestLogin: IconSet.calendar
         case .latestActivity, .oldestActivity: IconSet.lastActivity
         case .timeAscending, .timeDescending: IconSet.clock
+        case .memberCount: IconSet.friendsFilled
         }
     }
 }

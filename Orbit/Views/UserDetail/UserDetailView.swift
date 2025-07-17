@@ -131,6 +131,8 @@ struct UserDetailView: View {
                 languageSection
             }
             
+            groupSection
+            
             let urls = user.bioLinks.wrappedValue
             if !urls.isEmpty {
                 socialLinksSection(urls)

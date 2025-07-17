@@ -17,6 +17,8 @@ struct SortPickerView: View {
             return [.name, .status, .latestLogin, .oldestLogin, .latestActivity, .oldestActivity]
         case .history:
             return [.name, .timeDescending, .timeAscending]
+        case .groups:
+            return [.name, .memberCount]
         }
     }
 
