@@ -58,42 +58,84 @@ struct GroupListView: View {
         sortedAndFilteredGroups(for: groupViewModel.managedGroups)
     }
     
-    private var filteredAllGroups: [VRCGroup] {
-        sortedAndFilteredGroups(for: groupViewModel.allGroups)
+    private var filteredMutualGroups: [VRCGroup] {
+        sortedAndFilteredGroups(for: groupViewModel.mutualGroups)
+    }
+    
+    private var filteredRegularGroups: [VRCGroup] {
+        sortedAndFilteredGroups(for: groupViewModel.regularGroups)
     }
     
     var body: some View {
         List {
             if !filteredRepresentedGroups.isEmpty {
-                Section("Representing") {
+                Section {
                     ForEach(filteredRepresentedGroups) { group in
                         NavigationLink(destination: GroupDetailView(group: group)) {
-                            GroupRowView(group: group, isRepresenting: true)
+                            GroupRowView(group: group, isRepresenting: false, isManagedGroup: false, isMutualGroup: false)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
+                } header: { 
+                    GroupSectionHeader(
+                        iconName: "star.fill",
+                        iconColor: .yellow,
+                        title: "Representing"
+                    )
                 }
             }
             
             if !filteredManagedGroups.isEmpty {
-                Section("관리 중인 그룹") {
+                Section {
                     ForEach(filteredManagedGroups) { group in
                         NavigationLink(destination: GroupDetailView(group: group)) {
-                            GroupRowView(group: group, isRepresenting: false)
+                            GroupRowView(group: group, isRepresenting: false, isManagedGroup: false, isMutualGroup: false)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
+                } header: { 
+                    GroupSectionHeader(
+                        iconName: "shield.fill",
+                        iconColor: .blue,
+                        title: "관리 중인 그룹",
+                        count: filteredManagedGroups.count
+                    )
                 }
             }
             
-            if !filteredAllGroups.isEmpty {
-                Section("참여 중인 그룹") {
-                    ForEach(filteredAllGroups) { group in
+            if !filteredMutualGroups.isEmpty {
+                Section {
+                    ForEach(filteredMutualGroups) { group in
                         NavigationLink(destination: GroupDetailView(group: group)) {
-                            GroupRowView(group: group, isRepresenting: false)
+                            GroupRowView(group: group, isRepresenting: false, isManagedGroup: false, isMutualGroup: false)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
+                } header: { 
+                    GroupSectionHeader(
+                        iconName: "person.2.circle.fill",
+                        iconColor: .purple,
+                        title: "함께 속한 그룹",
+                        count: filteredMutualGroups.count
+                    )
+                }
+            }
+            
+            if !filteredRegularGroups.isEmpty {
+                Section {
+                    ForEach(filteredRegularGroups) { group in
+                        NavigationLink(destination: GroupDetailView(group: group)) {
+                            GroupRowView(group: group, isRepresenting: false, isManagedGroup: false, isMutualGroup: false)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                } header: { 
+                    GroupSectionHeader(
+                        iconName: "person.3.fill",
+                        iconColor: .green,
+                        title: "소속된 그룹",
+                        count: filteredRegularGroups.count
+                    )
                 }
             }
         }
@@ -181,7 +223,7 @@ struct GroupListView: View {
             } description: {
                 Text("VRChat에서 그룹에 가입하면 여기에 표시됩니다")
             }
-        } else if !searchText.isEmpty && filteredRepresentedGroups.isEmpty && filteredManagedGroups.isEmpty && filteredAllGroups.isEmpty {
+        } else if !searchText.isEmpty && filteredRepresentedGroups.isEmpty && filteredManagedGroups.isEmpty && filteredMutualGroups.isEmpty && filteredRegularGroups.isEmpty {
             ContentUnavailableView.search
         }
     }
@@ -190,6 +232,8 @@ struct GroupListView: View {
 struct GroupRowView: View {
     let group: VRCGroup
     let isRepresenting: Bool
+    let isManagedGroup: Bool
+    let isMutualGroup: Bool
     
     var body: some View {
         HStack(spacing: 12) {
@@ -228,6 +272,18 @@ struct GroupRowView: View {
                     if isRepresenting {
                         Image(systemName: "star.fill")
                             .foregroundColor(.yellow)
+                            .font(.caption)
+                    }
+                    
+                    if isManagedGroup {
+                        Image(systemName: "shield.fill")
+                            .foregroundColor(.purple)
+                            .font(.caption)
+                    }
+                    
+                    if isMutualGroup {
+                        Image(systemName: "person.2.circle.fill")
+                            .foregroundColor(.purple)
                             .font(.caption)
                     }
                     

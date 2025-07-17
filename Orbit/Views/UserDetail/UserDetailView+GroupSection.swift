@@ -56,19 +56,16 @@ struct GroupSectionContent: View {
                 VStack(alignment: .leading, spacing: 12) {
                     if !groupViewModel.representedGroups.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
-                                    .font(.caption)
-                                Text("Representing")
-                                    .font(.caption)
-                                    .foregroundColor(.primary)
-                                Spacer()
-                            }
+                            GroupSectionHeader(
+                                iconName: "star.fill",
+                                iconColor: .yellow,
+                                title: "Representing"
+                            )
+                            
                             ForEach(groupViewModel.representedGroups) { group in
                                 NavigationLink(destination: GroupDetailView(group: group)) {
                                     NavigationLabel {
-                                        GroupRowView(group: group, isRepresenting: false)
+                                        GroupRowView(group: group, isRepresenting: false, isManagedGroup: false, isMutualGroup: false)
                                             .contentShape(Rectangle())
                                     }
                                 }
@@ -79,20 +76,17 @@ struct GroupSectionContent: View {
                     
                     if !groupViewModel.managedGroups.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Image(systemName: "shield.fill")
-                                    .foregroundColor(.blue)
-                                    .font(.caption)
-                                Text("관리 중")
-                                    .font(.caption)
-                                    .foregroundColor(.primary)
-                                Spacer()
-                            }
+                            GroupSectionHeader(
+                                iconName: "shield.fill",
+                                iconColor: .blue,
+                                title: "관리 중인 그룹",
+                                count: groupViewModel.managedGroups.count
+                            )
                             
                             ForEach(groupViewModel.managedGroups.prefix(2)) { group in
                                 NavigationLink(destination: GroupDetailView(group: group)) {
                                     NavigationLabel {
-                                        GroupRowView(group: group, isRepresenting: false)
+                                        GroupRowView(group: group, isRepresenting: false, isManagedGroup: false, isMutualGroup: false)
                                             .contentShape(Rectangle())
                                     }
                                 }
@@ -110,19 +104,24 @@ struct GroupSectionContent: View {
                         }
                     }
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Image(systemName: "person.3.fill")
-                                .foregroundColor(.green)
-                                .font(.caption)
-                            Text("소속된 그룹")
-                                .font(.caption)
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Text("\(groupViewModel.allGroups.count)개")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                    if !groupViewModel.mutualGroups.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            GroupSectionHeader(
+                                iconName: "person.2.circle.fill",
+                                iconColor: .purple,
+                                title: "함께 속한 그룹",
+                                count: groupViewModel.mutualGroups.count
+                            )
                         }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        GroupSectionHeader(
+                            iconName: "person.3.fill",
+                            iconColor: .green,
+                            title: "소속된 그룹",
+                            count: groupViewModel.allGroups.count
+                        )
                     }
                 }
             } else {
@@ -142,31 +141,6 @@ struct GroupSectionContent: View {
             groupViewModel.configure(groupService: groupService, userId: userId)
             await groupViewModel.loadUserGroups()
             isLoading = false
-        }
-    }
-}
-
-struct GroupSummaryRow: View {
-    let title: String
-    let groups: [VRCGroup]
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .font(.caption)
-            
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.primary)
-            
-            Spacer()
-            
-            Text("\(groups.count)개")
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
     }
 }

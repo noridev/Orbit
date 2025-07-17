@@ -25,6 +25,7 @@ final class PreviewData: Sendable {
         bannerUrl: URL(string: "https://api.vrchat.cloud/api/1/file/file_sample_banner/1/file"),
         iconId: "file_sample_icon",
         iconUrl: URL(string: "https://api.vrchat.cloud/api/1/file/file_sample_icon/1/file"),
+        onlineMemberCount: 123,
         ownerId: "usr_sample_owner",
         privacy: .default,
         memberCount: 12345,

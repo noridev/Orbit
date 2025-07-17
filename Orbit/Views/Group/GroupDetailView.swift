@@ -12,10 +12,12 @@ struct GroupDetailView: View {
     let group: VRCGroup
     @Environment(\.dismiss) private var dismiss
     @Environment(AppViewModel.self) var appVM
+    @Environment(FriendViewModel.self) var friendVM
     @State private var isLoading = false
     @State private var isPresentedJsonView = false
     @State var ownerUserState: OwnerUserState = .loading
     @State var currentGroup: VRCGroup
+    @State private var members: [GroupMembership]?
     
     enum OwnerUserState {
         case loading
@@ -34,11 +36,10 @@ struct GroupDetailView: View {
             VStack(spacing: 0) {
                 headerSection
                 VStack(spacing: 16) {
-                    if let desc = currentGroup.description, !desc.isEmpty {
-                        descriptionSection(desc)
-                    }
-                    
-                    statsSection
+                    descriptionSection(currentGroup.description, isLoading: isLoading)
+                    rulesSection(currentGroup.rules, isLoading: isLoading)
+                    membershipSection(isLoading: isLoading)
+                    infoSection(members: members, isLoading: isLoading)
                     
                     if let languages = currentGroup.languages, !languages.isEmpty {
                         languageSection(languages: languages)
@@ -76,13 +77,21 @@ struct GroupDetailView: View {
     }
     
     private func refreshData() async {
+        isLoading = true
+        defer { isLoading = false }
+
         await fetchGroupDetails()
         await fetchOwnerUser()
+        await fetchMembers()
     }
     
     private func fetchGroupDetails() async {
         do {
-            let updatedGroup = try await appVM.services.groupService.fetchGroup(groupId: currentGroup.groupId ?? currentGroup.id)
+            let updatedGroup = try await appVM.services.groupService.fetchGroup(
+                groupId: currentGroup.groupId ?? currentGroup.id,
+                includeRoles: true,
+                includeMembers: true
+            )
             await MainActor.run {
                 self.currentGroup = updatedGroup
             }
@@ -115,6 +124,17 @@ struct GroupDetailView: View {
                 self.ownerUserState = isNotFound ? .notFound : .error(error)
             }
             print("❌ [GroupDetailView] Failed to fetch owner user: \(error)")
+        }
+    }
+    
+    private func fetchMembers() async {
+        do {
+            let groupMembers = try await appVM.services.groupService.fetchGroupMembers(groupId: currentGroup.groupId ?? currentGroup.id)
+            await MainActor.run {
+                self.members = groupMembers
+            }
+        } catch {
+            print("❌ [GroupDetailView] Failed to fetch group members: \(error)")
         }
     }
 }

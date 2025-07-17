@@ -28,6 +28,7 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
                 bannerUrl: nil,
                 iconId: nil,
                 iconUrl: nil,
+                onlineMemberCount: 123,
                 ownerId: "usr_owner",
                 privacy: .public,
                 memberCount: 1500,
@@ -101,6 +102,7 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
                 bannerUrl: nil,
                 iconId: nil,
                 iconUrl: nil,
+                onlineMemberCount: 123,
                 ownerId: "usr_owner2",
                 privacy: .private,
                 memberCount: 500,
@@ -171,7 +173,7 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
         return allGroups.filter { $0.isRepresenting == true }
     }
     
-    public func fetchGroup(groupId: String) async throws -> VRCGroup {
+    public func fetchGroup(groupId: String, includeRoles: Bool = true, includeMembers: Bool = true) async throws -> VRCGroup {
         return VRCGroup(
             id: "gmem_sample",
             groupId: groupId,
@@ -183,6 +185,7 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
             bannerUrl: nil,
             iconId: nil,
             iconUrl: nil,
+            onlineMemberCount: 123,
             ownerId: "usr_owner3",
             privacy: .public,
             memberCount: 100,
@@ -216,6 +219,37 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
                 roleOrder: nil
             )
         )
+    }
+    
+    public func fetchGroupMembers(groupId: String) async throws -> [GroupMembership] {
+        return [
+            GroupMembership(
+                id: "mem_preview_1",
+                groupId: groupId,
+                userId: "usr_preview_friend_1",
+                isRepresenting: false,
+                isSubscribedToAnnouncements: true,
+                visibility: .visible,
+                isSubscribedToEvents: true,
+                roleIds: ["role_member"],
+                joinedAt: Date(),
+                rolePermissions: nil,
+                roleOrder: nil
+            ),
+            GroupMembership(
+                id: "mem_preview_2",
+                groupId: groupId,
+                userId: "usr_preview_friend_2",
+                isRepresenting: false,
+                isSubscribedToAnnouncements: true,
+                visibility: .visible,
+                isSubscribedToEvents: true,
+                roleIds: ["role_member"],
+                joinedAt: Date(),
+                rolePermissions: nil,
+                roleOrder: nil
+            )
+        ]
     }
     
     public func fetchGroupRawJSON(groupId: String) async throws -> Data {

@@ -1,5 +1,5 @@
 //
-//  GroupDetailView+DescriptionSection.swift
+//  GroupDetailView+RulesSection.swift
 //  Orbit
 //
 //  Created by NoriDev on 7/17/25.
@@ -9,18 +9,18 @@ import SwiftUI
 import VRCKit
 
 extension GroupDetailView {
-    func descriptionSection(_ description: String?, isLoading: Bool) -> some View {
-        GroupBox("설명") {
+    func rulesSection(_ rules: String?, isLoading: Bool) -> some View {
+        GroupBox("규칙") {
             if isLoading {
-                Text("설명이 없습니다")
+                Text("규칙이 없습니다")
                     .font(.body)
                     .redacted(reason: .placeholder)
             } else {
-                if let desc = description, !desc.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(desc)
+                if let rulesText = rules, !rulesText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(rulesText)
                         .font(.body)
                 } else {
-                    Text("설명이 없습니다")
+                    Text("규칙이 없습니다")
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }
@@ -28,4 +28,4 @@ extension GroupDetailView {
         }
         .groupBoxStyle(.card)
     }
-}
+} 

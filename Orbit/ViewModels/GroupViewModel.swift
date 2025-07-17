@@ -174,6 +174,20 @@ final class GroupViewModel: ObservableObject {
         }
     }
     
+    var mutualGroups: [VRCGroup] {
+        userGroups.filter { group in
+            group.mutualGroup
+        }
+    }
+    
+    var regularGroups: [VRCGroup] {
+        userGroups.filter { group in
+            !group.isRepresenting &&
+            !canManageGroup(group) && 
+            !group.mutualGroup
+        }
+    }
+    
     private func canManageGroup(_ group: VRCGroup) -> Bool {
         let isOwner = group.ownerId == currentUserId
         
