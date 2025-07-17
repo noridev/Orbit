@@ -95,7 +95,6 @@ struct BadgePopoverView: View {
                         .frame(width: 64, height: 64)
                 }
                 .frame(width: 64, height: 64)
-                .clipShape(Circle())
                 
                 VStack(spacing: 4) {
                     Text(badge.badgeName)

@@ -31,6 +31,8 @@ struct FavoritesView: View {
             .overlay {
                 if isFetching {
                     ProgressView()
+                        .padding(32)
+                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
                 } else if isSelectedEmpty {
                     ContentUnavailableView {
                         Label("No Favorites", systemImage: IconSet.favorite.systemName)
