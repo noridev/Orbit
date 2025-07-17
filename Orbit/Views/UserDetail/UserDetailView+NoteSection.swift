@@ -29,7 +29,6 @@ extension UserDetailView {
         .groupBoxStyle(.card)
         .sheet(isPresented: $isPresentedNoteEditor) {
             NoteEditView(initialValue: user.note, userId: user.id) { text in
-                user.note = text
             }
             .presentationDetents([.small])
         }

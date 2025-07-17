@@ -29,7 +29,6 @@ struct UserDetailView: View {
     @Environment(FavoriteViewModel.self) var favoriteVM
     @Environment(FriendViewModel.self) var friendVM
     @Environment(\.dismiss) private var dismiss
-    @State var user: UserDetail
     @State var instance: Instance?
     @State var lastActivity = ""
     @State var isPresentedNoteEditor = false
@@ -39,12 +38,9 @@ struct UserDetailView: View {
     @State private var isPresentedForm = false
     @State private var isPresentedBrowser = false
     @State private var isPresentedJsonView = false
+    let user: UserDetail
     
     private let headerHeight: CGFloat = 250
-
-    init(user: UserDetail) {
-        _user = State(initialValue: user)
-    }
 
     var body: some View {
         let content = ScrollView {

@@ -72,6 +72,8 @@ struct NoteEditView: View {
                     note: text
                 )
             }
+            
+            NotificationCenter.default.post(name: .profileUpdated, object: nil)
         } catch {
             appVM.handleError(error)
         }
