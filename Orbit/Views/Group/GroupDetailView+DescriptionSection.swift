@@ -17,7 +17,7 @@ extension GroupDetailView {
                     .redacted(reason: .placeholder)
             } else {
                 if let desc = description, !desc.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(desc)
+                    ShowMoreText(text: desc, lineLimit: 3)
                         .font(.body)
                 } else {
                     Text("설명이 없습니다")

@@ -17,7 +17,7 @@ extension GroupDetailView {
                         .font(.caption)
                         .foregroundStyle(.gray)
                     
-                    Text("\(currentGroup.memberCount) (\(currentGroup.onlineMemberCount ?? 0)/\(friendsInGroupCount(members: members)))")
+                    Text(memberCountText(members: members))
                         .font(.callout)
                 }
                 
@@ -68,6 +68,17 @@ extension GroupDetailView {
         }
         .groupBoxStyle(.card)
         .redacted(reason: isLoading ? .placeholder : [])
+    }
+    
+    private func memberCountText(members: [GroupMembership]?) -> String {
+        let onlineCount = currentGroup.onlineMemberCount ?? 0
+        let friendsCount = friendsInGroupCount(members: members)
+        
+        if onlineCount == 0 && friendsCount == 0 {
+            return "\(currentGroup.memberCount)"
+        } else {
+            return "\(currentGroup.memberCount) (\(onlineCount)/\(friendsCount))"
+        }
     }
     
     private func friendsInGroupCount(members: [GroupMembership]?) -> Int {

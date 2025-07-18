@@ -258,4 +258,37 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
         encoder.outputFormatting = .prettyPrinted
         return try encoder.encode(mockGroup)
     }
+    
+    public func fetchGroupPosts(groupId: String) async throws -> [GroupPost] {
+        return [
+            GroupPost(
+                id: "post_1",
+                groupId: groupId,
+                authorId: "usr_preview_1",
+                editorId: "usr_preview_1",
+                visibility: "public",
+                roleId: ["role_member"],
+                title: "첫 번째 포스트",
+                text: "첫 번째 샘플 포스트입니다!",
+                imageId: nil,
+                imageUrl: nil,
+                createdAt: Date().addingTimeInterval(-3600),
+                updatedAt: Date().addingTimeInterval(-1800)
+            ),
+            GroupPost(
+                id: "post_2",
+                groupId: groupId,
+                authorId: "usr_preview_2",
+                editorId: "usr_preview_2",
+                visibility: "public",
+                roleId: ["role_member"],
+                title: "두 번째 포스트",
+                text: "두 번째 포스트, 사진도 있어요!",
+                imageId: "file_sample",
+                imageUrl: "https://placehold.co/80x80",
+                createdAt: Date().addingTimeInterval(-7200),
+                updatedAt: Date().addingTimeInterval(-3600)
+            )
+        ]
+    }
 }

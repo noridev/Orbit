@@ -114,9 +114,9 @@ extension GroupDetailView {
                             .lineLimit(1)
                     }
                     
-                    HStack {
-                        if let joinState = currentGroup.joinState {
-                            Text(joinState.rawValue.capitalized)
+                    ScrollView(.horizontal) {
+                        HStack {
+                            Text(privacyDisplayText)
                                 .font(.caption)
                                 .fontWeight(.medium)
                                 .foregroundColor(.secondary)
@@ -125,36 +125,81 @@ extension GroupDetailView {
                                 .background(
                                     ZStack {
                                         Capsule()
-                                            .fill(Color.white)
+                                            .fill(Color(.systemGray6))
                                         Capsule()
                                             .fill(Color.blue.opacity(0.1))
                                     }
                                 )
                                 .lineLimit(1)
+                            
+                            if let joinState = currentGroup.joinState {
+                                Text(joinState.rawValue.capitalized)
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(
+                                        ZStack {
+                                            Capsule()
+                                                .fill(Color.white)
+                                            Capsule()
+                                                .fill(Color.blue.opacity(0.1))
+                                        }
+                                    )
+                                    .lineLimit(1)
+                            }
+                            
+                            Text(currentGroup.memberVisibility.rawValue.capitalized)
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(
+                                    ZStack {
+                                        Capsule()
+                                            .fill(Color(.systemGray6))
+                                        Capsule()
+                                            .fill(Color.blue.opacity(0.1))
+                                    }
+                                )
+                                .lineLimit(1)
+                            
+                            if let isSubscribed = currentGroup.myMember?.isSubscribedToAnnouncements, isSubscribed == true {
+                                Text("Subscribed")
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(
+                                        ZStack {
+                                            Capsule()
+                                                .fill(Color(.systemGray6))
+                                            Capsule()
+                                                .fill(Color.blue.opacity(0.1))
+                                        }
+                                    )
+                                    .lineLimit(1)
+                            }
                         }
-                        
-                        Text(currentGroup.memberVisibility.rawValue.capitalized)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(
-                                ZStack {
-                                    Capsule()
-                                        .fill(Color(.systemGray6))
-                                    Capsule()
-                                        .fill(Color.blue.opacity(0.1))
-                                }
-                            )
-                            .lineLimit(1)
                     }
                 }
-                
-                Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
+        }
+    }
+    
+    private var privacyDisplayText: String {
+        switch currentGroup.privacy {
+        case .private:
+            return "Private"
+        case .public, .default:
+            return "Public"
+        case .unknown:
+            return "Unknown"
         }
     }
 }

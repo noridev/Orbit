@@ -18,6 +18,16 @@ struct GroupDetailView: View {
     @State var ownerUserState: OwnerUserState = .loading
     @State var currentGroup: VRCGroup
     @State private var members: [GroupMembership]?
+    @State private var selectedTab: Tab = .info
+    @State private var selectedImageURL: URL?
+    
+    enum Tab: String, CaseIterable, Identifiable {
+        case info = "정보"
+        case posts = "포스트"
+        case members = "멤버"
+        case gallery = "갤러리"
+        var id: String { rawValue }
+    }
     
     enum OwnerUserState {
         case loading
@@ -35,20 +45,44 @@ struct GroupDetailView: View {
         ScrollView {
             VStack(spacing: 0) {
                 headerSection
-                VStack(spacing: 16) {
-                    descriptionSection(currentGroup.description, isLoading: isLoading)
-                    rulesSection(currentGroup.rules, isLoading: isLoading)
-                    membershipSection(isLoading: isLoading)
-                    infoSection(members: members, isLoading: isLoading)
-                    
-                    if let languages = currentGroup.languages, !languages.isEmpty {
-                        languageSection(languages: languages)
+                
+                Picker("Tabs", selection: $selectedTab) {
+                    ForEach(Tab.allCases) { tab in
+                        Text(tab.rawValue).tag(tab)
                     }
-                    
-                    ownerSection
                 }
-                .padding(.top, 16)
-                .padding(.bottom, 32)
+                .pickerStyle(.segmented)
+                .padding([.horizontal, .top])
+                
+                Group {
+                    switch selectedTab {
+                    case .info:
+                        VStack(spacing: 16) {
+                            descriptionSection(currentGroup.description, isLoading: isLoading)
+                            rulesSection(currentGroup.rules, isLoading: isLoading)
+                            membershipSection(isLoading: isLoading)
+                            infoSection(members: members, isLoading: isLoading)
+                            if let languages = currentGroup.languages, !languages.isEmpty {
+                                languageSection(languages: languages)
+                            }
+                            ownerSection
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 32)
+                        
+                    case .posts:
+                        GroupPostListView(selectedImageURL: $selectedImageURL, groupId: currentGroup.groupId ?? currentGroup.id)
+                            .padding(.top, 16)
+                        
+                    case .members:
+                        GroupMemberListView(groupId: currentGroup.groupId ?? currentGroup.id, currentGroup: currentGroup)
+                            .padding(.top, 16)
+                        
+                    case .gallery:
+                        GroupGalleryView(galleries: currentGroup.galleries)
+                            .padding(.top, 16)
+                    }
+                }
             }
         }
         .navigationTitle(currentGroup.name)
@@ -67,6 +101,9 @@ struct GroupDetailView: View {
         }
         .sheet(isPresented: $isPresentedJsonView) {
             GroupJsonDetailView(group: currentGroup)
+        }
+        .fullScreenCover(item: $selectedImageURL) { url in
+            ImageViewer(imageUrl: url)
         }
         .refreshable {
             await refreshData()
@@ -116,7 +153,7 @@ struct GroupDetailView: View {
                     isNotFound = false
                 }
             } else {
-                isNotFound = error.localizedDescription.lowercased().contains("not found") || 
+                isNotFound = error.localizedDescription.lowercased().contains("not found") ||
                             (error as NSError).code == 404
             }
             
