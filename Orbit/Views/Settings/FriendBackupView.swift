@@ -74,7 +74,6 @@ struct FriendBackupView: View {
     
     var body: some View {
         ZStack {
-            // 그라데이션 배경
             LinearGradient(
                 gradient: Gradient(colors: [
                     Color.blue.opacity(0.1),
@@ -191,11 +190,8 @@ struct FriendBackupView: View {
         }
     }
     
-    // MARK: - View Components
-    
     private var headerSection: some View {
         VStack(spacing: 16) {
-            // 아이콘
             ZStack {
                 Circle()
                     .fill(
@@ -231,7 +227,6 @@ struct FriendBackupView: View {
     
     private var accountInfoCard: some View {
         VStack(spacing: 16) {
-            // 카드 헤더
             HStack {
                 Label("계정 정보", systemImage: "person.circle.fill")
                     .font(.headline)
@@ -240,7 +235,6 @@ struct FriendBackupView: View {
                 Spacer()
             }
             
-            // 현재 계정 정보
             VStack(spacing: 12) {
                 HStack {
                     Image(systemName: "person.circle.fill")
@@ -318,7 +312,6 @@ struct FriendBackupView: View {
     
     private var dataStatusCard: some View {
         VStack(spacing: 16) {
-            // 카드 헤더
             HStack {
                 Label("데이터 정보", systemImage: "chart.bar.doc.horizontal")
                     .font(.headline)
@@ -327,7 +320,6 @@ struct FriendBackupView: View {
                 Spacer()
             }
             
-            // 데이터 상태
             VStack(spacing: 12) {
                 dataStatusRow(
                     icon: "externaldrive",
@@ -391,7 +383,6 @@ struct FriendBackupView: View {
     
     private var dataManagementCard: some View {
         VStack(spacing: 16) {
-            // 카드 헤더
             HStack {
                 Label("데이터 관리", systemImage: "externaldrive.badge.icloud")
                     .font(.headline)
@@ -400,7 +391,6 @@ struct FriendBackupView: View {
                 Spacer()
             }
             
-            // 관리 버튼들
             VStack(spacing: 12) {
                 gradientActionButton(
                     icon: "square.and.arrow.up",
@@ -433,7 +423,6 @@ struct FriendBackupView: View {
                 }
             }
             
-            // 도움말 정보
             VStack(alignment: .leading, spacing: 8) {
                 infoRow(icon: "info.circle", text: "백업에는 모든 계정의 친구 목록과 기록이 포함됩니다.", color: .blue)
                 infoRow(icon: "arrow.triangle.merge", text: "백업을 복원하면 기존 데이터와 자동으로 병합됩니다.", color: .green)
@@ -459,7 +448,6 @@ struct FriendBackupView: View {
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 16) {
-                // 아이콘
                 ZStack {
                     Circle()
                         .fill(
@@ -482,7 +470,6 @@ struct FriendBackupView: View {
                     }
                 }
                 
-                // 텍스트
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.headline)
@@ -497,9 +484,8 @@ struct FriendBackupView: View {
                 
                 Spacer()
                 
-                // 화살표
                 if !isLoading {
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconSet.forward.systemName)
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.secondary)
@@ -532,7 +518,6 @@ struct FriendBackupView: View {
     
     private var importantNoticeCard: some View {
         VStack(spacing: 16) {
-            // 카드 헤더
             HStack {
                 Label("진행 전 안내", systemImage: "exclamationmark.triangle.fill")
                     .font(.headline)
@@ -541,7 +526,6 @@ struct FriendBackupView: View {
                 Spacer()
             }
             
-            // 안내 사항들
             VStack(alignment: .leading, spacing: 12) {
                 noticeRow(
                     icon: "lock.shield",
@@ -585,8 +569,6 @@ struct FriendBackupView: View {
             Spacer()
         }
     }
-    
-    // MARK: - Private Methods
     
     private func exportFriendData() {
         isExporting = true
@@ -720,8 +702,6 @@ struct FriendBackupView: View {
     }
 }
 
-// MARK: - Support Views
-
 struct BackupActionRow: View {
     let icon: String
     let title: String
@@ -771,15 +751,13 @@ struct BackupActionRow: View {
     private var chevronView: some View {
         Group {
             if !isLoading {
-                Image(systemName: "chevron.right")
+                Image(systemName: IconSet.forward.systemName)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
         }
     }
 }
-
-// MARK: - Preview Sheets
 
 struct PreviewSheet: View {
     let previewResult: FriendCacheManager.PreviewResult
@@ -788,7 +766,6 @@ struct PreviewSheet: View {
     
     var body: some View {
         ZStack {
-            // 그라데이션 배경
             LinearGradient(
                 gradient: Gradient(colors: [
                     Color.blue.opacity(0.1),
@@ -803,9 +780,7 @@ struct PreviewSheet: View {
             VStack(spacing: 32) {
                 Spacer(minLength: 60)
                 
-                // 헤더 섹션
                 VStack(spacing: 16) {
-                    // 아이콘
                     ZStack {
                         Circle()
                             .fill(
@@ -836,7 +811,6 @@ struct PreviewSheet: View {
                     }
                 }
                 
-                // 변경사항 요약 카드
                 VStack(spacing: 24) {
                     previewCards
                     changesDetail
@@ -850,10 +824,7 @@ struct PreviewSheet: View {
                 .frame(maxWidth: 400)
                 
                 Spacer()
-                
-                // 액션 버튼들
                 actionButtons
-                
                 Spacer(minLength: 40)
             }
             .padding(.horizontal, 24)
@@ -984,8 +955,6 @@ struct PreviewCard: View {
     }
 }
 
-// MARK: - Share Sheet
-
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
     
@@ -1042,7 +1011,6 @@ struct ResetSelectionSheet: View {
     
     var body: some View {
         ZStack {
-            // 그라데이션 배경
             LinearGradient(
                 gradient: Gradient(colors: [
                     Color.orange.opacity(0.1),
@@ -1057,7 +1025,6 @@ struct ResetSelectionSheet: View {
             VStack(spacing: 24) {
                 Spacer(minLength: 20)
                 
-                // 헤더
                 VStack(spacing: 16) {
                     ZStack {
                         Circle()
@@ -1089,7 +1056,6 @@ struct ResetSelectionSheet: View {
                     }
                 }
                 
-                // 옵션 카드들
                 VStack(spacing: 16) {
                     ForEach(FriendBackupView.ResetType.allCases, id: \.self) { type in
                         Button {
@@ -1122,7 +1088,7 @@ struct ResetSelectionSheet: View {
                                 
                                 Spacer()
                                 
-                                Image(systemName: "chevron.right")
+                                Image(systemName: IconSet.forward.systemName)
                                     .font(.caption)
                                     .fontWeight(.semibold)
                                     .foregroundColor(.secondary)
@@ -1137,10 +1103,8 @@ struct ResetSelectionSheet: View {
                         .buttonStyle(.plain)
                     }
                 }
-                
                 Spacer()
                 
-                // 취소 버튼
                 Button(action: onCancel) {
                     Text("취소")
                         .fontWeight(.medium)

@@ -17,7 +17,7 @@ extension GroupDetailView {
                     .redacted(reason: .placeholder)
             } else {
                 if let rulesText = rules, !rulesText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(rulesText)
+                    ShowMoreText(text: rulesText, lineLimit: 3)
                         .font(.body)
                 } else {
                     Text("규칙이 없습니다")

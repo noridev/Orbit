@@ -95,7 +95,7 @@ struct GroupListView: View {
                     }
                 } header: { 
                     GroupSectionHeader(
-                        iconName: "shield.fill",
+                        iconName: IconSet.shield.systemName,
                         iconColor: .blue,
                         title: "관리 중인 그룹",
                         count: filteredManagedGroups.count
@@ -276,7 +276,7 @@ struct GroupRowView: View {
                     }
                     
                     if isManagedGroup {
-                        Image(systemName: "shield.fill")
+                        Image(systemName: IconSet.shield.systemName)
                             .foregroundColor(.purple)
                             .font(.caption)
                     }

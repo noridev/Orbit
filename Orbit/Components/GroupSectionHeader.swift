@@ -52,7 +52,7 @@ struct GroupSectionHeader: View {
         )
         
         GroupSectionHeader(
-            iconName: "shield.fill",
+            iconName: IconSet.shield.systemName,
             iconColor: .blue,
             title: "관리 중인 그룹",
             count: 5

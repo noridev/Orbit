@@ -77,7 +77,7 @@ struct GroupSectionContent: View {
                     if !groupViewModel.managedGroups.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             GroupSectionHeader(
-                                iconName: "shield.fill",
+                                iconName: IconSet.shield.systemName,
                                 iconColor: .blue,
                                 title: "관리 중인 그룹",
                                 count: groupViewModel.managedGroups.count

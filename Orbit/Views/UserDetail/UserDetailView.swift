@@ -43,11 +43,13 @@ struct UserDetailView: View {
     private let headerHeight: CGFloat = 250
 
     var body: some View {
-        let content = ScrollView {
-            VStack {
-                header
-                userInfoSection
-                contentStacks
+        let content = ScrollViewReader { proxy in
+            ScrollView {
+                VStack {
+                    header
+                    userInfoSection
+                    contentStacks(proxy: proxy)
+                }
             }
         }
         .navigationTitle(user.displayName)
@@ -108,7 +110,7 @@ struct UserDetailView: View {
         }
     }
     
-    private var contentStacks: some View {
+    private func contentStacks(proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 12) {
             if !user.badges.isEmpty {
                 badgeSection(badges: user.badges, isMe: user.id == appVM.user?.id)
@@ -121,7 +123,7 @@ struct UserDetailView: View {
                 historySection(friend: friend)
             }
 
-            bioSection(user.bio)
+            bioSection(user.bio, proxy: proxy)
 
             if !user.tags.languageTags.isEmpty {
                 languageSection
@@ -277,18 +279,19 @@ extension UserDetailView {
 
     func badgeView(icon: some View, text: String, color: Color) -> some View {
         HStack(spacing: 6) {
-            icon.font(.caption)
-            Text(text).font(.caption.bold())
+            icon
+                .font(.caption)
+                .foregroundStyle(color)
+            Text(text)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundStyle(color)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 7)
-        .background(
-            Capsule()
-                .fill(color.opacity(0.13))
-                .overlay(
-                    Capsule().stroke(color.opacity(0.35), lineWidth: 1)
-                )
-        )
-        .foregroundStyle(color)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(color.opacity(0.1))
+        .clipShape(Capsule())
     }
 }
+
+

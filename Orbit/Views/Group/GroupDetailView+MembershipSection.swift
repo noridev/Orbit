@@ -84,7 +84,7 @@ extension GroupDetailView {
                     .foregroundStyle(role.isManagementRole ? .blue : .primary)
                 
                 if role.isManagementRole {
-                    Image(systemName: "shield.fill")
+                    Image(systemName: IconSet.shield.systemName)
                         .font(.caption2)
                         .foregroundStyle(.blue)
                 }
