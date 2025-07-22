@@ -42,7 +42,9 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
                 joinState: .open,
                 tags: ["korea", "community"],
                 languages: ["korean", "english"],
-                galleries: nil,
+                galleries: [
+                    GroupGallery(id: "ggal_1", name: "Test Gallery 1", description: "Test Description", membersOnly: false, roleIdsToView: nil, roleIdsToSubmit: nil, roleIdsToAutoApprove: nil, roleIdsToManage: nil, createdAt: Date(), updatedAt: Date())
+                ],
                 createdAt: Date().addingTimeInterval(-86400 * 30),
                 updatedAt: Date(),
                 memberships: [
@@ -289,6 +291,14 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
                 createdAt: Date().addingTimeInterval(-7200),
                 updatedAt: Date().addingTimeInterval(-3600)
             )
+        ]
+    }
+
+    func fetchGroupGalleryImages(groupId: String, galleryId: String) async throws -> [GroupGalleryImage] {
+        return [
+            GroupGalleryImage(id: "ggim_1", groupId: groupId, galleryId: galleryId, fileId: "file_1", imageUrl: URL(string: "https://placehold.co/100x100")!, createdAt: Date(), submittedByUserId: "usr_preview", approved: true, approvedByUserId: "usr_preview", approvedAt: Date()),
+            GroupGalleryImage(id: "ggim_2", groupId: groupId, galleryId: galleryId, fileId: "file_2", imageUrl: URL(string: "https://placehold.co/100x100")!, createdAt: Date(), submittedByUserId: "usr_preview", approved: true, approvedByUserId: "usr_preview", approvedAt: Date()),
+            GroupGalleryImage(id: "ggim_3", groupId: groupId, galleryId: galleryId, fileId: "file_3", imageUrl: URL(string: "https://placehold.co/100x100")!, createdAt: Date(), submittedByUserId: "usr_preview", approved: true, approvedByUserId: "usr_preview", approvedAt: Date())
         ]
     }
 }

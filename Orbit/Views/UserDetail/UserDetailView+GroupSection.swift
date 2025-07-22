@@ -52,7 +52,16 @@ struct GroupSectionContent: View {
     
     var body: some View {
         Group {
-            if groupViewModel.hasGroups {
+            if let error = groupViewModel.error {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundColor(.orange)
+                    Text("그룹 정보를 불러올 수 없습니다")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+            } else if groupViewModel.hasGroups {
                 VStack(alignment: .leading, spacing: 12) {
                     if !groupViewModel.representedGroups.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
@@ -126,9 +135,9 @@ struct GroupSectionContent: View {
                 }
             } else {
                 HStack {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundColor(.orange)
-                    Text("그룹 정보를 불러올 수 없습니다")
+                    Image(systemName: "person.3.fill")
+                        .foregroundColor(.gray)
+                    Text("참여 중인 그룹이 없습니다")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -139,8 +148,12 @@ struct GroupSectionContent: View {
         .task {
             isLoading = true
             groupViewModel.configure(groupService: groupService, userId: userId)
+            if Task.isCancelled { return }
             await groupViewModel.loadUserGroups()
-            isLoading = false
+            if Task.isCancelled { return }
+            await MainActor.run {
+                self.isLoading = false
+            }
         }
     }
 }

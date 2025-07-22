@@ -11,57 +11,84 @@ import VRCKit
 struct GroupPostListView: View {
     @Environment(AppViewModel.self) var appVM
     @Binding var selectedImageURL: URL?
+    @Binding var reloadTrigger: Bool
     @State private var posts: [GroupPost] = []
     @State private var isLoading = false
     @State private var error: Error?
     
     let groupId: String
-    
-    var body: some View {
-        Group {
-            if isLoading {
-                ProgressView("로딩 중...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if let error = error {
-                VStack(spacing: 16) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.largeTitle)
-                        .foregroundColor(.orange)
-                    Text("포스트를 불러오지 못했습니다")
-                        .font(.headline)
-                    Text(error.localizedDescription)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.top, 16)
-                .padding(.bottom, 32)
-            } else if posts.isEmpty {
-                ContentUnavailableView {
-                    Label("포스트가 없습니다", systemImage: "text.bubble")
-                        .foregroundColor(.gray)
-                } description: {
-                    Text("이 그룹에는 아직 포스트가 없습니다")
-                }
-            } else {
-                LazyVStack(spacing: 16) {
-                    ForEach(posts) { post in
-                        PostCardView(
-                            post: post, 
-                            selectedImageURL: $selectedImageURL,
-                            scrollProxy: nil
-                        )
-                        .id(post.id)
-                    }
-                }
-                .padding(.bottom, 32)
-            }
+
+    private var placeholderPosts: [GroupPost] {
+        (0..<5).map { i in
+            GroupPost(
+                id: "placeholder_\(i)",
+                groupId: "grp_placeholder",
+                authorId: "usr_placeholder",
+                editorId: nil,
+                visibility: "public",
+                roleId: ["role_placeholder"],
+                title: "Placeholder Title",
+                text: "This is a placeholder text for the post content. Loading...",
+                imageId: nil,
+                imageUrl: nil,
+                createdAt: Date(),
+                updatedAt: Date()
+            )
         }
-        .onAppear(perform: loadPosts)
-        .refreshable { loadPosts() }
     }
     
-    private func loadPosts() {
+    var body: some View {
+        let displayPosts = isLoading ? placeholderPosts : posts
+        
+        LazyVStack(spacing: 16) {
+            if !isLoading && posts.isEmpty {
+                if let error = error {
+                    VStack(spacing: 16) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.largeTitle)
+                            .foregroundColor(.orange)
+                        Text("포스트를 불러오지 못했습니다")
+                            .font(.headline)
+                        Text(error.localizedDescription)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.top, 16)
+                    .padding(.bottom, 32)
+                } else {
+                    ContentUnavailableView {
+                        Label("포스트가 없습니다", systemImage: "text.bubble")
+                            .foregroundColor(.gray)
+                    } description: {
+                        Text("이 그룹에는 아직 포스트가 없습니다")
+                    }
+                }
+            } else {
+                ForEach(displayPosts) { post in
+                    PostCardView(
+                        post: post,
+                        selectedImageURL: $selectedImageURL,
+                        scrollProxy: nil
+                    )
+                    .id(post.id)
+                    .disabled(isLoading)
+                }
+            }
+        }
+        .padding(.bottom, 32)
+        .redacted(reason: isLoading ? .placeholder : [])
+        .onAppear { loadPosts() }
+        .refreshable { loadPosts() }
+        .onChange(of: reloadTrigger) {
+            loadPosts(force: true)
+        }
+    }
+    
+    private func loadPosts(force: Bool = false) {
+        if !force {
+            guard posts.isEmpty, !isLoading else { return }
+        }
         isLoading = true
         error = nil
         Task {
@@ -181,7 +208,6 @@ struct PostCardView: View {
             }
         }
         .groupBoxStyle(.card)
-        .redacted(reason: isLoadingAuthor ? .placeholder : [])
         .onAppear {
             loadAuthorInfo()
         }
@@ -212,11 +238,12 @@ struct PostCardView: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
             }
+            .redacted(reason: isLoadingAuthor ? .placeholder : [])
         }
     }
     
     private func loadAuthorInfo() {
-        guard authorUser == nil && !isLoadingAuthor else { return }
+        guard authorUser == nil, !isLoadingAuthor else { return }
         
         isLoadingAuthor = true
         Task {

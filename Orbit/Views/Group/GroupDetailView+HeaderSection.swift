@@ -119,7 +119,7 @@ extension GroupDetailView {
                             Text(privacyDisplayText)
                                 .font(.caption)
                                 .fontWeight(.medium)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(currentGroup.privacy == .private ? .red : .green)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(
@@ -127,7 +127,7 @@ extension GroupDetailView {
                                         Capsule()
                                             .fill(Color(.systemGray6))
                                         Capsule()
-                                            .fill(Color.blue.opacity(0.1))
+                                            .fill(currentGroup.privacy == .private ? .red.opacity(0.1) : .green.opacity(0.1))
                                     }
                                 )
                                 .lineLimit(1)
@@ -136,7 +136,11 @@ extension GroupDetailView {
                                 Text(joinState.rawValue.capitalized)
                                     .font(.caption)
                                     .fontWeight(.medium)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(
+                                        joinState == .request ? .orange :
+                                            [.invite, .closed].contains(joinState) ? .red :
+                                                .green
+                                    )
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
                                     .background(
@@ -144,7 +148,11 @@ extension GroupDetailView {
                                             Capsule()
                                                 .fill(Color.white)
                                             Capsule()
-                                                .fill(Color.blue.opacity(0.1))
+                                                .fill(
+                                                    joinState == .request ? .orange.opacity(0.1) :
+                                                        [.invite, .closed].contains(joinState) ? .red.opacity(0.1) :
+                                                            .green.opacity(0.1)
+                                                )
                                         }
                                     )
                                     .lineLimit(1)

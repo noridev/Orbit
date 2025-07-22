@@ -34,16 +34,13 @@ final class GroupViewModel: ObservableObject {
             print("❌ [GroupViewModel] GroupService or userId not configured")
             return
         }
-        
         await MainActor.run {
             isLoading = true
             error = nil
             objectWillChange.send()
         }
-        
         var userGroupsError: Error?
         var representedGroupsError: Error?
-        
         do {
             let groups = try await groupService.fetchUserGroups(userId: userId)
             await MainActor.run {
@@ -62,7 +59,6 @@ final class GroupViewModel: ObservableObject {
             }
             userGroupsError = error
         }
-        
         do {
             let represented = try await groupService.fetchUserRepresentedGroups(userId: userId)
             await MainActor.run {
@@ -81,7 +77,6 @@ final class GroupViewModel: ObservableObject {
             }
             representedGroupsError = error
         }
-        
         await MainActor.run {
             if userGroupsError != nil && representedGroupsError != nil {
                 self.error = userGroupsError ?? representedGroupsError
@@ -97,16 +92,13 @@ final class GroupViewModel: ObservableObject {
             print("❌ [GroupViewModel] GroupService or userId not configured")
             return
         }
-        
         await MainActor.run {
             isLoading = true
             error = nil
             objectWillChange.send()
         }
-        
         var userGroupsError: Error?
         var representedGroupsError: Error?
-        
         do {
             let groups = try await groupService.fetchUserGroups(userId: userId)
             await MainActor.run {
@@ -125,7 +117,6 @@ final class GroupViewModel: ObservableObject {
             }
             userGroupsError = error
         }
-        
         do {
             let represented = try await groupService.fetchUserRepresentedGroups(userId: userId)
             await MainActor.run {
@@ -144,7 +135,6 @@ final class GroupViewModel: ObservableObject {
             }
             representedGroupsError = error
         }
-        
         await MainActor.run {
             if userGroupsError != nil && representedGroupsError != nil {
                 self.error = userGroupsError ?? representedGroupsError

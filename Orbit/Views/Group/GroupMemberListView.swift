@@ -10,7 +10,8 @@ import VRCKit
 
 struct GroupMemberListView: View {
     let groupId: String
-    let currentGroup: VRCGroup?
+    let currentGroup: VRCKit.VRCGroup?
+    @Binding var reloadTrigger: Bool
     @State private var members: [GroupMembership] = []
     @State private var userDetails: [String: UserDetail] = [:]
     @State private var isLoading = false
@@ -18,105 +19,95 @@ struct GroupMemberListView: View {
     @Environment(AppViewModel.self) var appVM
     @Environment(FriendViewModel.self) var friendVM
     
+    private var placeholderMembers: [GroupMembership] {
+        (0..<8).map { i in
+            GroupMembership(
+                id: "placeholder_\(i)",
+                groupId: "grp_placeholder",
+                userId: "usr_placeholder_\(i)",
+                isRepresenting: false,
+                isSubscribedToAnnouncements: false,
+                visibility: .hidden,
+                isSubscribedToEvents: false,
+                roleIds: ["role_placeholder"],
+                joinedAt: Date(),
+                rolePermissions: nil,
+                roleOrder: nil
+            )
+        }
+    }
+
     var body: some View {
-        Group {
-            if isLoading {
-                ProgressView("로딩 중...")
-            } else if let error = error {
-                VStack {
-                    Text("멤버를 불러오지 못했습니다")
-                    Text(error.localizedDescription).font(.caption).foregroundColor(.secondary)
+        let displayMembers = isLoading ? placeholderMembers : members
+
+        LazyVStack(spacing: 12) {
+            if !isLoading && members.isEmpty {
+                if let error = error {
+                    VStack {
+                        Text("멤버를 불러오지 못했습니다")
+                        Text(error.localizedDescription).font(.caption).foregroundColor(.secondary)
+                    }
+                } else {
+                    Text("멤버가 없습니다")
+                        .foregroundColor(.secondary)
                 }
-            } else if members.isEmpty {
-                Text("멤버가 없습니다")
-                    .foregroundColor(.secondary)
             } else {
-                LazyVStack(spacing: 12) {
-                    ForEach(members, id: \.id) { member in
-                        NavigationLink {
+                ForEach(displayMembers, id: \.id) { member in
+                    NavigationLink {
+                        if !isLoading {
                             UserDetailPresentationView(id: member.userId)
-                        } label: {
-                            GroupBox {
-                                HStack(alignment: .center, spacing: 12) {
-                                    if let user = friendVM.getFriend(id: member.userId) {
-                                        UserIcon(
-                                            user: user,
-                                            size: Constants.IconSize.userDetailThumbnail,
-                                            showStatusIndicator: true,
-                                            showTrustRankBorder: true
-                                        )
-                                    } else if let userDetail = userDetails[member.userId] {
-                                        UserIcon(
-                                            user: userDetail,
-                                            size: Constants.IconSize.userDetailThumbnail,
-                                            showStatusIndicator: true,
-                                            showTrustRankBorder: true
-                                        )
-                                    } else {
+                        }
+                    } label: {
+                        GroupBox {
+                            HStack(alignment: .center, spacing: 12) {
+                                if let user = friendVM.getFriend(id: member.userId) {
+                                    UserRowContent(
+                                        user: user,
+                                        joinedAt: member.joinedAt,
+                                        roles: getRoleNames(for: member.roleIds),
+                                        isManager: isManager(for: member),
+                                        isLoading: isLoading,
+                                        iconSize: Constants.IconSize.userDetailThumbnail
+                                    )
+                                } else if let userDetail = userDetails[member.userId] {
+                                    UserRowContent(
+                                        user: userDetail,
+                                        joinedAt: member.joinedAt,
+                                        roles: getRoleNames(for: member.roleIds),
+                                        isManager: isManager(for: member),
+                                        isLoading: isLoading,
+                                        iconSize: Constants.IconSize.userDetailThumbnail
+                                    )
+                                } else {
+                                    HStack {
                                         Circle()
                                             .fill(Color.gray.opacity(0.3))
                                             .frame(width: 44, height: 44)
-                                            .overlay(
-                                                Image(systemName: "person.fill")
-                                                    .font(.system(size: 24))
-                                                    .foregroundColor(.white.opacity(0.7))
-                                            )
+                                        Text("...")
                                     }
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(getDisplayName(for: member.userId))
-                                            .font(.headline)
-                                            .fontWeight(.medium)
-                                            .lineLimit(1)
-                                            .truncationMode(.tail)
-                                        if let joinedAt = member.joinedAt {
-                                            HStack(spacing: 4) {
-                                                IconSet.calendar.icon
-                                                    .font(.caption2)
-                                                    .foregroundColor(.secondary)
-                                                Text("가입일: \(joinedAt, style: .date)")
-                                                    .font(.caption2)
-                                                    .foregroundColor(.secondary)
-                                            }
-                                        }
-                                        if !member.roleIds.isEmpty {
-                                            HStack(spacing: 6) {
-                                                Text("\(getRoleNames(for: member.roleIds).joined(separator: ", "))")
-                                                    .font(.caption2)
-                                                    .foregroundStyle(isManager(for: member) ? .blue : .primary)
-                                                
-                                                if isManager(for: member) {
-                                                    Image(systemName: IconSet.shield.systemName)
-                                                        .font(.caption2)
-                                                        .foregroundStyle(.blue)
-                                                }
-                                            }
-                                            .font(.subheadline)
-                                            .fontWeight(.medium)
-                                            .foregroundColor(.blue)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(Color.blue.opacity(0.1))
-                                            .clipShape(Capsule())
-                                        }
-                                    }
-                                    Spacer()
-                                    Image(systemName: IconSet.forward.systemName)
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundColor(.gray)
-                                        .opacity(0.5)
                                 }
-                                .padding(.vertical, 6)
+                                Spacer()
+                                Image(systemName: IconSet.forward.systemName)
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.gray)
+                                    .opacity(0.5)
                             }
-                            .groupBoxStyle(.card)
+                            .padding(.vertical, 6)
                         }
-                        .buttonStyle(.plain)
+                        .groupBoxStyle(.card)
                     }
+                    .buttonStyle(.plain)
+                    .disabled(isLoading)
                 }
-                .padding(.bottom, 32)
             }
         }
-        .onAppear(perform: loadMembers)
+        .padding(.bottom, 32)
+        .redacted(reason: isLoading ? .placeholder : [])
+        .onAppear { loadMembers() }
         .refreshable { loadMembers() }
+        .onChange(of: reloadTrigger) {
+            loadMembers(force: true)
+        }
     }
     
     private func getDisplayName(for userId: String) -> String {
@@ -139,18 +130,34 @@ struct GroupMemberListView: View {
         }
     }
     
-    private func loadMembers() {
+    private func loadMembers(force: Bool = false) {
+        if !force {
+            guard members.isEmpty, !isLoading else { return }
+        }
         isLoading = true
         error = nil
         Task {
             do {
                 let result = try await appVM.services.groupService.fetchGroupMembers(groupId: groupId)
+                await loadUserDetails(for: result)
+                if let currentUser = appVM.user,
+                   let currentGroup = currentGroup,
+                   let myMember = currentGroup.myMember,
+                   !result.contains(where: { $0.userId == currentUser.id }) {
+                    var finalResult = result
+                    finalResult.append(myMember)
+                    await loadUserDetails(for: [myMember])
+                    await MainActor.run {
+                        self.members = finalResult
+                    }
+                } else {
+                    await MainActor.run {
+                        self.members = result
+                    }
+                }
                 await MainActor.run {
-                    self.members = result
                     self.isLoading = false
                 }
-                await loadUserDetails(for: result)
-                await addCurrentUserIfNeeded()
             } catch {
                 await MainActor.run {
                     self.error = error
@@ -160,31 +167,15 @@ struct GroupMemberListView: View {
         }
     }
     
-    private func addCurrentUserIfNeeded() async {
-        guard let currentUser = appVM.user,
-              let currentGroup = currentGroup,
-              let myMember = currentGroup.myMember else { return }
-        
-        let isCurrentUserInList = members.contains { member in
-            member.userId == currentUser.id
-        }
-        
-        if !isCurrentUserInList {
-            await MainActor.run {
-                self.members.append(myMember)
-            }
-            
-            await loadUserDetails(for: [myMember])
-        }
-    }
-    
     private func loadUserDetails(for members: [GroupMembership]) async {
-        let nonFriendMembers = members.filter { member in
-            friendVM.getFriend(id: member.userId) == nil
+        let membersToFetch = members.filter { member in
+            friendVM.getFriend(id: member.userId) == nil && userDetails[member.userId] == nil
         }
+        
+        guard !membersToFetch.isEmpty else { return }
         
         await withTaskGroup(of: (String, UserDetail?).self) { group in
-            for member in nonFriendMembers {
+            for member in membersToFetch {
                 group.addTask {
                     do {
                         let userDetail = try await appVM.services.userService.fetchUser(userId: member.userId)

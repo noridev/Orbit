@@ -20,6 +20,7 @@ struct GroupDetailView: View {
     @State private var members: [GroupMembership]?
     @State private var selectedTab: Tab = .info
     @State private var selectedImageURL: URL?
+    @State private var reloadTrigger = false
     
     enum Tab: String, CaseIterable, Identifiable {
         case info = "정보"
@@ -57,29 +58,16 @@ struct GroupDetailView: View {
                 Group {
                     switch selectedTab {
                     case .info:
-                        VStack(spacing: 16) {
-                            descriptionSection(currentGroup.description, isLoading: isLoading)
-                            rulesSection(currentGroup.rules, isLoading: isLoading)
-                            membershipSection(isLoading: isLoading)
-                            infoSection(members: members, isLoading: isLoading)
-                            if let languages = currentGroup.languages, !languages.isEmpty {
-                                languageSection(languages: languages)
-                            }
-                            ownerSection
-                        }
-                        .padding(.top, 16)
-                        .padding(.bottom, 32)
-                        
+                        GroupInfoView(group: currentGroup, reloadTrigger: $reloadTrigger)
+                            .padding(.top, 16)
                     case .posts:
-                        GroupPostListView(selectedImageURL: $selectedImageURL, groupId: currentGroup.groupId ?? currentGroup.id)
+                        GroupPostListView(selectedImageURL: $selectedImageURL, reloadTrigger: $reloadTrigger, groupId: currentGroup.groupId ?? currentGroup.id)
                             .padding(.top, 16)
-                        
                     case .members:
-                        GroupMemberListView(groupId: currentGroup.groupId ?? currentGroup.id, currentGroup: currentGroup)
+                        GroupMemberListView(groupId: currentGroup.groupId ?? currentGroup.id, currentGroup: currentGroup, reloadTrigger: $reloadTrigger)
                             .padding(.top, 16)
-                        
                     case .gallery:
-                        GroupGalleryView(galleries: currentGroup.galleries)
+                        GroupGalleryView(selectedImageURL: $selectedImageURL, reloadTrigger: $reloadTrigger, galleries: currentGroup.galleries, groupId: currentGroup.actualGroupId, isLoading: isLoading)
                             .padding(.top, 16)
                     }
                 }
@@ -107,6 +95,7 @@ struct GroupDetailView: View {
         }
         .refreshable {
             await refreshData()
+            reloadTrigger.toggle()
         }
         .task {
             await refreshData()
