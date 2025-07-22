@@ -51,12 +51,16 @@ struct UserDetailPresentationView: View {
 
     private func fetchUser(id: String) async {
         do {
-            userDetail = try await appVM.services.userService.fetchUser(userId: id)
-            print("✅ [fetchUser] Successfully fetched user data for: \(userDetail?.displayName ?? id)")
-            
-            if let user = userDetail, let currentUser = appVM.user, currentUser.id == user.id {
+            if Task.isCancelled { return }
+            let detail = try await appVM.services.userService.fetchUser(userId: id)
+            if Task.isCancelled { return }
+            await MainActor.run {
+                self.userDetail = detail
+            }
+            print("✅ [fetchUser] Successfully fetched user data for: \(detail.displayName)")
+            if let currentUser = appVM.user, currentUser.id == detail.id {
                 print("🔄 [fetchUser] This is current user, updating AppViewModel user")
-                await updateAppVMUser(from: user)
+                await updateAppVMUser(from: detail)
             }
         } catch {
             print("❌ [fetchUser] Error fetching user: \(error)")

@@ -24,17 +24,12 @@ struct FriendsListView: View {
 
         List(friendVM.filterResultFriends, selection: $selected) { friend in
             NavigationLabel {
-                HStack {
-                    UserIcon(user: friend, size: Constants.IconSize.userDetailThumbnail)
-
-                    VStack(alignment: .leading) {
-                        Text(friend.displayName)
-                            .font(.headline)
-                        
-                        FriendStatusView(friend: friend)
-                    }
-                    .padding(.leading, 4)
-                }
+                UserRowContent(
+                    user: friend,
+                    showFriendStatus: true,
+                    friendStatusView: AnyView(FriendStatusView(friend: friend)),
+                    iconSize: Constants.IconSize.userDetailThumbnail
+                )
             }
         }
         .sheet(isPresented: $isPresentedSheet) {

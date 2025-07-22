@@ -84,11 +84,19 @@ struct UserDetailView: View {
             UserDetailJsonDetailView(userId: user.id, cachedUserDetail: user)
         }
         .task {
-            if case let .id(id) = user.location { await fetchInstance(id: id) }
+            if case let .id(id) = user.location {
+                if Task.isCancelled { return }
+                await fetchInstanceSafe(id: id)
+            }
         }
         .task {
             if let lastActivity = user.lastActivity {
-                self.lastActivity = await DateUtil.shared.formatRelative(from: lastActivity)
+                if Task.isCancelled { return }
+                let formatted = await DateUtil.shared.formatRelative(from: lastActivity)
+                if Task.isCancelled { return }
+                await MainActor.run {
+                    self.lastActivity = formatted
+                }
             }
         }
         
@@ -156,14 +164,22 @@ struct UserDetailView: View {
         .groupBoxStyle(.card)
     }
 
-    private func fetchInstance(id: String) async {
+    private func fetchInstanceSafe(id: String) async {
         do {
-            defer { isRequesting = false }
+            if Task.isCancelled { return }
             isRequesting = true
             let service = appVM.services.instanceService
-            instance = try await service.fetchInstance(location: id)
+            let result = try await service.fetchInstance(location: id)
+            if Task.isCancelled { return }
+            await MainActor.run {
+                self.instance = result
+                self.isRequesting = false
+            }
         } catch {
             if !error.isCancelled {
+                await MainActor.run {
+                    self.isRequesting = false
+                }
                 appVM.handleError(error)
             }
         }
