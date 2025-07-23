@@ -66,6 +66,10 @@ final class FriendViewModel {
     func getFriend(id: Friend.ID) -> Friend? {
         allFriends.first { $0.id == id }
     }
+    
+    func isFriend(id: String) -> Bool {
+        allFriends.contains { $0.id == id }
+    }
 
     var recentlyFriends: [Friend] {
         guard let appVM = appVM, let user = appVM.user else { return [] }
