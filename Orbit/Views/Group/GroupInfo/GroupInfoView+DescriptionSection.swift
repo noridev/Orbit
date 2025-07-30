@@ -1,14 +1,14 @@
 //
-//  GroupDetailView+DescriptionSection.swift
+//  GroupInfoView+DescriptionSection.swift
 //  Orbit
 //
-//  Created by NoriDev on 7/17/25.
+//  Created by NoriDev on 7/18/25.
 //
 
 import SwiftUI
 import VRCKit
 
-extension GroupDetailView {
+extension GroupInfoView {
     func descriptionSection(_ description: String?, isLoading: Bool) -> some View {
         GroupBox("설명") {
             if isLoading {

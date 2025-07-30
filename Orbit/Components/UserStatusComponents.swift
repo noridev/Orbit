@@ -71,11 +71,19 @@ struct InstanceLocationView: View {
                     .foregroundColor(.gray)
             } else if let instance = instance {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(instance.world.name)
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
+                    if let world = instance.world {
+                        Text(world.name)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    } else {
+                        Text("Unknown World")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
                     Text(InstanceUtil.getInstanceDescription(instance))
                         .font(.caption)
                         .foregroundColor(.gray)

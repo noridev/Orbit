@@ -52,7 +52,7 @@ struct GroupSectionContent: View {
     
     var body: some View {
         Group {
-            if let error = groupViewModel.error {
+            if groupViewModel.error != nil {
                 HStack {
                     Image(systemName: "exclamationmark.triangle")
                         .foregroundColor(.orange)

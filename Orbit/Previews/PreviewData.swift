@@ -39,6 +39,7 @@ final class PreviewData: Sendable {
         joinState: .open,
         tags: ["sample", "preview"],
         languages: ["korean", "english"],
+        links: ["https://discord.gg/sample", "https://twitter.com/samplegroup"],
         galleries: nil,
         createdAt: Date(),
         updatedAt: Date(),

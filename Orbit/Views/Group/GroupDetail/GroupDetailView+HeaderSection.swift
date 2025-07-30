@@ -46,10 +46,11 @@ extension GroupDetailView {
                             .fill(Color.gray.opacity(0.3))
                     }
                     .frame(width: 80, height: 80)
+                    .background(Color(.systemGray6))
                     .cornerRadius(12)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color(.systemGray5), lineWidth: 1)
+                            .stroke(Color(.systemGray4), lineWidth: 0.5)
                     )
                 } else {
                     Rectangle()

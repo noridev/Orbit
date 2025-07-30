@@ -65,28 +65,58 @@ extension UserDetailView {
     private func locationContent(instance: Instance, location: FriendsLocation) -> some View {
         HStack {
             VStack(spacing: 8) {
-                WorldHeaderView(redacted: isRequesting, world: instance.world) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(InstanceUtil.getInstanceWithInstanceType(instance))
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color.blue.opacity(0.1))
-                            .clipShape(Capsule()).lineLimit(1)
-                        
-                        HStack(spacing: 2) {
-                            Image(systemName: "person.2.fill")
+                if let world = instance.world {
+                    WorldHeaderView(redacted: isRequesting, world: world) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(InstanceUtil.getInstanceWithInstanceType(instance))
                                 .font(.caption)
-                                .foregroundColor(.secondary)
-                            
-                            Text(personAmount(instance, location: location))
-                                .font(.caption2)
                                 .fontWeight(.medium)
                                 .foregroundColor(.secondary)
-                                .lineLimit(1)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.blue.opacity(0.1))
+                                .clipShape(Capsule()).lineLimit(1)
+                            
+                            HStack(spacing: 2) {
+                                Image(systemName: "person.2.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Text(personAmount(instance, location: location))
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                            }
                         }
+                    }
+                } else {
+                    HStack(spacing: 16) {
+                        GradientOverlayImageView(
+                            imageUrl: Const.privateWorldImageUrl,
+                            size: CGSize(width: 80, height: 65)
+                        )
+                        .frame(width: 80, height: 65)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Unknown World")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                            
+                            Text(InstanceUtil.getInstanceWithInstanceType(instance))
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.blue.opacity(0.1))
+                                .clipShape(Capsule()).lineLimit(1)
+                        }
+                        
+                        Spacer()
                     }
                 }
                 
@@ -171,17 +201,21 @@ extension UserDetailView {
 
     private var locationDescription: String {
         if let instance = instance {
-            instance.world.name
+            if let world = instance.world {
+                return world.name
+            } else {
+                return "Unknown World"
+            }
         } else if user.platform == .some(.web) {
-            String(localized: "Active on Website")
+            return String(localized: "Active on Website")
         } else if user.location == .private {
-            String(localized: "User is online in a private instance")
+            return String(localized: "User is online in a private instance")
         } else if user.location == .offline {
-            String(localized: "Offline")
+            return String(localized: "Offline")
         } else if isRequesting {
-            String(repeating: " ", count: 15)
+            return String(repeating: " ", count: 15)
         } else {
-            ""
+            return ""
         }
     }
 

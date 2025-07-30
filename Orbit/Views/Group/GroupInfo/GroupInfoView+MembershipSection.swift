@@ -1,14 +1,14 @@
 //
-//  GroupDetailView+MembershipSection.swift
+//  GroupInfoView+MembershipSection.swift
 //  Orbit
 //
-//  Created by NoriDev on 7/17/25.
+//  Created by NoriDev on 7/18/25.
 //
 
 import SwiftUI
 import VRCKit
 
-extension GroupDetailView {
+extension GroupInfoView {
     func membershipSection(isLoading: Bool) -> some View {
         GroupBox("가입 정보") {
             if isLoading {
@@ -60,39 +60,27 @@ extension GroupDetailView {
                 .font(.caption)
                 .foregroundStyle(.gray)
             
-            let userRoles = filterUserRoles(for: member)
-            
-            if userRoles.isEmpty {
-                Text("역할 없음")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-            } else {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(userRoles) { role in
-                        roleItemView(for: role)
-                    }
+            if let roles = currentGroup.roles {
+                let memberRoles = roles.filter { role in
+                    member.roleIds.contains(role.id)
                 }
-            }
-        }
-    }
-    
-    private func roleItemView(for role: GroupRole) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 6) {
-                Text(role.name)
-                    .font(.callout)
-                    .foregroundStyle(role.isManagementRole ? .blue : .primary)
                 
-                if role.isManagementRole {
-                    Image(systemName: IconSet.shield.systemName)
-                        .font(.caption2)
-                        .foregroundStyle(.blue)
+                if !memberRoles.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(memberRoles, id: \.id) { role in
+                            Text(role.name)
+                                .font(.callout)
+                                .fontWeight(.medium)
+                        }
+                    }
+                } else {
+                    Text("역할 없음")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
                 }
-            }
-            
-            if let description = role.description, !description.isEmpty {
-                Text(description)
-                    .font(.caption2)
+            } else {
+                Text("역할 정보 없음")
+                    .font(.callout)
                     .foregroundStyle(.secondary)
             }
         }
@@ -101,7 +89,7 @@ extension GroupDetailView {
     private var noMembershipInfoView: some View {
         VStack(alignment: .leading, spacing: 8) {
             infoRow(title: "가입일", value: "정보 없음")
-            infoRow(title: "내 역할", value: "역할 없음")
+            infoRow(title: "내 역할", value: "정보 없음")
         }
     }
     
@@ -110,18 +98,10 @@ extension GroupDetailView {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.gray)
+            
             Text(value)
                 .font(.callout)
                 .foregroundStyle(.secondary)
         }
-    }
-    
-    private func filterUserRoles(for member: GroupMembership) -> [GroupRole] {
-        guard let allRoles = currentGroup.roles, !member.roleIds.isEmpty else {
-            return []
-        }
-        
-        let roleIdSet = Set(member.roleIds)
-        return allRoles.filter { roleIdSet.contains($0.id) }
     }
 }

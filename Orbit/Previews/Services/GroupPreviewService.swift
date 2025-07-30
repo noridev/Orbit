@@ -42,8 +42,20 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
                 joinState: .open,
                 tags: ["korea", "community"],
                 languages: ["korean", "english"],
+                links: ["https://discord.gg/koreacommunity", "https://twitter.com/koreacommunity"],
                 galleries: [
-                    GroupGallery(id: "ggal_1", name: "Test Gallery 1", description: "Test Description", membersOnly: false, roleIdsToView: nil, roleIdsToSubmit: nil, roleIdsToAutoApprove: nil, roleIdsToManage: nil, createdAt: Date(), updatedAt: Date())
+                    GroupGallery(
+                        id: "ggal_1",
+                        name: "Test Gallery 1",
+                        description: "Test Description",
+                        membersOnly: false,
+                        roleIdsToView: nil,
+                        roleIdsToSubmit: nil,
+                        roleIdsToAutoApprove: nil,
+                        roleIdsToManage: nil,
+                        createdAt: Date(),
+                        updatedAt: Date()
+                    )
                 ],
                 createdAt: Date().addingTimeInterval(-86400 * 30),
                 updatedAt: Date(),
@@ -118,6 +130,7 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
                 joinState: .invite,
                 tags: ["development", "technical"],
                 languages: ["english"],
+                links: ["https://github.com/vrchat", "https://discord.gg/vrchatdev"],
                 galleries: nil,
                 createdAt: Date().addingTimeInterval(-86400 * 60),
                 updatedAt: Date(),
@@ -201,6 +214,7 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
             joinState: .open,
             tags: ["sample"],
             languages: ["korean"],
+            links: ["https://discord.gg/samplegroup"],
             galleries: nil,
             createdAt: Date().addingTimeInterval(-86400 * 10),
             updatedAt: Date(),
@@ -223,7 +237,7 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
         )
     }
     
-    public func fetchGroupMembers(groupId: String) async throws -> [GroupMembership] {
+    public func fetchGroupMembers(groupId: String, offset: Int, n: Int) async throws -> [GroupMembership] {
         return [
             GroupMembership(
                 id: "mem_preview_1",
@@ -296,9 +310,50 @@ final actor GroupPreviewService: APIService, GroupServiceProtocol {
 
     func fetchGroupGalleryImages(groupId: String, galleryId: String) async throws -> [GroupGalleryImage] {
         return [
-            GroupGalleryImage(id: "ggim_1", groupId: groupId, galleryId: galleryId, fileId: "file_1", imageUrl: URL(string: "https://placehold.co/100x100")!, createdAt: Date(), submittedByUserId: "usr_preview", approved: true, approvedByUserId: "usr_preview", approvedAt: Date()),
-            GroupGalleryImage(id: "ggim_2", groupId: groupId, galleryId: galleryId, fileId: "file_2", imageUrl: URL(string: "https://placehold.co/100x100")!, createdAt: Date(), submittedByUserId: "usr_preview", approved: true, approvedByUserId: "usr_preview", approvedAt: Date()),
-            GroupGalleryImage(id: "ggim_3", groupId: groupId, galleryId: galleryId, fileId: "file_3", imageUrl: URL(string: "https://placehold.co/100x100")!, createdAt: Date(), submittedByUserId: "usr_preview", approved: true, approvedByUserId: "usr_preview", approvedAt: Date())
+            GroupGalleryImage(
+                id: "ggim_1",
+                groupId: groupId,
+                galleryId: galleryId,
+                fileId: "file_1",
+                imageUrl: URL(string: "https://placehold.co/100x100")!,
+                createdAt: Date(),
+                submittedByUserId: "usr_preview",
+                approved: true,
+                approvedByUserId: "usr_preview",
+                approvedAt: Date()
+            ),
+            GroupGalleryImage(
+                id: "ggim_2",
+                groupId: groupId,
+                galleryId: galleryId,
+                fileId: "file_2",
+                imageUrl: URL(string: "https://placehold.co/100x100")!,
+                createdAt: Date(),
+                submittedByUserId: "usr_preview",
+                approved: true,
+                approvedByUserId: "usr_preview",
+                approvedAt: Date()
+            ),
+            GroupGalleryImage(
+                id: "ggim_3",
+                groupId: groupId,
+                galleryId: galleryId,
+                fileId: "file_3",
+                imageUrl: URL(string: "https://placehold.co/100x100")!,
+                createdAt: Date(),
+                submittedByUserId: "usr_preview",
+                approved: true,
+                approvedByUserId: "usr_preview",
+                approvedAt: Date()
+            ),
+        ]
+    }
+
+    func fetchGroupInstances(userId: String, groupId: String) async throws -> [Instance] {
+        return [
+            PreviewData.instanceMap[PreviewData.instanceId(PreviewData.bar)]!,
+            PreviewData.instanceMap[PreviewData.instanceId(PreviewData.chillRoom)]!,
+            PreviewData.instanceMap[PreviewData.instanceId(PreviewData.fuji)]!
         ]
     }
 }

@@ -22,12 +22,18 @@ struct InstanceUtil {
     }
     
     static func getUserCountString(_ instance: Instance) -> String {
-        return "(\(instance.userCount)/\(instance.world.capacity))"
+        guard let world = instance.world else {
+            return "(\(instance.userCount)/\(instance.capacity))"
+        }
+        return "(\(instance.userCount)/\(world.capacity))"
     }
     
     static func getWorldNameWithInstance(_ instance: Instance) -> String {
         let instanceNumber = extractInstanceNumber(from: instance.instanceId)
-        return "\(instance.world.name) #\(instanceNumber)"
+        guard let world = instance.world else {
+            return "Unknown World #\(instanceNumber)"
+        }
+        return "\(world.name) #\(instanceNumber)"
     }
     
     static func getInstanceWithUserCount(_ instance: Instance) -> String {

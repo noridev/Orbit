@@ -1,14 +1,14 @@
 //
-//  GroupDetailView+OwnerSection.swift
+//  GroupInfoView+OwnerSection.swift
 //  Orbit
 //
-//  Created by NoriDev on 7/17/25.
+//  Created by NoriDev on 7/18/25.
 //
 
 import SwiftUI
 import VRCKit
 
-extension GroupDetailView {
+extension GroupInfoView {
     var ownerSection: some View {
         GroupBox("그룹 소유자") {
             switch ownerUserState {
@@ -39,11 +39,6 @@ extension GroupDetailView {
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(.primary)
-                        /*
-                        Text(currentGroup.ownerId)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                         */
                     }
                     Spacer()
                 }

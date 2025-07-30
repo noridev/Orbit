@@ -19,7 +19,7 @@ struct GroupPostListView: View {
     let groupId: String
 
     private var placeholderPosts: [GroupPost] {
-        (0..<5).map { i in
+        (0..<6).map { i in
             GroupPost(
                 id: "placeholder_\(i)",
                 groupId: "grp_placeholder",
@@ -40,49 +40,32 @@ struct GroupPostListView: View {
     var body: some View {
         let displayPosts = isLoading ? placeholderPosts : posts
         
-        LazyVStack(spacing: 16) {
-            if !isLoading && posts.isEmpty {
-                if let error = error {
-                    VStack(spacing: 16) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.largeTitle)
-                            .foregroundColor(.orange)
-                        Text("포스트를 불러오지 못했습니다")
-                            .font(.headline)
-                        Text(error.localizedDescription)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.top, 16)
-                    .padding(.bottom, 32)
-                } else {
-                    ContentUnavailableView {
-                        Label("포스트가 없습니다", systemImage: "text.bubble")
-                            .foregroundColor(.gray)
-                    } description: {
-                        Text("이 그룹에는 아직 포스트가 없습니다")
-                    }
+        Group {
+            if !isLoading && displayPosts.isEmpty {
+                ContentUnavailableView {
+                    Label("포스트가 없습니다", systemImage: "doc.text")
+                        .foregroundColor(.gray)
+                } description: {
+                    Text("이 그룹에는 아직 포스트가 없습니다")
                 }
             } else {
-                ForEach(displayPosts) { post in
-                    PostCardView(
-                        post: post,
-                        selectedImageURL: $selectedImageURL,
-                        scrollProxy: nil
-                    )
-                    .id(post.id)
-                    .disabled(isLoading)
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(displayPosts) { post in
+                            PostCardView(post: post, selectedImageURL: $selectedImageURL, scrollProxy: nil)
+                        }
+                    }
+                    .padding(.vertical, 8)
                 }
+                .refreshable {
+                    loadPosts(force: true)
+                    reloadTrigger.toggle()
+                }
+                .redacted(reason: isLoading ? .placeholder : [])
             }
         }
-        .padding(.bottom, 32)
-        .redacted(reason: isLoading ? .placeholder : [])
         .onAppear { loadPosts() }
-        .refreshable { loadPosts() }
-        .onChange(of: reloadTrigger) {
-            loadPosts(force: true)
-        }
+        .onChange(of: reloadTrigger) { loadPosts(force: true) }
     }
     
     private func loadPosts(force: Bool = false) {
@@ -189,7 +172,12 @@ struct PostCardView: View {
                                         )
                                 }
                                 .frame(width: 120, height: 120)
+                                .background(Color(.systemGray6))
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color(.systemGray4), lineWidth: 0.5)
+                                )
                                 .onTapGesture {
                                     selectedImageURL = url
                                 }

@@ -83,19 +83,17 @@ struct UserDetailView: View {
         .sheet(isPresented: $isPresentedJsonView) {
             UserDetailJsonDetailView(userId: user.id, cachedUserDetail: user)
         }
-        .task {
-            if case let .id(id) = user.location {
-                if Task.isCancelled { return }
-                await fetchInstanceSafe(id: id)
+        .onAppear {
+            Task {
+                if case let .id(id) = user.location {
+                    if Task.isCancelled { return }
+                    await fetchInstanceSafe(id: id)
+                }
             }
-        }
-        .task {
-            if let lastActivity = user.lastActivity {
-                if Task.isCancelled { return }
-                let formatted = await DateUtil.shared.formatRelative(from: lastActivity)
-                if Task.isCancelled { return }
-                await MainActor.run {
-                    self.lastActivity = formatted
+            Task {
+                if let lastActivity = user.lastActivity {
+                    if Task.isCancelled { return }
+                    await updateLastActivity(from: lastActivity)
                 }
             }
         }
@@ -164,6 +162,7 @@ struct UserDetailView: View {
         .groupBoxStyle(.card)
     }
 
+    @MainActor
     private func fetchInstanceSafe(id: String) async {
         do {
             if Task.isCancelled { return }
@@ -171,18 +170,22 @@ struct UserDetailView: View {
             let service = appVM.services.instanceService
             let result = try await service.fetchInstance(location: id)
             if Task.isCancelled { return }
-            await MainActor.run {
-                self.instance = result
-                self.isRequesting = false
-            }
+            self.instance = result
+            self.isRequesting = false
         } catch {
             if !error.isCancelled {
-                await MainActor.run {
-                    self.isRequesting = false
-                }
+                self.isRequesting = false
                 appVM.handleError(error)
             }
         }
+    }
+    
+    @MainActor
+    private func updateLastActivity(from date: Date) async {
+        if Task.isCancelled { return }
+        let formatted = await DateUtil.shared.formatRelative(from: date)
+        if Task.isCancelled { return }
+        self.lastActivity = formatted
     }
 
     private var unfriendTaskButton: some View {
@@ -309,5 +312,3 @@ extension UserDetailView {
         .clipShape(Capsule())
     }
 }
-
-

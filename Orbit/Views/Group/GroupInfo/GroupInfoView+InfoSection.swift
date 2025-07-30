@@ -1,14 +1,14 @@
 //
-//  GroupDetailView+StatsSection.swift
+//  GroupInfoView+InfoSection.swift
 //  Orbit
 //
-//  Created by NoriDev on 7/17/25.
+//  Created by NoriDev on 7/18/25.
 //
 
 import SwiftUI
 import VRCKit
 
-extension GroupDetailView {
+extension GroupInfoView {
     func infoSection(members: [GroupMembership]?, isLoading: Bool) -> some View {
         GroupBox("그룹 정보") {
             DividedVStack(alignment: .leading, spacing: 8) {
@@ -17,8 +17,19 @@ extension GroupDetailView {
                         .font(.caption)
                         .foregroundStyle(.gray)
                     
-                    Text(memberCountText(members: members))
+                    Text(memberInGroupCount(members: members))
                         .font(.callout)
+                }
+                
+                if friendsInGroupCount(members: members) != 0 {
+                    VStack(alignment: .leading) {
+                        Text("친구인 멤버")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                        
+                        Text("\(friendsInGroupCount(members: members))")
+                            .font(.callout)
+                    }
                 }
                 
                 if let lastPostCreatedAt = currentGroup.lastPostCreatedAt {
@@ -70,14 +81,13 @@ extension GroupDetailView {
         .redacted(reason: isLoading ? .placeholder : [])
     }
     
-    private func memberCountText(members: [GroupMembership]?) -> String {
+    private func memberInGroupCount(members: [GroupMembership]?) -> String {
         let onlineCount = currentGroup.onlineMemberCount ?? 0
-        let friendsCount = friendsInGroupCount(members: members)
         
-        if onlineCount == 0 && friendsCount == 0 {
+        if onlineCount == 0 {
             return "\(currentGroup.memberCount)"
         } else {
-            return "\(currentGroup.memberCount) (\(onlineCount)/\(friendsCount))"
+            return "\(currentGroup.memberCount) (\(onlineCount))"
         }
     }
     

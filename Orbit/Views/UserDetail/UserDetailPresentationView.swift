@@ -32,12 +32,22 @@ struct UserDetailPresentationView: View {
                     .id("\(userDetail.id)_\(userDetail.status.rawValue)_\(userDetail.statusDescription)_\(userDetail.bio ?? "")_\(userDetail.displayName)_\(userDetail.pronouns ?? "")_\(userDetail.badges.hashValue)")
             } else {
                 ProgressScreen()
-                    .task {
-                        await fetchUser(id: id)
+                    .onAppear {
+                        Task {
+                            await fetchUser(id: id)
+                        }
                     }
                     .navigationTitle("Loading...")
                     .navigationBarTitleDisplayMode(.inline)
             }
+        }
+        .onAppear {
+            if userDetail == nil || userDetail?.id != id {
+                userDetail = nil
+            }
+        }
+        .onChange(of: id) {
+            userDetail = nil
         }
         .onReceive(NotificationCenter.default.publisher(for: .profileUpdated)) { notification in
             if let updatedUser = notification.object as? User, updatedUser.id == id {
@@ -49,14 +59,13 @@ struct UserDetailPresentationView: View {
         }
     }
 
+    @MainActor
     private func fetchUser(id: String) async {
         do {
             if Task.isCancelled { return }
             let detail = try await appVM.services.userService.fetchUser(userId: id)
             if Task.isCancelled { return }
-            await MainActor.run {
-                self.userDetail = detail
-            }
+            self.userDetail = detail
             print("✅ [fetchUser] Successfully fetched user data for: \(detail.displayName)")
             if let currentUser = appVM.user, currentUser.id == detail.id {
                 print("🔄 [fetchUser] This is current user, updating AppViewModel user")
@@ -68,6 +77,7 @@ struct UserDetailPresentationView: View {
         }
     }
     
+    @MainActor
     private func updateAppVMUser(from userDetail: UserDetail) async {
         guard let currentUser = appVM.user else { return }
         

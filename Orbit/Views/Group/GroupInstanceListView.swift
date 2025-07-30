@@ -1,201 +1,282 @@
+//
+//  GroupInstanceListView.swift
+//  Orbit
+//
+//  Created by NoriDev on 7/22/25.
+//
+
 import SwiftUI
 import VRCKit
 
+private enum GroupInstanceCardData {
+    case friendInstance(Instance)
+}
+
 struct GroupInstanceListView: View {
-    let instances: [Instance]
-    let groupName: String
-    @State private var selectedInstance: Instance?
-    @Environment(AppViewModel.self) var appVM
+@Environment(AppViewModel.self) var appVM
     @Environment(FriendViewModel.self) var friendVM
-    
+    @Binding var reloadTrigger: Bool
+    @State private var instances: [Instance] = []
+    @State private var isLoading = false
+    @State private var error: Error?
+    let groupId: String
+    let groupName: String
+
     var body: some View {
-        LazyVStack(spacing: 12) {
-            if instances.isEmpty {
-                ContentUnavailableView {
-                    Label("인스턴스가 없습니다", systemImage: "person.3.fill")
-                        .foregroundColor(.gray)
-                } description: {
-                    Text("이 그룹에는 현재 인스턴스가 없습니다")
+        let displayInstances: [GroupInstanceCardData?] = isLoading
+            ? []
+            : instances.map { .friendInstance($0) }
+        
+        let friendInstances = displayInstances.compactMap { data in
+            if case .friendInstance(let instance) = data {
+                let friendsInInstance = friendVM.allFriends.filter { friend in
+                    if case let .id(locationId) = friend.location {
+                        return locationId == instance.id
+                    }
+                    return false
                 }
-                .frame(maxWidth: .infinity, minHeight: 200)
+                return friendsInInstance.isEmpty ? nil : instance
+            }
+            return nil
+        }
+        
+        let regularInstances = displayInstances.compactMap { data in
+            if case .friendInstance(let instance) = data {
+                let friendsInInstance = friendVM.allFriends.filter { friend in
+                    if case let .id(locationId) = friend.location {
+                        return locationId == instance.id
+                    }
+                    return false
+                }
+                return friendsInInstance.isEmpty ? instance : nil
+            }
+            return nil
+        }
+        
+        Group {
+            if !isLoading && instances.isEmpty {
+                if let error = error {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.largeTitle)
+                            .foregroundColor(.orange)
+                        Text(error.localizedDescription)
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 200)
+                } else {
+                    ContentUnavailableView {
+                        Label("인스턴스 없음", systemImage: "person.3.fill")
+                            .foregroundColor(.gray)
+                    } description: {
+                        Text("현재 이 그룹에는 인스턴스가 없습니다")
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 200)
+                }
             } else {
-                ForEach(instances) { instance in
-                    Button(action: { selectedInstance = instance }) {
-                        GroupBox {
-                            InstanceCardContent(instance: instance)
-                        }
-                        .groupBoxStyle(.card)
-                    }
-                    .buttonStyle(.plain)
-                }
+                GroupInstanceList(
+                    friendInstances: friendInstances,
+                    regularInstances: regularInstances,
+                    isLoading: isLoading,
+                    loadInstances: { await loadInstances(force: true) },
+                    instanceCount: instances.count
+                )
             }
         }
-        .padding(.bottom, 32)
-        .sheet(item: $selectedInstance) { instance in
-            LocationDetailViewForInstance(instance: instance, appVM: appVM, friendVM: friendVM)
+        .onAppear { Task { await loadInstances() } }
+        .onChange(of: reloadTrigger) { Task { await loadInstances(force: true) } }
+    }
+
+    @MainActor
+    private func loadInstances(force: Bool = false) async {
+        if !force {
+            guard instances.isEmpty, !isLoading else { return }
         }
+        isLoading = true
+        error = nil
+        
+        do {
+            let userId = appVM.user?.id ?? "me"
+            let result = try await appVM.services.groupService.fetchGroupInstances(userId: userId, groupId: groupId)
+            self.instances = result
+        } catch {
+            self.error = error
+        }
+        
+        withAnimation { self.isLoading = false }
     }
 }
 
-private struct InstanceCardContent: View {
-    let instance: Instance
-    var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            WorldHeaderView(world: instance.world) {
-                Text(InstanceUtil.getInstanceWithInstanceType(instance))
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color.blue.opacity(0.1))
-                    .clipShape(Capsule()).lineLimit(1)
-                HStack(spacing: 2) {
-                    Image(systemName: "person.2.fill")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("\(instance.userCount) / \(instance.capacity)")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
-            }
-            Spacer()
-            Image(systemName: IconSet.forward.systemName)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.gray)
-                .opacity(0.5)
-        }
-        .padding(.vertical, 6)
-    }
-}
-
-private struct LocationDetailViewForInstance: View {
-    let instance: Instance
-    @Environment(\.dismiss) private var dismiss
-    @State private var users: [UserDetail] = []
-    @State private var isLoadingUsers = false
-    @State private var userError: Error?
-    var appVM: AppViewModel
-    var friendVM: FriendViewModel
+private struct GroupInstanceList: View {
+    let friendInstances: [Instance]
+    let regularInstances: [Instance]
+    let isLoading: Bool
+    let loadInstances: () async -> Void
+    let instanceCount: Int
     
     var body: some View {
-        NavigationStack {
-            List {
-                Section("World") {
-                    WorldHeaderView(world: instance.world) {
-                        Text(instance.world.description ?? "")
-                            .font(.footnote)
-                            .foregroundStyle(Color.gray)
-                            .lineLimit(2)
+        List {
+            if isLoading {
+                Section(header: HStack {
+                    Text("인스턴스")
+                    Spacer()
+                    Text("\(instanceCount)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.blue.opacity(0.1))
+                        .clipShape(Capsule())
+                        .redacted(reason: isLoading ? .placeholder : [])
+                }) {
+                    ForEach(0..<6) { _ in
+                        NavigationLink(destination: EmptyView()) {
+                            FriendLocationContent(instance: PreviewData.instance)
+                        }
+                        .disabled(true)
+                    }
+                }
+            } else {
+                if !friendInstances.isEmpty {
+                    Section(header: HStack {
+                        Text("친구가 접속함")
+                        Spacer()
+                        Text("\(friendInstances.count)")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.green)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.green.opacity(0.1))
+                            .clipShape(Capsule())
+                    }) {
+                        ForEach(friendInstances, id: \.id) { instance in
+                            NavigationLink(destination: GroupLocationDetailView(instance: instance)) {
+                                FriendLocationContent(instance: instance)
+                            }
+                        }
                     }
                 }
                 
-                Section("Information") {
-                    LabeledContent("Instance ID", value: instance.instanceId)
-                    LabeledContent("Users", value: "\(instance.userCount)")
-                    LabeledContent("Capacity", value: "\(instance.capacity)")
-                    LabeledContent("Region", value: instance.region.description)
-                    LabeledContent("Type", value: instance.typeDescription)
-                }
-                
-                Section("Users") {
-                    if isLoadingUsers {
-                        HStack {
-                            Spacer()
-                            ProgressView("유저 목록을 불러오는 중...")
-                            Spacer()
-                        }
-                    } else if let error = userError {
-                        VStack(spacing: 8) {
-                            Image(systemName: "exclamationmark.triangle")
-                                .font(.title)
-                                .foregroundColor(.orange)
-                            Text("유저 목록을 불러오지 못했습니다")
-                                .font(.headline)
-                            Text(error.localizedDescription)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    } else if users.isEmpty {
-                        Text("현재 이 인스턴스에 접속한 유저가 없습니다")
+                if !regularInstances.isEmpty {
+                    Section(header: HStack {
+                        Text("인스턴스")
+                        Spacer()
+                        Text("\(regularInstances.count)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    } else {
-                        ForEach(users) { user in
-                            NavigationLink(destination: UserDetailPresentationView(id: user.id)) {
-                                SimpleUserRowContent(
-                                    userId: user.id,
-                                    displayName: user.displayName,
-                                    userIconUrl: user.userIcon,
-                                    status: user.status,
-                                    statusDescription: user.statusDescription,
-                                    location: user.location,
-                                    isFriend: friendVM.isFriend(id: user.id)
-                                )
+                            .fontWeight(.medium)
+                            .foregroundColor(.blue)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.blue.opacity(0.1))
+                            .clipShape(Capsule())
+                    }) {
+                        ForEach(regularInstances, id: \.id) { instance in
+                            NavigationLink(destination: GroupLocationDetailView(instance: instance)) {
+                                FriendLocationContent(instance: instance)
                             }
                         }
                     }
                 }
             }
-            .listStyle(.insetGrouped)
-            .navigationTitle(instance.world.name)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("닫기") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: loadUsers) {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                    .disabled(isLoadingUsers)
-                }
+        }
+        .listStyle(.insetGrouped)
+        .redacted(reason: isLoading ? .placeholder : [])
+        .refreshable {
+            await loadInstances()
+        }
+    }
+}
+
+private struct FriendLocationContent: View {
+    @Environment(FriendViewModel.self) var friendVM
+    let instance: Instance
+    
+    private var friendsInInstance: [Friend] {
+        friendVM.allFriends.filter { friend in
+            if case let .id(locationId) = friend.location {
+                return locationId == instance.id
             }
-            .task {
-                loadUsers()
+            return false
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .center, spacing: 12) {
+                WorldHeaderView(world: instance.world ?? .placeholder) {
+                    Text(InstanceUtil.getInstanceWithInstanceType(instance))
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color.blue.opacity(0.1))
+                        .clipShape(Capsule()).lineLimit(1)
+                    
+                    HStack {
+                        HStack(spacing: 2) {
+                            Image(systemName: "person.2.fill")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Text(personAmount(instance))
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                        
+                        if instance.ageGate == true {
+                            HStack(spacing: 2) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.orange)
+                                
+                                Text("Age Gated")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.orange)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding(.vertical, 6)
+            
+            if !friendsInInstance.isEmpty {
+                HStack(spacing: 10) {
+                    HStack(spacing: 2) {
+                        Image(systemName: "person.2.fill")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Text("\(friendsInInstance.count)")
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(Color.blue.opacity(0.1))
+                    .clipShape(Capsule())
+                    
+                    HorizontalProfileImages(friendsInInstance)
+                }
+                .padding(.top, 8)
             }
         }
     }
     
-    private func loadUsers() {
-        guard !isLoadingUsers else { return }
-        
-        isLoadingUsers = true
-        userError = nil
-        
-        Task {
-            do {
-                let userId = appVM.user?.id ?? "me"
-                let groupId = instance.location.getGroupId() ?? ""
-                let instanceId = instance.location.getInstanceId() ?? ""
-                
-                if !groupId.isEmpty && !instanceId.isEmpty {
-                    let fetchedUsers = try await appVM.services.groupService.fetchUsersInGroupInstance(
-                        userId: userId,
-                        groupId: groupId,
-                        instanceId: instanceId
-                    )
-                    await MainActor.run {
-                        self.users = fetchedUsers
-                        self.isLoadingUsers = false
-                    }
-                } else {
-                    throw VRCKitError.invalidResponse("Invalid group or instance ID")
-                }
-            } catch {
-                await MainActor.run {
-                    self.userError = error
-                    self.isLoadingUsers = false
-                }
-            }
-        }
+    private func personAmount(_ instance: Instance) -> String {
+        [instance.userCount, instance.capacity]
+            .map { $0.description }
+            .joined(separator: " / ")
     }
-} 
+}

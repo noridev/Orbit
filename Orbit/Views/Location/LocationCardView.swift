@@ -59,26 +59,28 @@ private struct FriendLocationContent: View {
     private func locationCardContent(instance: Instance) -> some View {
         NavigationLink(value: tag(instance)) {
             VStack(spacing: 0) {
-                WorldHeaderView(redacted: isRequesting, world: instance.world) {
-                    Text(InstanceUtil.getInstanceWithInstanceType(instance))
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Color.blue.opacity(0.1))
-                        .clipShape(Capsule()).lineLimit(1)
-                    
-                    HStack(spacing: 2) {
-                        Image(systemName: "person.2.fill")
+                if let world = instance.world {
+                    WorldHeaderView(redacted: isRequesting, world: world) {
+                        Text(InstanceUtil.getInstanceWithInstanceType(instance))
                             .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Text(personAmount(instance))
-                            .font(.caption2)
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
-                            .lineLimit(1)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.blue.opacity(0.1))
+                            .clipShape(Capsule()).lineLimit(1)
+                        
+                        HStack(spacing: 2) {
+                            Image(systemName: "person.2.fill")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Text(personAmount(instance))
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
                     }
                 }
                 

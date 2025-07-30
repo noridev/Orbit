@@ -4,9 +4,6 @@
     "" : {
       "shouldTranslate" : false
     },
-    "..." : {
-
-    },
     "#%@.%@" : {
       "localizations" : {
         "en" : {
@@ -62,16 +59,6 @@
     },
     "%lld friends" : {
 
-    },
-    "%lld/%lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld/%2$lld"
-          }
-        }
-      }
     },
     "%lld개" : {
 
@@ -169,6 +156,9 @@
           }
         }
       }
+    },
+    "Age Gated" : {
+
     },
     "All" : {
       "localizations" : {
@@ -1002,6 +992,9 @@
         }
       }
     },
+    "Friends in Instance" : {
+
+    },
     "Go to the Friends tab and pull down to refresh to regenerate the cache." : {
       "localizations" : {
         "ko" : {
@@ -1347,6 +1340,9 @@
         }
       }
     },
+    "Links" : {
+
+    },
     "Loading..." : {
       "localizations" : {
         "ja" : {
@@ -1584,6 +1580,9 @@
           }
         }
       }
+    },
+    "No friends in this instance" : {
+
     },
     "No history" : {
       "localizations" : {
@@ -2346,9 +2345,6 @@
         }
       }
     },
-    "This gallery has no images." : {
-
-    },
     "Translate" : {
       "localizations" : {
         "ko" : {
@@ -2444,6 +2440,9 @@
           }
         }
       }
+    },
+    "Unknown World" : {
+
     },
     "User is online in a private instance" : {
       "localizations" : {
@@ -2633,6 +2632,9 @@
     "멤버" : {
 
     },
+    "멤버 전용" : {
+
+    },
     "멤버가 없습니다" : {
 
     },
@@ -2681,25 +2683,34 @@
     "소개가 없습니다" : {
 
     },
+    "알 수 없는 유저" : {
+
+    },
     "업데이트될 친구" : {
 
     },
     "역할 없음" : {
 
     },
+    "역할 정보 없음" : {
+
+    },
+    "이 갤러리에는 이미지가 없습니다" : {
+
+    },
     "이 그룹에는 아직 갤러리가 없습니다" : {
+
+    },
+    "이 그룹에는 아직 멤버가 없습니다" : {
 
     },
     "이 그룹에는 아직 포스트가 없습니다" : {
 
     },
-    "이 그룹에는 현재 활성화된 인스턴스가 없습니다." : {
+    "인스턴스" : {
 
     },
-    "인스턴스 목록을 불러오지 못했습니다" : {
-
-    },
-    "인스턴스가 없습니다" : {
+    "인스턴스 없음" : {
 
     },
     "재설정" : {
@@ -2729,16 +2740,22 @@
     "친구 데이터 복원" : {
 
     },
+    "친구가 접속함" : {
+
+    },
+    "친구인 멤버" : {
+
+    },
     "캐시 새로고침" : {
 
     },
     "포스트가 없습니다" : {
 
     },
-    "포스트를 불러오지 못했습니다" : {
+    "현재 계정" : {
 
     },
-    "현재 계정" : {
+    "현재 이 그룹에는 인스턴스가 없습니다" : {
 
     },
     "확인" : {

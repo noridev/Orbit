@@ -1,14 +1,14 @@
 //
-//  GroupDetailView+RulesSection.swift
+//  GroupInfoView+RulesSection.swift
 //  Orbit
 //
-//  Created by NoriDev on 7/17/25.
+//  Created by NoriDev on 7/18/25.
 //
 
 import SwiftUI
 import VRCKit
 
-extension GroupDetailView {
+extension GroupInfoView {
     func rulesSection(_ rules: String?, isLoading: Bool) -> some View {
         GroupBox("규칙") {
             if isLoading {
@@ -28,4 +28,4 @@ extension GroupDetailView {
         }
         .groupBoxStyle(.card)
     }
-} 
+}

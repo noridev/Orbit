@@ -21,12 +21,16 @@ struct GroupDetailView: View {
     @State private var selectedTab: Tab = .info
     @State private var selectedImageURL: URL?
     @State private var reloadTrigger = false
+    @State private var groupInstances: [Instance] = []
+    @State private var isLoadingInstances = false
+    @State private var instanceError: Error?
     
     enum Tab: String, CaseIterable, Identifiable {
         case info = "정보"
         case posts = "포스트"
         case members = "멤버"
         case gallery = "갤러리"
+        case instances = "인스턴스"
         var id: String { rawValue }
     }
     
@@ -43,33 +47,27 @@ struct GroupDetailView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                headerSection
-                
-                Picker("Tabs", selection: $selectedTab) {
-                    ForEach(Tab.allCases) { tab in
-                        Text(tab.rawValue).tag(tab)
-                    }
+        VStack(spacing: 0) {
+            Picker("Tabs", selection: $selectedTab) {
+                ForEach(Tab.allCases) { tab in
+                    Text(tab.rawValue).tag(tab)
                 }
-                .pickerStyle(.segmented)
-                .padding([.horizontal, .top])
-                
-                Group {
-                    switch selectedTab {
-                    case .info:
-                        GroupInfoView(group: currentGroup, reloadTrigger: $reloadTrigger)
-                            .padding(.top, 16)
-                    case .posts:
-                        GroupPostListView(selectedImageURL: $selectedImageURL, reloadTrigger: $reloadTrigger, groupId: currentGroup.groupId ?? currentGroup.id)
-                            .padding(.top, 16)
-                    case .members:
-                        GroupMemberListView(groupId: currentGroup.groupId ?? currentGroup.id, currentGroup: currentGroup, reloadTrigger: $reloadTrigger)
-                            .padding(.top, 16)
-                    case .gallery:
-                        GroupGalleryView(selectedImageURL: $selectedImageURL, reloadTrigger: $reloadTrigger, galleries: currentGroup.galleries, groupId: currentGroup.actualGroupId, isLoading: isLoading)
-                            .padding(.top, 16)
-                    }
+            }
+            .pickerStyle(.segmented)
+            .padding([.bottom, .horizontal])
+            
+            Group {
+                switch selectedTab {
+                case .info:
+                    GroupInfoView(group: currentGroup, reloadTrigger: $reloadTrigger, headerSection: AnyView(headerSection))
+                case .posts:
+                    GroupPostListView(selectedImageURL: $selectedImageURL, reloadTrigger: $reloadTrigger, groupId: currentGroup.groupId ?? currentGroup.id)
+                case .members:
+                    GroupMemberListView(reloadTrigger: $reloadTrigger, groupId: currentGroup.groupId ?? currentGroup.id, currentGroup: currentGroup)
+                case .gallery:
+                    GroupGalleryView(selectedImageURL: $selectedImageURL, reloadTrigger: $reloadTrigger, galleries: currentGroup.galleries, groupId: currentGroup.actualGroupId)
+                case .instances:
+                    GroupInstanceListView(reloadTrigger: $reloadTrigger, groupId: currentGroup.groupId ?? currentGroup.id, groupName: currentGroup.name)
                 }
             }
         }
@@ -97,8 +95,16 @@ struct GroupDetailView: View {
             await refreshData()
             reloadTrigger.toggle()
         }
+        .onChange(of: selectedTab) {
+            if selectedTab == .instances && groupInstances.isEmpty && !isLoadingInstances {
+                Task { await loadGroupInstances() }
+            }
+        }
         .task {
             await refreshData()
+            if selectedTab == .instances {
+                await loadGroupInstances()
+            }
         }
     }
     
@@ -111,6 +117,7 @@ struct GroupDetailView: View {
         await fetchMembers()
     }
     
+    @MainActor
     private func fetchGroupDetails() async {
         do {
             let updatedGroup = try await appVM.services.groupService.fetchGroup(
@@ -118,20 +125,17 @@ struct GroupDetailView: View {
                 includeRoles: true,
                 includeMembers: true
             )
-            await MainActor.run {
-                self.currentGroup = updatedGroup
-            }
+            self.currentGroup = updatedGroup
         } catch {
             print("❌ [GroupDetailView] Failed to fetch group details: \(error)")
         }
     }
     
+    @MainActor
     private func fetchOwnerUser() async {
         do {
             let user = try await appVM.services.userService.fetchUser(userId: currentGroup.ownerId)
-            await MainActor.run {
-                self.ownerUserState = .loaded(user)
-            }
+            self.ownerUserState = .loaded(user)
         } catch {
             let isNotFound: Bool
             if let vrcError = error as? VRCKitError {
@@ -146,21 +150,38 @@ struct GroupDetailView: View {
                             (error as NSError).code == 404
             }
             
-            await MainActor.run {
-                self.ownerUserState = isNotFound ? .notFound : .error(error)
-            }
+            self.ownerUserState = isNotFound ? .notFound : .error(error)
             print("❌ [GroupDetailView] Failed to fetch owner user: \(error)")
         }
     }
     
+    @MainActor
     private func fetchMembers() async {
         do {
-            let groupMembers = try await appVM.services.groupService.fetchGroupMembers(groupId: currentGroup.groupId ?? currentGroup.id)
-            await MainActor.run {
-                self.members = groupMembers
-            }
+            let groupMembers = try await appVM.services.groupService.fetchGroupMembers(
+                groupId: currentGroup.groupId ?? currentGroup.id,
+                offset: 0,
+                n: 100
+            )
+            self.members = groupMembers
         } catch {
             print("❌ [GroupDetailView] Failed to fetch group members: \(error)")
+        }
+    }
+    
+    @MainActor
+    private func loadGroupInstances() async {
+        isLoadingInstances = true
+        instanceError = nil
+        do {
+            let userId = appVM.user?.id ?? "me"
+            let groupId = currentGroup.groupId ?? currentGroup.id
+            let instances = try await appVM.services.groupService.fetchGroupInstances(userId: userId, groupId: groupId)
+            self.groupInstances = instances
+            self.isLoadingInstances = false
+        } catch {
+            self.instanceError = error
+            self.isLoadingInstances = false
         }
     }
 }

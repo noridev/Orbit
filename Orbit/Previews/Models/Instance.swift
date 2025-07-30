@@ -34,6 +34,7 @@ private extension Instance {
     init(world: World, instanceId: Int = 0, capacity: Int = 32, userCount: Int = 0) {
         self.init(
             active: true,
+            ageGate: false,
             capacity: capacity,
             full: false,
             groupAccessType: nil,

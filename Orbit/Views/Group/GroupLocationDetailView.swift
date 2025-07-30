@@ -1,27 +1,24 @@
 //
-//  LocationDetailView.swift
+//  GroupLocationDetailView.swift
 //  Orbit
 //
-//  Created by makinosp on 2024/07/17.
+//  Created by NoriDev on 7/23/25.
 //
 
-import AsyncSwiftUI
-import NukeUI
-import MemberwiseInit
+import SwiftUI
 import VRCKit
 
-@MemberwiseInit
-struct LocationDetailView: View {
-    @Init(.internal) private let location: FriendsLocation
-    @Init(.internal) private let instance: Instance
-
+struct GroupLocationDetailView: View {
+    let instance: Instance
+    @Environment(AppViewModel.self) var appVM
+    @Environment(FriendViewModel.self) var friendVM
+    
     private typealias InformationItem = (title: String, value: String)
     private var information: [InformationItem] {
         let platforms = instance.userPlatforms.map(\.description).joined(separator: ", ")
         var items = [
             (title: String(localized: "Instance Type"), value: instance.typeDescription),
             (title: String(localized: "Instance ID"), value: "#\(InstanceUtil.extractInstanceNumber(from: instance.instanceId))"),
-            (title: String(localized: "Friends"), value: location.friends.count.description),
             (title: String(localized: "Users"), value: instance.userCount.description),
             (title: String(localized: "Capacity"), value: instance.capacity.description),
             (title: String(localized: "Region"), value: instance.region.description),
@@ -34,7 +31,7 @@ struct LocationDetailView: View {
         
         return items
     }
-
+    
     var body: some View {
         List {
             if let world = instance.world {
@@ -49,19 +46,26 @@ struct LocationDetailView: View {
                     }
                 }
             }
-            Section("Friends") { friendList }
+            Section("Friends in Instance") { friendList }
             Section("Information") { informationList }
         }
         .listStyle(.insetGrouped)
         .navigationTitle(instance.world?.name ?? "Unknown World")
         .navigationBarTitleDisplayMode(.inline)
     }
-
+    
     private var friendList: some View {
         Group {
-            if location.friends.isEmpty {
+            let friendsInInstance = friendVM.allFriends.filter { friend in
+                if case let .id(locationId) = friend.location {
+                    return locationId == instance.id
+                }
+                return false
+            }
+            
+            if friendsInInstance.isEmpty {
                 Label {
-                    Text("No users added as friends")
+                    Text("No friends in this instance")
                         .font(.body)
                         .foregroundColor(.gray)
                 } icon: {
@@ -70,7 +74,7 @@ struct LocationDetailView: View {
                         .foregroundColor(.gray)
                 }
             } else {
-                ForEach(location.friends) { friend in
+                ForEach(friendsInInstance) { friend in
                     NavigationLink(destination: UserDetailPresentationView(id: friend.id)) {
                         HStack {
                             UserIcon(user: friend, size: Constants.IconSize.thumbnail)

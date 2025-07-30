@@ -160,21 +160,19 @@ final class GroupViewModel: ObservableObject {
     
     var managedGroups: [VRCGroup] {
         userGroups.filter { group in
-            canManageGroup(group)
+            canManageGroup(group) && !group.isRepresenting
         }
     }
     
     var mutualGroups: [VRCGroup] {
         userGroups.filter { group in
-            group.mutualGroup
+            group.mutualGroup && !group.isRepresenting && !canManageGroup(group)
         }
     }
     
     var regularGroups: [VRCGroup] {
         userGroups.filter { group in
-            !group.isRepresenting &&
-            !canManageGroup(group) && 
-            !group.mutualGroup
+            !group.isRepresenting && !canManageGroup(group) && !group.mutualGroup
         }
     }
     

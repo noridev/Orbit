@@ -11,110 +11,117 @@ import VRCKit
 struct GroupGalleryView: View {
     @Binding var selectedImageURL: URL?
     @Binding var reloadTrigger: Bool
+    @State private var isLoading = true
     let galleries: [GroupGallery]?
     let groupId: String
-    let isLoading: Bool
-
-    private var placeholderGalleries: [GroupGallery] {
-        (0..<3).map { i in
-            GroupGallery(
-                id: "placeholder_gal_\(i)",
-                name: "Placeholder Gallery",
-                description: "Loading gallery description...",
-                membersOnly: false,
-                roleIdsToView: nil,
-                roleIdsToSubmit: nil,
-                roleIdsToAutoApprove: nil,
-                roleIdsToManage: nil,
-                createdAt: nil,
-                updatedAt: nil
-            )
-        }
-    }
 
     var body: some View {
-        let displayGalleries = isLoading ? placeholderGalleries : (galleries ?? [])
+        let displayGalleries = galleries ?? []
         let _ = reloadTrigger
 
-        if !isLoading && displayGalleries.isEmpty {
-            ContentUnavailableView {
-                Label("갤러리가 없습니다", systemImage: "photo.on.rectangle")
-                    .foregroundColor(.gray)
-            } description: {
-                Text("이 그룹에는 아직 갤러리가 없습니다")
-            }
-        } else {
-            LazyVStack(spacing: 12) {
-                ForEach(displayGalleries) { gallery in
-                    GalleryRowView(
-                        gallery: gallery,
-                        groupId: groupId,
-                        selectedImageURL: $selectedImageURL
-                    )
+        Group {
+            if displayGalleries.isEmpty && !isLoading {
+                ContentUnavailableView {
+                    Label("갤러리가 없습니다", systemImage: "photo.on.rectangle")
+                        .foregroundColor(.gray)
+                } description: {
+                    Text("이 그룹에는 아직 갤러리가 없습니다")
                 }
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(displayGalleries) { gallery in
+                            GalleryRowView(selectedImageURL: $selectedImageURL, gallery: gallery, groupId: groupId, scrollProxy: nil, isLoading: isLoading)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                .refreshable { reloadTrigger.toggle() }
+                .redacted(reason: isLoading ? .placeholder : [])
             }
-            .id(reloadTrigger)
-            .padding(.bottom, 32)
-            .redacted(reason: isLoading ? .placeholder : [])
-            .disabled(isLoading)
+        }
+        .task {
+            isLoading = true
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            isLoading = false
+        }
+
+        .onChange(of: reloadTrigger) {
+            isLoading = true
+            Task {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                isLoading = false
+            }
         }
     }
 }
 
 struct GalleryRowView: View {
     @Environment(AppViewModel.self) var appVM
+    @Binding var selectedImageURL: URL?
+    @State private var images: [GroupGalleryImage] = []
     let gallery: GroupGallery
     let groupId: String
-    @Binding var selectedImageURL: URL?
-
-    @State private var images: [GroupGalleryImage] = []
-    @State private var isLoadingImages = false
-    
-    private var placeholderImages: [GroupGalleryImage] {
-        (0..<5).map { i in
-            GroupGalleryImage(
-                id: "placeholder_img_\(i)",
-                groupId: "grp_placeholder",
-                galleryId: "ggal_placeholder",
-                fileId: "file_placeholder",
-                imageUrl: URL(string: "https://placehold.co/100x100")!,
-                createdAt: Date(),
-                submittedByUserId: "usr_placeholder",
-                approved: nil,
-                approvedByUserId: nil,
-                approvedAt: nil
-            )
-        }
-    }
+    let scrollProxy: ScrollViewProxy?
+    let isLoading: Bool
 
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(gallery.name)
                             .font(.headline)
-                            .fontWeight(.medium)
-                        if let desc = gallery.description, !desc.isEmpty {
-                            Text(desc)
+                            .fontWeight(.semibold)
+                        
+                        if let createdAt = gallery.createdAt {
+                            Text("\(createdAt.formatted(date: .numeric, time: .shortened)) (\(relativeTimeString(from: createdAt)))")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
+                        }
+                        
+                        if gallery.membersOnly {
+                            HStack {
+                                HStack(spacing: 2) {
+                                    Image(systemName: IconSet.newFriend.systemName)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    
+                                    Text("멤버 전용")
+                                        .font(.caption2)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .background(Color.blue.opacity(0.1))
+                                .clipShape(Capsule())
+                            }
+                            .padding(.top, 2)
                         }
                     }
                     Spacer()
                 }
-                .padding(.vertical, 6)
-
-                let displayImages = isLoadingImages ? placeholderImages : images
-
-                if !displayImages.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(displayImages) { image in
+                
+                if let description = gallery.description {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ShowMoreText(
+                            text: description,
+                            lineLimit: 3,
+                            scrollProxy: scrollProxy,
+                            scrollTargetId: gallery.id
+                        )
+                        .font(.body)
+                    }
+                }
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        if !images.isEmpty {
+                            ForEach(images) { image in
                                 Button {
-                                    if !isLoadingImages {
-                                        selectedImageURL = image.imageUrl
-                                    }
+                                    selectedImageURL = image.imageUrl
                                 } label: {
                                     AsyncImage(url: image.imageUrl) { phase in
                                         switch phase {
@@ -135,29 +142,39 @@ struct GalleryRowView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                 }
                             }
+                        } else if !isLoading {
+                            Text("이 갤러리에는 이미지가 없습니다")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.vertical, 8)
+                        } else {
+                            ForEach(0..<3, id: \.self) { _ in
+                                Rectangle()
+                                    .fill(Color(.systemGray5))
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
                         }
                     }
-                    .redacted(reason: isLoadingImages ? .placeholder : [])
-                    .disabled(isLoadingImages)
-                } else if !isLoadingImages && images.isEmpty {
-                    Text("This gallery has no images.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding()
+                    .padding(.vertical, 4)
                 }
             }
         }
         .groupBoxStyle(.card)
         .onAppear {
-            if images.isEmpty && !isLoadingImages {
+            if images.isEmpty {
+                fetchImages()
+            }
+        }
+        .onChange(of: isLoading) { _, newValue in
+            if newValue && images.isEmpty {
                 fetchImages()
             }
         }
     }
-
+    
     private func fetchImages() {
-        isLoadingImages = true
         Task {
             do {
                 let fetchedImages = try await appVM.services.groupService.fetchGroupGalleryImages(
@@ -166,14 +183,16 @@ struct GalleryRowView: View {
                 )
                 await MainActor.run {
                     self.images = fetchedImages
-                    self.isLoadingImages = false
                 }
             } catch {
                 print("Failed to fetch gallery images for galleryId \(gallery.id): \(error)")
-                await MainActor.run {
-                    self.isLoadingImages = false
-                }
             }
         }
+    }
+    
+    private func relativeTimeString(from date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
