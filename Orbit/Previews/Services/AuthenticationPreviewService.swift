@@ -9,7 +9,7 @@ import MemberwiseInit
 import VRCKit
 
 @MemberwiseInit
-final actor AuthenticationPreviewService: APIService, AuthenticationServiceProtocol {
+final actor AuthenticationPreviewService: APIService, AuthenticationProvidable {
     let client: APIClient
 
     func exists(userId: String) async throws -> Bool { true }

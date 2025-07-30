@@ -9,7 +9,7 @@ import MemberwiseInit
 import VRCKit
 
 @MemberwiseInit
-final actor FriendPreviewService: APIService, FriendServiceProtocol {
+final actor FriendPreviewService: APIService, FriendProvidable {
     let client: APIClient
 
     func fetchFriends(offset: Int, n: Int, offline: Bool) async throws -> [Friend] {

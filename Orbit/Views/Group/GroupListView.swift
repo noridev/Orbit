@@ -16,9 +16,9 @@ struct GroupListView: View {
     @State var isPresentedSheet = false
     let userId: String
     let userName: String?
-    let groupService: GroupServiceProtocol
+    let groupService: GroupProvidable
 
-    init(userId: String, userName: String? = nil, groupService: GroupServiceProtocol) {
+    init(userId: String, userName: String? = nil, groupService: GroupProvidable) {
         self.userId = userId
         self.userName = userName
         self.groupService = groupService

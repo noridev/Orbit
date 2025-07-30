@@ -40,12 +40,12 @@ extension UserDetailView {
 
 struct GroupSectionContent: View {
     let userId: String
-    let groupService: GroupServiceProtocol
+    let groupService: GroupProvidable
     
     @ObservedObject private var groupViewModel = GroupViewModel.shared
     @State private var isLoading = true
     
-    init(userId: String, groupService: GroupServiceProtocol) {
+    init(userId: String, groupService: GroupProvidable) {
         self.userId = userId
         self.groupService = groupService
     }

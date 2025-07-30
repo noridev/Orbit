@@ -18,12 +18,12 @@ final class GroupViewModel: ObservableObject {
     @Published var isLoading = true
     @Published var error: Error?
     
-    private var groupService: GroupServiceProtocol?
+    private var groupService: GroupProvidable?
     private var currentUserId: String?
     
     private init() {}
     
-    func configure(groupService: GroupServiceProtocol, userId: String) {
+    func configure(groupService: GroupProvidable, userId: String) {
         self.groupService = groupService
         self.currentUserId = userId
     }

@@ -8,14 +8,14 @@
 import VRCKit
 
 actor APIServiceUtil {
-    let authenticationService: AuthenticationServiceProtocol
-    let favoriteService: FavoriteServiceProtocol
-    let friendService: FriendServiceProtocol
-    let groupService: GroupServiceProtocol
-    let instanceService: InstanceServiceProtocol
-    let userNoteService: UserNoteServiceProtocol
-    let userService: UserServiceProtocol
-    let worldService: WorldServiceProtocol
+    let authenticationService: AuthenticationProvidable
+    let favoriteService: FavoriteProvidable
+    let friendService: FriendProvidable
+    let groupService: GroupProvidable
+    let instanceService: InstanceProvidable
+    let userNoteService: UserNoteProvidable
+    let userService: UserProvidable
+    let worldService: WorldProvidable
 
     init(isPreviewMode: Bool = false, client: APIClient) {
         if isPreviewMode {

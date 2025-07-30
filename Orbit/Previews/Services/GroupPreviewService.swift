@@ -8,7 +8,7 @@
 import Foundation
 import VRCKit
 
-final actor GroupPreviewService: APIService, GroupServiceProtocol {
+final actor GroupPreviewService: APIService, GroupProvidable {
     public let client: APIClient
     
     init(client: APIClient) {

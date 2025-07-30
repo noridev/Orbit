@@ -42,7 +42,7 @@ final class FavoriteViewModel {
     }
 
     func updateFavoriteGroup(
-        service: FavoriteServiceProtocol,
+        service: FavoriteProvidable,
         id: FavoriteGroup.ID,
         displayName: String,
         visibility: FavoriteGroup.Visibility
@@ -66,7 +66,7 @@ final class FavoriteViewModel {
     ///   - friendFinder: A closure that takes a `Favorite` instance and returns an optional `Friend`
     ///     if a corresponding friend is found; returns `nil` otherwise.
     /// - Throws: An error if the service encounters an issue while fetching favorite groups or favorite details.
-    func fetchFavoriteFriends(service: FavoriteServiceProtocol, friendFinder: (Favorite) -> Friend?) async throws {
+    func fetchFavoriteFriends(service: FavoriteProvidable, friendFinder: (Favorite) -> Friend?) async throws {
         defer { isFetchingFavoriteFriends = false }
         isFetchingFavoriteFriends = true
         favoriteGroups = try await service.listFavoriteGroups()
@@ -147,7 +147,7 @@ final class FavoriteViewModel {
     ///   - service: Any `FavoriteServiceProtocol` service.
     ///   - friendId: The ID of friend whose favorite status is being updated.
     ///   - targetGroup: The `FavoriteGroup` object representing the target group for the favorite status.
-    func updateFavorite(service: FavoriteServiceProtocol, friend: Friend, targetGroup: FavoriteGroup) async throws {
+    func updateFavorite(service: FavoriteProvidable, friend: Friend, targetGroup: FavoriteGroup) async throws {
         let sourceGroupId = favoriteGroupId(friendId: friend.id)
         if let sourceGroupId = sourceGroupId {
             _ = try await service.removeFavorite(favoriteId: friend.id)
@@ -165,7 +165,7 @@ final class FavoriteViewModel {
 
     // MARK: - World
 
-    func fetchFavoritedWorlds(service: WorldServiceProtocol) async throws {
+    func fetchFavoritedWorlds(service: WorldProvidable) async throws {
         favoriteWorlds = try await service.fetchFavoritedWorlds()
     }
 
@@ -201,7 +201,7 @@ final class FavoriteViewModel {
     ///   - world: The world to update.
     ///   - targetGroup: The `FavoriteGroup` where the world should be added.
     func updateFavorite(
-        service: FavoriteServiceProtocol,
+        service: FavoriteProvidable,
         world: World,
         targetGroup: FavoriteGroup
     ) async throws {

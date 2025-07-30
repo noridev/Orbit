@@ -10,7 +10,7 @@ import MemberwiseInit
 import VRCKit
 
 @MemberwiseInit
-final actor UserNotePreviewService: APIService, UserNoteServiceProtocol {
+final actor UserNotePreviewService: APIService, UserNoteProvidable {
     let client: APIClient
 
     func updateUserNote(

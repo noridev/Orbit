@@ -10,7 +10,7 @@ import Foundation
 import VRCKit
 
 @MemberwiseInit
-final actor UserPreviewService: APIService, UserServiceProtocol {
+final actor UserPreviewService: APIService, UserProvidable {
     let client: APIClient
 
     func fetchUser(userId: String) async throws -> UserDetail {

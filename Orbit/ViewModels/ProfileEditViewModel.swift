@@ -31,7 +31,7 @@ final class ProfileEditViewModel {
         tempBioLinks = user.bioLinks.wrappedValue.map { $0.absoluteString }
     }
 
-    func saveProfile(service: UserServiceProtocol) async throws {
+    func saveProfile(service: UserProvidable) async throws {
         guard tempBioLinks.count <= maxBioLinks else {
             throw ApplicationError.tooManyBioLinks
         }

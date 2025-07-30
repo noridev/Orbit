@@ -41,7 +41,7 @@ final class AppViewModel {
     /// - Returns: A `Step` value indicating the next step:
     ///            `.loggingIn` if the user is not authenticated, or `.done(user)`
     ///            if the authentication and user data retrieval are successful.
-    func setup(service: AuthenticationServiceProtocol) async -> Step {
+    func setup(service: AuthenticationProvidable) async -> Step {
         var next: Step = .loggingIn
         // check local data
         guard await client.cookieManager.cookieExists else { 
@@ -88,7 +88,7 @@ final class AppViewModel {
     ///                        be saved in the Keychain for future use.
     private func setCredential(_ credential: Credential, isSavedOnKeyChain: Bool) async {
         services = APIServiceUtil(isPreviewMode: credential.isPreviewUser, client: client)
-        await client.setCledentials(credential)
+        await client.setCredentials(credential)
         if isSavedOnKeyChain {
             _ = await KeychainUtil.shared.savePassword(credential)
         }

@@ -9,7 +9,7 @@ import MemberwiseInit
 import VRCKit
 
 @MemberwiseInit
-final actor InstancePreviewService: APIService, InstanceServiceProtocol {
+final actor InstancePreviewService: APIService, InstanceProvidable {
     let client: APIClient
 
     func fetchInstance(location: String) async throws -> Instance {

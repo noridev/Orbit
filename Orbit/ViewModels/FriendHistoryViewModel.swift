@@ -39,7 +39,7 @@ class FriendHistoryViewModel: ObservableObject {
     private init() {}
 
     @MainActor
-    func loadAllHistories(friends: [Friend], userService: UserServiceProtocol?) async -> [MergedHistory] {
+    func loadAllHistories(friends: [Friend], userService: UserProvidable?) async -> [MergedHistory] {
         self.friendsDict = Dictionary(uniqueKeysWithValues: friends.map { ($0.id, $0) })
         
         let allHistoryData = FriendCacheManager.loadAllFriendHistory()

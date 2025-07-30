@@ -10,7 +10,7 @@ import MemberwiseInit
 import VRCKit
 
 @MemberwiseInit
-final actor WorldPreviewService: APIService, WorldServiceProtocol {
+final actor WorldPreviewService: APIService, WorldProvidable {
     let client: APIClient
 
     func fetchWorld(worldId: String) async throws -> World {

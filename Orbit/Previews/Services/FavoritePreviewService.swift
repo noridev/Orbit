@@ -10,7 +10,7 @@ import MemberwiseInit
 import VRCKit
 
 @MemberwiseInit
-final actor FavoritePreviewService: APIService, FavoriteServiceProtocol {
+final actor FavoritePreviewService: APIService, FavoriteProvidable {
     let client: APIClient
 
     let favoriteGroups = FavoriteType.allCases.flatMap { type in
