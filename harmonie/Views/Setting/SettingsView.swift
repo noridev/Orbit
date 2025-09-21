@@ -5,7 +5,6 @@
 //  Created by makinosp on 2024/03/10.
 //
 
-import LicenseList
 import SwiftUI
 import VRCKit
 
@@ -14,7 +13,7 @@ struct SettingsView: View {
     @State var destination: SettingsDestination? = UIDevice.current.userInterfaceIdiom == .pad ? .userDetail : nil
     @State var isPresentedForm = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
-    @State private var selectedLibrary: Library?
+//    @State private var selectedLibrary: Library?
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -31,9 +30,9 @@ struct SettingsView: View {
                 ProfileEditView(user: user)
             }
         }
-        .sheet(item: $selectedLibrary) { library in
-            LicenseView(library: library)
-        }
+//        .sheet(item: $selectedLibrary) { library in
+//            LicenseView(library: library)
+//        }
     }
 
     @ViewBuilder
@@ -48,15 +47,16 @@ struct SettingsView: View {
         case .about:
             aboutThisApp
         case .license:
-            List(Library.libraries) { library in
-                Button {
-                    selectedLibrary = library
-                } label: {
-                    Text(library.name)
-                }
-            }
-            .navigationTitle("Third Party Licence")
-            .navigationBarTitleDisplayMode(.inline)
+            EmptyView()
+//            List(Library.libraries) { library in
+//                Button {
+//                    selectedLibrary = library
+//                } label: {
+//                    Text(library.name)
+//                }
+//            }
+//            .navigationTitle("Third Party Licence")
+//            .navigationBarTitleDisplayMode(.inline)
         }
     }
 
