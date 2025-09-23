@@ -29,9 +29,7 @@ struct UserDetailPresentationView: View {
                 }
         } else {
             ProgressScreen()
-                .task(id: id) {
-                    await fetchUser(id: id)
-                }
+                .onAppear { Task { await fetchUser(id: id) } }
                 .navigationTitle("Loading...")
                 .navigationBarTitleDisplayMode(.inline)
         }
