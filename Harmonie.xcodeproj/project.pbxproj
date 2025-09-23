@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		201067B82C4552B40083ECBC /* AsyncSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 201067B72C4552B40083ECBC /* AsyncSwiftUI */; };
 		2014A0B32C3832690019C638 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2014A0B22C3832690019C638 /* VRCKit */; };
-		201B43102C27F48E00879A2F /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 201B430F2C27F48E00879A2F /* LicenseList */; };
 		20395DC22B945EEF00003921 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 20395DC12B945EEF00003921 /* VRCKit */; };
 		204709A32C7B47E100A56DF8 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 208899AA2C4BB26D00BCE9C5 /* VRCKit */; };
 		204709A42C7B47E100A56DF8 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2052C7AD2C4BC97100B341D1 /* VRCKit */; };
@@ -75,7 +74,6 @@
 				204709A52C7B47E100A56DF8 /* VRCKit in Frameworks */,
 				204709A42C7B47E100A56DF8 /* VRCKit in Frameworks */,
 				204709A32C7B47E100A56DF8 /* VRCKit in Frameworks */,
-				201B43102C27F48E00879A2F /* LicenseList in Frameworks */,
 				201067B82C4552B40083ECBC /* AsyncSwiftUI in Frameworks */,
 				2094C4002C43BBC100F88986 /* VRCKit in Frameworks */,
 				20F213DD2C11FB470061DE29 /* NukeUI in Frameworks */,
@@ -150,7 +148,6 @@
 				20395DC12B945EEF00003921 /* VRCKit */,
 				206AC9002BFA07AA00E0D5AE /* AsyncSwiftUI */,
 				20F213DC2C11FB470061DE29 /* NukeUI */,
-				201B430F2C27F48E00879A2F /* LicenseList */,
 				2014A0B22C3832690019C638 /* VRCKit */,
 				20DC3C282C422786001101DB /* VRCKit */,
 				2094C3FF2C43BBC100F88986 /* VRCKit */,
@@ -243,7 +240,6 @@
 			mainGroup = 20395D882B945CD700003921;
 			packageReferences = (
 				20F213D92C11FB470061DE29 /* XCRemoteSwiftPackageReference "Nuke" */,
-				201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */,
 				20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */,
 				2096016B2C4BD30100D905AF /* XCRemoteSwiftPackageReference "vrckit" */,
 				205A12062CBB8621007D4EA4 /* XCRemoteSwiftPackageReference "swift-memberwise-init-macro" */,
@@ -642,14 +638,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/cybozu/LicenseList.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.1;
-			};
-		};
 		20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/makinosp/async-swift-ui";
@@ -692,11 +680,6 @@
 		2014A0B22C3832690019C638 /* VRCKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = VRCKit;
-		};
-		201B430F2C27F48E00879A2F /* LicenseList */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */;
-			productName = LicenseList;
 		};
 		20395DC12B945EEF00003921 /* VRCKit */ = {
 			isa = XCSwiftPackageProductDependency;

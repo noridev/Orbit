@@ -1,5 +1,5 @@
 {
-  "originHash" : "d25c80368e9e8d8866e69d741b0ffc1dbd5065f632c8e2a054795c9c6d0d7caf",
+  "originHash" : "7894f9b77b78d0c5d758dbf9dcaab8193a77f87fc02556f61fa468d41bbb0d2f",
   "pins" : [
     {
       "identity" : "async-swift-ui",
@@ -8,15 +8,6 @@
       "state" : {
         "branch" : "issue-10-adapt-to-SE-0409",
         "revision" : "350d5b97c88c7b17e384659e6cf6252b4ce3b48a"
-      }
-    },
-    {
-      "identity" : "licenselist",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/cybozu/LicenseList.git",
-      "state" : {
-        "revision" : "0f83f934ee437461b87870b62871108b882a143a",
-        "version" : "2.0.3"
       }
     },
     {
