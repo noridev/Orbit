@@ -72,3 +72,6 @@ playground.xcworkspace
 
 # IntelliJ
 .idea/
+
+# Serena
+.serena/
