@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		201067B82C4552B40083ECBC /* AsyncSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 201067B72C4552B40083ECBC /* AsyncSwiftUI */; };
 		2014A0B32C3832690019C638 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2014A0B22C3832690019C638 /* VRCKit */; };
-		201B43102C27F48E00879A2F /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 201B430F2C27F48E00879A2F /* LicenseList */; };
 		20395DC22B945EEF00003921 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 20395DC12B945EEF00003921 /* VRCKit */; };
 		204709A32C7B47E100A56DF8 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 208899AA2C4BB26D00BCE9C5 /* VRCKit */; };
 		204709A42C7B47E100A56DF8 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2052C7AD2C4BC97100B341D1 /* VRCKit */; };
@@ -25,7 +24,6 @@
 		20F213DD2C11FB470061DE29 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 20F213DC2C11FB470061DE29 /* NukeUI */; };
 		F1A395802E199C2300AE647B /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1A3957F2E199C2300AE647B /* VRCKit */; };
 		F1C08D812E19691400B95347 /* VRCKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1C08D802E19691400B95347 /* VRCKit */; };
-		F1E2819A2D74580E0047C025 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = F1E281992D74580E0047C025 /* CHANGELOG.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,7 +51,6 @@
 		2096E1162C96B9C9009C3649 /* release.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release.sh; sourceTree = "<group>"; };
 		20C7F89E2C480E6800AC7A56 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		20E1D3322C8F467D00E00017 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
-		F1E281992D74580E0047C025 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -78,7 +75,6 @@
 				F1C08D812E19691400B95347 /* VRCKit in Frameworks */,
 				204709A42C7B47E100A56DF8 /* VRCKit in Frameworks */,
 				204709A32C7B47E100A56DF8 /* VRCKit in Frameworks */,
-				201B43102C27F48E00879A2F /* LicenseList in Frameworks */,
 				201067B82C4552B40083ECBC /* AsyncSwiftUI in Frameworks */,
 				2094C4002C43BBC100F88986 /* VRCKit in Frameworks */,
 				20F213DD2C11FB470061DE29 /* NukeUI in Frameworks */,
@@ -112,7 +108,6 @@
 		20395D882B945CD700003921 = {
 			isa = PBXGroup;
 			children = (
-				F1E281992D74580E0047C025 /* CHANGELOG.md */,
 				2096E1152C96B9C9009C3649 /* README.md */,
 				2096E1162C96B9C9009C3649 /* release.sh */,
 				20E1D3322C8F467D00E00017 /* .swiftlint.yml */,
@@ -155,7 +150,6 @@
 				20395DC12B945EEF00003921 /* VRCKit */,
 				206AC9002BFA07AA00E0D5AE /* AsyncSwiftUI */,
 				20F213DC2C11FB470061DE29 /* NukeUI */,
-				201B430F2C27F48E00879A2F /* LicenseList */,
 				2014A0B22C3832690019C638 /* VRCKit */,
 				20DC3C282C422786001101DB /* VRCKit */,
 				2094C3FF2C43BBC100F88986 /* VRCKit */,
@@ -249,7 +243,6 @@
 			mainGroup = 20395D882B945CD700003921;
 			packageReferences = (
 				20F213D92C11FB470061DE29 /* XCRemoteSwiftPackageReference "Nuke" */,
-				201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */,
 				20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */,
 				205A12062CBB8621007D4EA4 /* XCRemoteSwiftPackageReference "swift-memberwise-init-macro" */,
 				F1A3957E2E199C2300AE647B /* XCLocalSwiftPackageReference "vrckit" */,
@@ -270,7 +263,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1E2819A2D74580E0047C025 /* CHANGELOG.md in Resources */,
 				20E1D3722C8F467D00E00017 /* .swiftlint.yml in Resources */,
 				2096E1172C96B9C9009C3649 /* README.md in Resources */,
 				2096E1182C96B9C9009C3649 /* release.sh in Resources */,
@@ -658,14 +650,6 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/cybozu/LicenseList.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.1;
-			};
-		};
 		20592B012C45640D00E1C8B8 /* XCRemoteSwiftPackageReference "async-swift-ui" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/makinosp/async-swift-ui";
@@ -700,11 +684,6 @@
 		2014A0B22C3832690019C638 /* VRCKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = VRCKit;
-		};
-		201B430F2C27F48E00879A2F /* LicenseList */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 201B430E2C27F48E00879A2F /* XCRemoteSwiftPackageReference "LicenseList" */;
-			productName = LicenseList;
 		};
 		20395DC12B945EEF00003921 /* VRCKit */ = {
 			isa = XCSwiftPackageProductDependency;

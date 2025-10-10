@@ -32,11 +32,7 @@ struct UserDetailPresentationView: View {
                     .id("\(userDetail.id)_\(userDetail.status.rawValue)_\(userDetail.statusDescription)_\(userDetail.bio ?? "")_\(userDetail.displayName)_\(userDetail.pronouns ?? "")_\(userDetail.badges.hashValue)")
             } else {
                 ProgressScreen()
-                    .onAppear {
-                        Task {
-                            await fetchUser(id: id)
-                        }
-                    }
+                .onAppear { Task { await fetchUser(id: id) } }
                     .navigationTitle("Loading...")
                     .navigationBarTitleDisplayMode(.inline)
             }

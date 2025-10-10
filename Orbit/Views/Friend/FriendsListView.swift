@@ -15,7 +15,8 @@ struct FriendsListView: View {
     @Environment(AppViewModel.self) var appVM
     @Environment(FriendViewModel.self) var friendVM
     @Environment(FavoriteViewModel.self) var favoriteVM
-    @InitWrapper(.internal, default: Binding<String?>.constant(nil), type: Binding<String?>.self)
+    typealias Bind = Binding<String?>
+    @InitWrapper(.internal, default: Bind.constant(nil), type: Bind.self)
     @Binding var selected: String?
     @State var isPresentedSheet = false
 

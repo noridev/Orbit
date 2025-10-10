@@ -11,12 +11,8 @@ import VRCKit
 
 @MemberwiseInit
 struct PrivateLocationView: View {
-    @InitWrapper(
-        .internal,
-        default: Binding<SegmentIdSelection?>.constant(nil),
-        label: "_",
-        type: Binding<SegmentIdSelection?>.self
-    )
+    typealias Bind = Binding<SegmentIdSelection?>
+    @InitWrapper(.internal, default: Bind.constant(nil), label: "_", type: Bind.self)
     @Binding private var selection: SegmentIdSelection?
     @Init(.internal) private let friends: [Friend]
 
