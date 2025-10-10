@@ -10,6 +10,7 @@ import VRCKit
 
 struct GroupListView: View {
     @Environment(AppViewModel.self) var appVM
+    @Environment(\.dismiss) private var dismiss
     @StateObject var groupViewModel = GroupViewModel.shared
     @State var searchText = ""
     @State var sortType: SortType = .name
@@ -17,11 +18,13 @@ struct GroupListView: View {
     let userId: String
     let userName: String?
     let groupService: GroupProvidable
+    var isPresentedAsSheet: Binding<Bool>?
 
-    init(userId: String, userName: String? = nil, groupService: GroupProvidable) {
+    init(userId: String, userName: String? = nil, groupService: GroupProvidable, isPresentedAsSheet: Binding<Bool>? = nil) {
         self.userId = userId
         self.userName = userName
         self.groupService = groupService
+        self.isPresentedAsSheet = isPresentedAsSheet
     }
     
     var body: some View {

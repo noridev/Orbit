@@ -35,6 +35,7 @@ struct UserDetailView: View {
     @State var isRequesting = false
     @State private var isPresentedAlert = false
     @State private var isPresentedSettings = false
+    @State private var isPresentedGroups = false
     @State private var isPresentedForm = false
     @State private var isPresentedBrowser = false
     @State private var isPresentedJsonView = false
@@ -60,6 +61,7 @@ struct UserDetailView: View {
                 isRequesting: $isRequesting,
                 isPresentedAlert: $isPresentedAlert,
                 isPresentedSettings: $isPresentedSettings,
+                isPresentedGroups: $isPresentedGroups,
                 isPresentedForm: $isPresentedForm,
                 isPresentedBrowser: $isPresentedBrowser,
                 isPresentedJsonView: $isPresentedJsonView,
@@ -72,6 +74,15 @@ struct UserDetailView: View {
             Text("Are you sure you want to unfriend?")
         }
         .sheet(isPresented: $isPresentedSettings) { SettingsView() }
+        .sheet(isPresented: $isPresentedGroups) {
+            NavigationStack {
+                GroupListView(
+                    userId: user.id,
+                    groupService: appVM.services.groupService,
+                    isPresentedAsSheet: $isPresentedGroups
+                )
+            }
+        }
         .sheet(isPresented: $isPresentedForm) {
             if let user = appVM.user { ProfileEditView(user: user) }
         }

@@ -16,6 +16,7 @@ struct UserDetailToolbarMenu: ToolbarContent {
     @Binding var isRequesting: Bool
     @Binding var isPresentedAlert: Bool
     @Binding var isPresentedSettings: Bool
+    @Binding var isPresentedGroups: Bool
     @Binding var isPresentedForm: Bool
     @Binding var isPresentedBrowser: Bool
     @Binding var isPresentedJsonView: Bool
@@ -33,6 +34,7 @@ struct UserDetailToolbarMenu: ToolbarContent {
                 if let isMe = appVM.user, user.id == isMe.id {
                     presentEditProfileButton
                     presentAccountSettingsButton
+                    presentGroupsButton
                 }
                 Divider()
                 presentJsonViewButton
@@ -52,6 +54,12 @@ struct UserDetailToolbarMenu: ToolbarContent {
 
     private var presentSettingsButton: some View {
         Button { isPresentedSettings.toggle() } label: { IconSet.setting.icon }
+    }
+    
+    private var presentGroupsButton: some View {
+        Button("Groups", systemImage: IconSet.groups.systemName) {
+            isPresentedGroups.toggle()
+        }
     }
 
     private var presentUnfriendAlertButton: some View {
