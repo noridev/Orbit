@@ -265,7 +265,14 @@
 
     },
     "Authenticator" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "인증기"
+          }
+        }
+      }
     },
     "Author" : {
       "localizations" : {
@@ -471,6 +478,9 @@
           }
         }
       }
+    },
+    "Close" : {
+
     },
     "Connect to your world" : {
 
@@ -720,6 +730,9 @@
     "Email" : {
 
     },
+    "Enter 6-digit code" : {
+
+    },
     "Enter note" : {
       "localizations" : {
         "ja" : {
@@ -753,7 +766,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 에서 받은 6자리 인증 코드를 입력해 주세요"
+            "value" : "%@에서 받은 6자리 인증 코드를 입력해 주세요"
           }
         },
         "zh-Hans" : {
@@ -2497,6 +2510,9 @@
           }
         }
       }
+    },
+    "Verification Code" : {
+
     },
     "Verify Code" : {
 

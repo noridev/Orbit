@@ -16,37 +16,30 @@ struct OtpView: View {
 
     var body: some View {
         ZStack {
-            Color.clear
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    isCodeFieldFocused = false
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.1),
+                    Color.purple.opacity(0.05),
+                    Color.clear
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: 40) {
+                    Spacer(minLength: 60)
+                    headerSection
+                    otpCard
+                    Spacer(minLength: 40)
                 }
-                .ignoresSafeArea()
-            
-            ZStack {
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color.blue.opacity(0.1),
-                        Color.purple.opacity(0.05),
-                        Color.clear
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-                
-                ScrollView {
-                    VStack(spacing: 40) {
-                        Spacer(minLength: 60)
-                        headerSection
-                        otpCard
-                        Spacer(minLength: 40)
-                    }
-                    .padding(.horizontal, 24)
-                }
+                .padding(.horizontal, 24)
+            }
+            .onTapGesture {
+                isCodeFieldFocused = false
             }
         }
-        .ignoresSafeArea(.keyboard)
         .onAppear {
             isCodeFieldFocused = true
         }
@@ -111,57 +104,38 @@ struct OtpView: View {
     }
 
     private var pinCodeFields: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Verification Code")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+
             HStack(spacing: 12) {
-                ForEach(0..<6, id: \.self) { index in
-                    Circle()
-                        .fill(
-                            index < code.count ? 
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.green, Color.blue]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ) : 
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color(.systemGray5), Color(.systemGray6)]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 16, height: 16)
-                        .overlay {
-                            Circle()
-                                .stroke(
-                                    index < code.count ? Color.clear : Color(.systemGray4),
-                                    lineWidth: 1
-                                )
+                Image(systemName: "number")
+                    .foregroundColor(.secondary)
+                    .frame(width: 20)
+
+                TextField("Enter 6-digit code", text: $code)
+                    .keyboardType(.numberPad)
+                    .textContentType(.oneTimeCode)
+                    .focused($isCodeFieldFocused)
+                    .onChange(of: code) { _, newValue in
+                        if newValue.count > 6 {
+                            code = String(newValue.prefix(6))
                         }
-                        .scaleEffect(index < code.count ? 1.2 : 1.0)
-                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: code.count)
-                }
-            }
-            .padding(.bottom, 8)
-            
-            TextField("", text: $code)
-                .keyboardType(.numberPad)
-                .textContentType(.oneTimeCode)
-                .focused($isCodeFieldFocused)
-                .opacity(0)
-                .frame(height: 1)
-                .onChange(of: code) { _, newValue in
-                    if newValue.count > 6 {
-                        code = String(newValue.prefix(6))
+                        code = newValue.filter { $0.isNumber }
                     }
-                    code = newValue.filter { $0.isNumber }
-                }
-            
-            Rectangle()
-                .fill(Color.clear)
-                .frame(height: 60)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    isCodeFieldFocused = true
-                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.systemGray6))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                    }
+            }
         }
     }
 
