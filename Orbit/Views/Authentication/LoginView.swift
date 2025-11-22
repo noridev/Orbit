@@ -61,7 +61,7 @@ struct LoginView: View {
             guard isSettedLocalData else { return }
             guard let password = await KeychainUtil.shared.getPassword(for: username) else { return }
             self.password = password
-            await appVM.login(credential: cledential, isSavedOnKeyChain: isSavedOnKeyChain)
+            await appVM.login(credential: credential, isSavedOnKeyChain: isSavedOnKeyChain)
         }
         .sheet(isPresented: $isPresentedBrowser) {
             if let url = URL(string: "https://vrchat.com/home/register") {
@@ -77,7 +77,7 @@ struct LoginView: View {
         isSavedOnKeyChain && !username.isEmpty
     }
 
-    private var cledential: Credential {
+    private var credential: Credential {
         Credential(username: username, password: password)
     }
 
@@ -280,7 +280,7 @@ struct LoginView: View {
         AsyncButton {
             defer { isRequesting = false }
             isRequesting = true
-            await appVM.login(credential: cledential, isSavedOnKeyChain: isSavedOnKeyChain)
+            await appVM.login(credential: credential, isSavedOnKeyChain: isSavedOnKeyChain)
         } label: {
             HStack(spacing: 12) {
                 if isRequesting {

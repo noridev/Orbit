@@ -43,37 +43,43 @@ final class AppViewModel {
     ///            if the authentication and user data retrieval are successful.
     func setup(service: AuthenticationProvidable) async -> Step {
         var next: Step = .loggingIn
-        // check local data
-        guard await client.cookieManager.cookieExists else { 
+
+        await client.cookieManager.ensureLoaded()
+
+        guard await client.cookieManager.cookieExists else {
             print("🍪 [setup] No cookies found, proceeding to login")
-            return next 
+            return next
         }
-        
-        print("🍪 [setup] Cookies found, verifying auth token")
+
+        print("🍪 [setup] Cookies found, attempting auto-login")
+
+        guard let username = userDefaults.string(forKey: Constants.Keys.username.rawValue),
+              let password = await KeychainUtil.shared.getPassword(for: username) else {
+            print("🔐 [setup] No saved credentials found, proceeding to login")
+            await client.cookieManager.deleteCookies()
+            return next
+        }
+
+        print("🔐 [setup] Found saved credentials for user: \(username)")
+        let credential = Credential(username: username, password: password)
+        await client.setCredentials(credential)
+
         do {
-            // verify auth token and fetch user data
-            guard try await service.verifyAuthToken() else { 
-                print("🔐 [setup] Auth token verification failed")
-                await client.cookieManager.deleteCookies()
-                return next 
-            }
-            
-            print("🔐 [setup] Auth token verified, fetching user info")
             let result = try await service.loginUserInfo()
             if case .left(let user) = result {
                 setUser(user)
                 next = .done(user)
-                print("✅ [setup] Setup completed successfully for user: \(user.displayName)")
+                print("✅ [setup] Auto-login successful for user: \(user.displayName)")
             } else {
-                print("🔐 [setup] User info fetch returned 2FA requirement")
+                print("🔐 [setup] 2FA required, cookies expired")
                 await client.cookieManager.deleteCookies()
             }
         } catch {
-            print("❌ [setup] Setup failed with error: \(error)")
+            print("❌ [setup] Auto-login failed with error: \(error)")
             await client.cookieManager.deleteCookies()
             if let vrckError = error as? VRCKitError,
                case .unauthorized = vrckError {
-                print("🔐 [setup] Authentication error, clearing session")
+                print("🔐 [setup] Session expired, clearing cookies")
             } else {
                 handleError(error)
             }
